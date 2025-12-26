@@ -19,9 +19,23 @@
       
       
       environment.systemPackages = with pkgs; [ 
+        
         neofetch 
         vim 
-        opencode 
+        opencode
+
+        
+        btop
+        coreutils
+        direnv
+        gh
+        go
+        lazydocker
+        neovim
+        netbird
+        nodejs
+        podman
+        rustup
       ];
 
       
@@ -30,6 +44,9 @@
       users.users.${username} = {
         home = "/Users/${username}";
       };
+
+      
+      system.primaryUser = username;
 
       
       programs.zsh.enable = true;
@@ -245,6 +262,7 @@
 
       modules = [ 
         configuration 
+        ./homebrew.nix
         home-manager.darwinModules.home-manager {
           home-manager.useGlobalPkgs = true;
           home-manager.useUserPackages = true;
