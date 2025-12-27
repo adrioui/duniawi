@@ -16,12 +16,14 @@
   homebrew.casks = [
     "dbeaver-community"
     "discord"
+    "firefox"
     "font-hack-nerd-font"
     "ghostty"
     "obsidian"
     "orbstack"
     "warp"
     "zed"
+    "yoink"
   ];
 
   
