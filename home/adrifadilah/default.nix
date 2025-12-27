@@ -3,6 +3,7 @@
 {
   imports = [
     ./opencode.nix
+    ./starship.nix
   ];
 
   home.stateVersion = "23.11";
