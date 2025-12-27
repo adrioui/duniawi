@@ -1,5 +1,8 @@
 { pkgs, lib, username, self, ... }:
 
+let
+  humanlayer = pkgs.callPackage ../../pkgs/humanlayer.nix { };
+in
 {
   
   
@@ -8,6 +11,7 @@
     neofetch 
     vim 
     opencode
+    humanlayer
 
     
     btop
