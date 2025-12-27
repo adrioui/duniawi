@@ -1,4 +1,10 @@
-{ pkgs, lib, username, self, ... }:
+{
+  pkgs,
+  lib,
+  username,
+  self,
+  ...
+}:
 
 let
   humanlayer = pkgs.callPackage ../../pkgs/humanlayer.nix { };
@@ -6,10 +12,10 @@ in
 {
   
   
-  environment.systemPackages = with pkgs; [ 
+  environment.systemPackages = with pkgs; [
     
-    neofetch 
-    vim 
+    neofetch
+    vim
     opencode
     humanlayer
 
@@ -27,10 +33,10 @@ in
     rustup
 
     
-    statix        
-    nixpkgs-fmt   
-    deadnix       
-    nix-tree      
+    statix 
+    nixpkgs-fmt 
+    deadnix 
+    nix-tree 
   ];
 
   
