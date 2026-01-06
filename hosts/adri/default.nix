@@ -25,12 +25,15 @@ in
     direnv
     gh
     go
+    bun
     lazydocker
     neovim
     netbird
     nodejs
     podman
+    rclone
     rustup
+    sshpass
 
     
     statix 
@@ -41,6 +44,9 @@ in
 
   
   nix.settings.experimental-features = "nix-command flakes";
+
+  
+  nix.settings.trusted-users = [ "root" username ];
 
   users.users.${username} = {
     home = "/Users/${username}";
