@@ -1,337 +1,152 @@
 { config, lib, ... }:
 
 {
-  
-  
-  
-  xdg.configFile."opencode/opencode.json".text = builtins.toJSON {
-    "$schema" = "https://opencode.ai/config.json";
-    plugin = [ "opencode-google-antigravity-auth" ];
-    provider = {
-      google = {
-        npm = "@ai-sdk/google";
-        models = {
-          
-          "gemini-3-pro-preview" = {
-            id = "gemini-3-pro-preview";
-            name = "Gemini 3 Pro Preview";
-            release_date = "2025-11-18";
-            reasoning = true;
-            limit = {
-              context = 1000000;
-              output = 64000;
-            };
-            cost = {
-              input = 2;
-              output = 12;
-              cache_read = 0.2;
-            };
-            modalities = {
-              input = [
-                "text"
-                "image"
-                "video"
-                "audio"
-                "pdf"
-              ];
-              output = [ "text" ];
-            };
-          };
-          "gemini-3-pro-high" = {
-            id = "gemini-3-pro-preview";
-            name = "Gemini 3 Pro Preview (High Thinking)";
-            options.thinkingConfig = {
-              thinkingLevel = "high";
-              includeThoughts = true;
-            };
-          };
-          "gemini-3-pro-medium" = {
-            id = "gemini-3-pro-preview";
-            name = "Gemini 3 Pro Preview (Medium Thinking)";
-            options.thinkingConfig = {
-              thinkingLevel = "medium";
-              includeThoughts = true;
-            };
-          };
-          "gemini-3-pro-low" = {
-            id = "gemini-3-pro-preview";
-            name = "Gemini 3 Pro Preview (Low Thinking)";
-            options.thinkingConfig = {
-              thinkingLevel = "low";
-              includeThoughts = true;
-            };
-          };
+  xdg.configFile."opencode/opencode.json".text =
+    builtins.toJSON {
+      "$schema" = "https://opencode.ai/config.json";
 
-          
-          "gemini-3-flash" = {
-            id = "gemini-3-flash";
-            name = "Gemini 3 Flash";
-            release_date = "2025-12-17";
-            reasoning = true;
-            limit = {
-              context = 1048576;
-              output = 65536;
-            };
-            cost = {
-              input = 0.5;
-              output = 3;
-              cache_read = 0.05;
-            };
-            modalities = {
-              input = [
-                "text"
-                "image"
-                "video"
-                "audio"
-                "pdf"
-              ];
-              output = [ "text" ];
-            };
-          };
-          "gemini-3-flash-high" = {
-            id = "gemini-3-flash";
-            name = "Gemini 3 Flash (High Thinking)";
-            options.thinkingConfig = {
-              thinkingLevel = "high";
-              includeThoughts = true;
-            };
-          };
-          "gemini-3-flash-medium" = {
-            id = "gemini-3-flash";
-            name = "Gemini 3 Flash (Medium Thinking)";
-            options.thinkingConfig = {
-              thinkingLevel = "medium";
-              includeThoughts = true;
-            };
-          };
-          "gemini-3-flash-low" = {
-            id = "gemini-3-flash";
-            name = "Gemini 3 Flash (Low Thinking)";
-            options.thinkingConfig = {
-              thinkingLevel = "low";
-              includeThoughts = true;
-            };
-          };
+      plugin = [
+        "opencode-antigravity-auth@beta"
+      ];
 
-          
-          "gemini-2.5-flash" = {
-            id = "gemini-2.5-flash";
-            name = "Gemini 2.5 Flash";
-            release_date = "2025-03-20";
-            reasoning = true;
-            limit = {
-              context = 1048576;
-              output = 65536;
+      provider = {
+        google = {
+          models = {
+            antigravity-gemini-3-pro = {
+              name = "Gemini 3 Pro (Antigravity)";
+              limit = {
+                context = 1048576;
+                output = 65535;
+              };
+              modalities = {
+                input = [ "text" "image" "pdf" ];
+                output = [ "text" ];
+              };
+              variants = {
+                low = { thinkingLevel = "low"; };
+                high = { thinkingLevel = "high"; };
+              };
             };
-            cost = {
-              input = 0.3;
-              output = 2.5;
-              cache_read = 0.075;
-            };
-            modalities = {
-              input = [
-                "text"
-                "image"
-                "audio"
-                "video"
-                "pdf"
-              ];
-              output = [ "text" ];
-            };
-          };
-          "gemini-2.5-flash-lite" = {
-            id = "gemini-2.5-flash-lite";
-            name = "Gemini 2.5 Flash Lite";
-            release_date = "2025-06-17";
-            reasoning = true;
-            limit = {
-              context = 1048576;
-              output = 65536;
-            };
-            cost = {
-              input = 0.1;
-              output = 0.4;
-              cache_read = 0.025;
-            };
-            modalities = {
-              input = [
-                "text"
-                "image"
-                "audio"
-                "video"
-                "pdf"
-              ];
-              output = [ "text" ];
-            };
-          };
 
-          
-          "gemini-claude-sonnet-4-5-thinking-high" = {
-            id = "gemini-claude-sonnet-4-5-thinking";
-            name = "Claude Sonnet 4.5 (High Thinking)";
-            release_date = "2025-11-18";
-            reasoning = true;
-            limit = {
-              context = 200000;
-              output = 64000;
+            antigravity-gemini-3-flash = {
+              name = "Gemini 3 Flash (Antigravity)";
+              limit = {
+                context = 1048576;
+                output = 65536;
+              };
+              modalities = {
+                input = [ "text" "image" "pdf" ];
+                output = [ "text" ];
+              };
+              variants = {
+                minimal = { thinkingLevel = "minimal"; };
+                low     = { thinkingLevel = "low"; };
+                medium  = { thinkingLevel = "medium"; };
+                high    = { thinkingLevel = "high"; };
+              };
             };
-            cost = {
-              input = 3;
-              output = 15;
-              cache_read = 0.3;
-            };
-            modalities = {
-              input = [
-                "text"
-                "image"
-                "pdf"
-              ];
-              output = [ "text" ];
-            };
-            options.thinkingConfig = {
-              thinkingBudget = 32000;
-              includeThoughts = true;
-            };
-          };
-          "gemini-claude-sonnet-4-5-thinking-medium" = {
-            id = "gemini-claude-sonnet-4-5-thinking";
-            name = "Claude Sonnet 4.5 (Medium Thinking)";
-            release_date = "2025-11-18";
-            reasoning = true;
-            limit = {
-              context = 200000;
-              output = 64000;
-            };
-            cost = {
-              input = 3;
-              output = 15;
-              cache_read = 0.3;
-            };
-            modalities = {
-              input = [
-                "text"
-                "image"
-                "pdf"
-              ];
-              output = [ "text" ];
-            };
-            options.thinkingConfig = {
-              thinkingBudget = 16000;
-              includeThoughts = true;
-            };
-          };
-          "gemini-claude-sonnet-4-5-thinking-low" = {
-            id = "gemini-claude-sonnet-4-5-thinking";
-            name = "Claude Sonnet 4.5 (Low Thinking)";
-            release_date = "2025-11-18";
-            reasoning = true;
-            limit = {
-              context = 200000;
-              output = 64000;
-            };
-            cost = {
-              input = 3;
-              output = 15;
-              cache_read = 0.3;
-            };
-            modalities = {
-              input = [
-                "text"
-                "image"
-                "pdf"
-              ];
-              output = [ "text" ];
-            };
-            options.thinkingConfig = {
-              thinkingBudget = 4000;
-              includeThoughts = true;
-            };
-          };
 
-          
-          "gemini-claude-opus-4-5-thinking-high" = {
-            id = "gemini-claude-opus-4-5-thinking";
-            name = "Claude Opus 4.5 (High Thinking)";
-            release_date = "2025-11-24";
-            reasoning = true;
-            limit = {
-              context = 200000;
-              output = 64000;
+            antigravity-claude-sonnet-4-5 = {
+              name = "Claude Sonnet 4.5 (no thinking) (Antigravity)";
+              limit = {
+                context = 200000;
+                output = 64000;
+              };
+              modalities = {
+                input = [ "text" "image" "pdf" ];
+                output = [ "text" ];
+              };
             };
-            cost = {
-              input = 5;
-              output = 25;
-              cache_read = 0.5;
+
+            antigravity-claude-sonnet-4-5-thinking = {
+              name = "Claude Sonnet 4.5 Thinking (Antigravity)";
+              limit = {
+                context = 200000;
+                output = 64000;
+              };
+              modalities = {
+                input = [ "text" "image" "pdf" ];
+                output = [ "text" ];
+              };
+              variants = {
+                low = {
+                  thinkingConfig = { thinkingBudget = 8192; };
+                };
+                max = {
+                  thinkingConfig = { thinkingBudget = 32768; };
+                };
+              };
             };
-            modalities = {
-              input = [
-                "text"
-                "image"
-                "pdf"
-              ];
-              output = [ "text" ];
+
+            antigravity-claude-opus-4-5-thinking = {
+              name = "Claude Opus 4.5 Thinking (Antigravity)";
+              limit = {
+                context = 200000;
+                output = 64000;
+              };
+              modalities = {
+                input = [ "text" "image" "pdf" ];
+                output = [ "text" ];
+              };
+              variants = {
+                low = {
+                  thinkingConfig = { thinkingBudget = 8192; };
+                };
+                max = {
+                  thinkingConfig = { thinkingBudget = 32768; };
+                };
+              };
             };
-            options.thinkingConfig = {
-              thinkingBudget = 32000;
-              includeThoughts = true;
+
+            gemini-2_5-flash = {
+              name = "Gemini 2.5 Flash (Gemini CLI)";
+              limit = {
+                context = 1048576;
+                output = 65536;
+              };
+              modalities = {
+                input = [ "text" "image" "pdf" ];
+                output = [ "text" ];
+              };
             };
-          };
-          "gemini-claude-opus-4-5-thinking-medium" = {
-            id = "gemini-claude-opus-4-5-thinking";
-            name = "Claude Opus 4.5 (Medium Thinking)";
-            release_date = "2025-11-24";
-            reasoning = true;
-            limit = {
-              context = 200000;
-              output = 64000;
+
+            gemini-2_5-pro = {
+              name = "Gemini 2.5 Pro (Gemini CLI)";
+              limit = {
+                context = 1048576;
+                output = 65536;
+              };
+              modalities = {
+                input = [ "text" "image" "pdf" ];
+                output = [ "text" ];
+              };
             };
-            cost = {
-              input = 5;
-              output = 25;
-              cache_read = 0.5;
+
+            gemini-3-flash-preview = {
+              name = "Gemini 3 Flash Preview (Gemini CLI)";
+              limit = {
+                context = 1048576;
+                output = 65536;
+              };
+              modalities = {
+                input = [ "text" "image" "pdf" ];
+                output = [ "text" ];
+              };
             };
-            modalities = {
-              input = [
-                "text"
-                "image"
-                "pdf"
-              ];
-              output = [ "text" ];
-            };
-            options.thinkingConfig = {
-              thinkingBudget = 16000;
-              includeThoughts = true;
-            };
-          };
-          "gemini-claude-opus-4-5-thinking-low" = {
-            id = "gemini-claude-opus-4-5-thinking";
-            name = "Claude Opus 4.5 (Low Thinking)";
-            release_date = "2025-11-24";
-            reasoning = true;
-            limit = {
-              context = 200000;
-              output = 64000;
-            };
-            cost = {
-              input = 5;
-              output = 25;
-              cache_read = 0.5;
-            };
-            modalities = {
-              input = [
-                "text"
-                "image"
-                "pdf"
-              ];
-              output = [ "text" ];
-            };
-            options.thinkingConfig = {
-              thinkingBudget = 4000;
-              includeThoughts = true;
+
+            gemini-3-pro-preview = {
+              name = "Gemini 3 Pro Preview (Gemini CLI)";
+              limit = {
+                context = 1048576;
+                output = 65535;
+              };
+              modalities = {
+                input = [ "text" "image" "pdf" ];
+                output = [ "text" ];
+              };
             };
           };
         };
       };
     };
-  };
 }
