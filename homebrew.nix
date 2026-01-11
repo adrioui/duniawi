@@ -29,6 +29,7 @@
     "warp"
     "zed"
     "yoink"
+    "anydesk"
   ];
 
   
