@@ -41,6 +41,8 @@ in
     pnpm
     rojo
     graphviz
+    lazygit
+    emscripten
 
     
     statix 

@@ -30,9 +30,12 @@
     "zed"
     "yoink"
     "anydesk"
+    "robloxstudio"
+    "typora"
   ];
 
-  
-  
+  homebrew.brews = [
+    "wally"
+  ];
 
 }
