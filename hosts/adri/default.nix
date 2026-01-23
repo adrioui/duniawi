@@ -24,7 +24,7 @@ in
     coreutils
     direnv
     gh
-    go
+    
     bun
     lazydocker
     neovim
@@ -39,10 +39,23 @@ in
     uv
     mkdocs
     pnpm
-    rojo
     graphviz
     lazygit
     emscripten
+    javaPackages.compiler.openjdk11
+    gradle_9
+    duckdb
+    trufflehog
+    checkov
+    terraform
+    tflint
+    trivy
+    tfsec
+    yarn
+    codebuff
+    zellij
+    amp-cli
+    eslint
 
     
     statix 

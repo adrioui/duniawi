@@ -30,12 +30,11 @@
     "zed"
     "yoink"
     "anydesk"
-    "robloxstudio"
     "typora"
   ];
 
   homebrew.brews = [
-    "wally"
+    "steveyegge/beads/bd"
   ];
 
 }
