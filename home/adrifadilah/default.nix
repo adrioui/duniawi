@@ -20,6 +20,11 @@
   xdg.enable = true;
 
   
+  home.packages = [
+    pkgs.llm-agents.agent-browser
+  ];
+
+  
   programs.zsh = {
     enable = true;
     shellAliases = {

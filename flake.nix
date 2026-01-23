@@ -9,6 +9,8 @@
 
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    llm-agents.url = "github:numtide/llm-agents.nix";
   };
 
   outputs =
@@ -17,6 +19,7 @@
       nix-darwin,
       nixpkgs,
       home-manager,
+      llm-agents,
     }:
     let
       username = "adrifadilah";
@@ -27,7 +30,11 @@
       
       darwinConfigurations."adri" = nix-darwin.lib.darwinSystem {
         inherit system;
-        pkgs = import nixpkgs { inherit system; };
+        pkgs = import nixpkgs { 
+          inherit system; 
+          config.allowUnfree = true;
+          overlays = [ llm-agents.overlays.default ];
+        };
 
         specialArgs = { inherit username self; };
 
