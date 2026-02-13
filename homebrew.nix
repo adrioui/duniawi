@@ -1,40 +1,36 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
-}:
+_:
 
 {
-  
-  
-  
-  homebrew.enable = true;
+  homebrew = {
+    
+    
+    
+    enable = true;
 
-  
-  homebrew.onActivation = {
-    autoUpdate = true;
-    cleanup = "zap";
+    
+    onActivation = {
+      autoUpdate = true;
+      cleanup = "zap";
+    };
+
+    
+    casks = [
+      "dbeaver-community"
+      "discord"
+      "firefox"
+      "font-hack-nerd-font"
+      "ghostty"
+      "obsidian"
+      "orbstack"
+      "warp"
+      "zed"
+      "yoink"
+      "anydesk"
+      "typora"
+    ];
+
+    brews = [
+      "steveyegge/beads/bd"
+    ];
   };
-
-  
-  homebrew.casks = [
-    "dbeaver-community"
-    "discord"
-    "firefox"
-    "font-hack-nerd-font"
-    "ghostty"
-    "obsidian"
-    "orbstack"
-    "warp"
-    "zed"
-    "yoink"
-    "anydesk"
-    "typora"
-  ];
-
-  homebrew.brews = [
-    "steveyegge/beads/bd"
-  ];
-
 }

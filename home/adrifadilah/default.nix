@@ -1,6 +1,4 @@
 {
-  config,
-  lib,
   pkgs,
   username,
   ...
@@ -12,17 +10,19 @@
     ./starship.nix
   ];
 
-  home.stateVersion = "23.11";
-  home.username = username;
-  home.homeDirectory = "/Users/${username}";
+  home = {
+    stateVersion = "23.11";
+    inherit username;
+    homeDirectory = "/Users/${username}";
+
+    
+    packages = [
+      pkgs.llm-agents.agent-browser
+    ];
+  };
 
   
   xdg.enable = true;
-
-  
-  home.packages = [
-    pkgs.llm-agents.agent-browser
-  ];
 
   
   programs.zsh = {

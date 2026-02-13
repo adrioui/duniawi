@@ -1,6 +1,5 @@
 {
   pkgs,
-  lib,
   username,
   self,
   ...
@@ -12,70 +11,73 @@ in
 {
   
   
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = [
     
-    neofetch
-    vim
-    opencode
+    pkgs.neofetch
+    pkgs.vim
+    pkgs.llm-agents.opencode
     humanlayer
 
     
-    btop
-    coreutils
-    direnv
-    gh
+    pkgs.btop
+    pkgs.coreutils
+    pkgs.direnv
+    pkgs.gh
     
-    bun
-    lazydocker
-    neovim
-    netbird
-    nodejs
-    podman
-    rclone
-    rustup
-    sshpass
-    freetds
-    ripgrep
-    uv
-    mkdocs
-    pnpm
-    graphviz
-    lazygit
-    emscripten
-    javaPackages.compiler.openjdk11
-    gradle_9
-    duckdb
-    trufflehog
-    checkov
-    terraform
-    tflint
-    trivy
-    tfsec
-    yarn
-    codebuff
-    zellij
-    amp-cli
-    eslint
+    pkgs.bun
+    pkgs.lazydocker
+    pkgs.neovim
+    pkgs.netbird
+    pkgs.nodejs
+    pkgs.podman
+    pkgs.rclone
+    pkgs.rustup
+    pkgs.sshpass
+    pkgs.freetds
+    pkgs.ripgrep
+    pkgs.uv
+    pkgs.mkdocs
+    pkgs.pnpm
+    pkgs.graphviz
+    pkgs.lazygit
+    pkgs.emscripten
+    pkgs.javaPackages.compiler.openjdk11
+    pkgs.gradle_9
+    pkgs.groovy
+    pkgs.duckdb
+    pkgs.trufflehog
+    pkgs.checkov
+    pkgs.terraform
+    pkgs.tflint
+    pkgs.trivy
+    pkgs.tfsec
+    pkgs.yarn
+    pkgs.codebuff
+    pkgs.zellij
+    pkgs.llm-agents.codex
+    pkgs.llm-agents.claude-code
+    pkgs.llm-agents.amp
+    pkgs.eslint
 
     
-    statix 
-    nixpkgs-fmt 
-    deadnix 
-    nix-tree 
+    pkgs.nixfmt-tree 
+    pkgs.statix 
+    pkgs.deadnix 
+    pkgs.nix-tree 
   ];
 
   
   nix.settings.experimental-features = "nix-command flakes";
 
   
-  nix.settings.trusted-users = [ "root" username ];
+  nix.settings.trusted-users = [
+    "root"
+    username
+  ];
 
   users.users.${username} = {
     home = "/Users/${username}";
   };
-
-  
-  system.primaryUser = username;
 
   
   programs.zsh.enable = true;
@@ -96,12 +98,17 @@ in
     };
   };
 
-  
-  system.configurationRevision = self.rev or self.dirtyRev or null;
+  system = {
+    
+    primaryUser = username;
 
-  
-  
-  system.stateVersion = 6;
+    
+    configurationRevision = self.rev or self.dirtyRev or null;
+
+    
+    
+    stateVersion = 6;
+  };
 
   
   nixpkgs.hostPlatform = "aarch64-darwin";
