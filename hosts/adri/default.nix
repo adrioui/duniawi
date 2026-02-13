@@ -1,6 +1,5 @@
 {
   pkgs,
-  lib,
   username,
   self,
   ...
@@ -12,70 +11,73 @@ in
 {
   # List packages installed in system profile. To search by name, run:
   # $ nix-env -qaP | grep wget
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = [
     # Existing
-    neofetch
-    vim
-    opencode
+    pkgs.neofetch
+    pkgs.vim
+    pkgs.llm-agents.opencode
     humanlayer
 
     # CLI tools (migrated from Homebrew)
-    btop
-    coreutils
-    direnv
-    gh
+    pkgs.btop
+    pkgs.coreutils
+    pkgs.direnv
+    pkgs.gh
     # go
-    bun
-    lazydocker
-    neovim
-    netbird
-    nodejs
-    podman
-    rclone
-    rustup
-    sshpass
-    freetds
-    ripgrep
-    uv
-    mkdocs
-    pnpm
-    graphviz
-    lazygit
-    emscripten
-    javaPackages.compiler.openjdk11
-    gradle_9
-    duckdb
-    trufflehog
-    checkov
-    terraform
-    tflint
-    trivy
-    tfsec
-    yarn
-    codebuff
-    zellij
-    amp-cli
-    eslint
+    pkgs.bun
+    pkgs.lazydocker
+    pkgs.neovim
+    pkgs.netbird
+    pkgs.nodejs
+    pkgs.podman
+    pkgs.rclone
+    pkgs.rustup
+    pkgs.sshpass
+    pkgs.freetds
+    pkgs.ripgrep
+    pkgs.uv
+    pkgs.mkdocs
+    pkgs.pnpm
+    pkgs.graphviz
+    pkgs.lazygit
+    pkgs.emscripten
+    pkgs.javaPackages.compiler.openjdk11
+    pkgs.gradle_9
+    pkgs.groovy
+    pkgs.duckdb
+    pkgs.trufflehog
+    pkgs.checkov
+    pkgs.terraform
+    pkgs.tflint
+    pkgs.trivy
+    pkgs.tfsec
+    pkgs.yarn
+    pkgs.codebuff
+    pkgs.zellij
+    pkgs.llm-agents.codex
+    pkgs.llm-agents.claude-code
+    pkgs.llm-agents.amp
+    pkgs.eslint
 
     # Development tools for Nix
-    statix # Nix linter
-    nixpkgs-fmt # Nix formatter
-    deadnix # Find unused Nix code
-    nix-tree # Browse Nix dependencies
+    pkgs.nixfmt-tree # Formatter for 'nix fmt'
+    pkgs.statix # Nix linter
+    pkgs.deadnix # Find unused Nix code
+    pkgs.nix-tree # Browse Nix dependencies
   ];
 
   # Necessary for using flakes on this system.
   nix.settings.experimental-features = "nix-command flakes";
 
   # Allow user to manage binary caches (needed for devenv cachix)
-  nix.settings.trusted-users = [ "root" username ];
+  nix.settings.trusted-users = [
+    "root"
+    username
+  ];
 
   users.users.${username} = {
     home = "/Users/${username}";
   };
-
-  # Required for homebrew and other user-specific features
-  system.primaryUser = username;
 
   # Enable alternative shell support in nix-darwin.
   programs.zsh.enable = true;
@@ -96,12 +98,17 @@ in
     };
   };
 
-  # Set Git commit hash for darwin-version.
-  system.configurationRevision = self.rev or self.dirtyRev or null;
+  system = {
+    # Required for homebrew and other user-specific features
+    primaryUser = username;
 
-  # Used for backwards compatibility, please read the changelog before changing.
-  # $ darwin-rebuild changelog
-  system.stateVersion = 6;
+    # Set Git commit hash for darwin-version.
+    configurationRevision = self.rev or self.dirtyRev or null;
+
+    # Used for backwards compatibility, please read the changelog before changing.
+    # $ darwin-rebuild changelog
+    stateVersion = 6;
+  };
 
   # The platform the configuration will be used on.
   nixpkgs.hostPlatform = "aarch64-darwin";

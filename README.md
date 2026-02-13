@@ -36,17 +36,19 @@ Personal nix-darwin + home-manager configuration for macOS.
 ### CLI Tool (via Nix)
 Add to `hosts/adri/default.nix`:
 ```nix
-environment.systemPackages = with pkgs; [
-  your-package
+environment.systemPackages = [
+  pkgs.your-package
 ];
 ```
 
 ### GUI App (via Homebrew)
 Add to `homebrew.nix`:
 ```nix
-homebrew.casks = [
-  "your-app"
-];
+homebrew = {
+  casks = [
+    "your-app"
+  ];
+};
 ```
 
 ### Home-manager Program
@@ -63,9 +65,8 @@ Or create a new module file and import it.
 # Format all Nix files
 nix fmt
 
-# Check for issues
-statix check .
-deadnix .
+# Run formatter + linters (deadnix/statix)
+nix flake check
 
 # Browse dependencies
 nix-tree .#darwinConfigurations.adri.system

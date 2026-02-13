@@ -24,17 +24,40 @@
     let
       username = "adrifadilah";
       system = "aarch64-darwin";
+
+      pkgsFor =
+        system:
+        import nixpkgs {
+          inherit system;
+          config.allowUnfree = true;
+          overlays = [ llm-agents.overlays.default ];
+        };
+
+      pkgs = pkgsFor system;
+
+      srcForChecks = pkgs.lib.cleanSourceWith {
+        src = self;
+        filter =
+          path: _:
+          let
+            root = "${toString self}/";
+            fullPath = toString path;
+            relativePath = pkgs.lib.removePrefix root fullPath;
+          in
+          !(
+            relativePath == "result"
+            || pkgs.lib.hasPrefix "result-" relativePath
+            || pkgs.lib.hasPrefix ".git/" relativePath
+            || pkgs.lib.hasPrefix ".opencode/node_modules/" relativePath
+            || pkgs.lib.hasPrefix "thoughts/" relativePath
+          );
+      };
     in
     {
       # Build darwin flake using:
       # $ darwin-rebuild build --flake .#adri
-      darwinConfigurations."adri" = nix-darwin.lib.darwinSystem {
-        inherit system;
-        pkgs = import nixpkgs { 
-          inherit system; 
-          config.allowUnfree = true;
-          overlays = [ llm-agents.overlays.default ];
-        };
+      darwinConfigurations.adri = nix-darwin.lib.darwinSystem {
+        inherit pkgs system;
 
         specialArgs = { inherit username self; };
 
@@ -43,16 +66,47 @@
           ./homebrew.nix
           home-manager.darwinModules.home-manager
           {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.backupFileExtension = "backup";
-            home-manager.users.${username} = import ./home/${username};
-            home-manager.extraSpecialArgs = { inherit inputs username; };
+            home-manager = {
+              useGlobalPkgs = true;
+              useUserPackages = true;
+              backupFileExtension = "backup";
+              users.${username} = import ./home/${username};
+              extraSpecialArgs = { inherit inputs username; };
+            };
           }
         ];
       };
 
-      # Formatter for 'nix fmt'
-      formatter.aarch64-darwin = nixpkgs.legacyPackages.aarch64-darwin.nixfmt-tree;
+      devShells.${system}.default = pkgs.mkShell {
+        packages = [
+          pkgs.deadnix
+          pkgs.nixfmt-tree
+          pkgs.statix
+        ];
+      };
+
+      checks.${system} = {
+        deadnix = pkgs.runCommand "deadnix-check" { src = srcForChecks; } ''
+          ${pkgs.deadnix}/bin/deadnix "$src"
+          touch "$out"
+        '';
+
+        nixfmt = pkgs.runCommand "nixfmt-check" { src = srcForChecks; } ''
+          work="$TMPDIR/src"
+          mkdir -p "$work"
+          cp -R "$src"/. "$work"/
+          chmod -R u+w "$work"
+          cd "$work"
+          ${pkgs.nixfmt-tree}/bin/treefmt --ci --tree-root "$work" --walk filesystem
+          touch "$out"
+        '';
+
+        statix = pkgs.runCommand "statix-check" { src = srcForChecks; } ''
+          ${pkgs.statix}/bin/statix check "$src"
+          touch "$out"
+        '';
+      };
+
+      formatter.${system} = pkgs.nixfmt-tree;
     };
 }

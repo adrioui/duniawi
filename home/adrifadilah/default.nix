@@ -1,6 +1,4 @@
 {
-  config,
-  lib,
   pkgs,
   username,
   ...
@@ -12,17 +10,19 @@
     ./starship.nix
   ];
 
-  home.stateVersion = "23.11";
-  home.username = username;
-  home.homeDirectory = "/Users/${username}";
+  home = {
+    stateVersion = "23.11";
+    inherit username;
+    homeDirectory = "/Users/${username}";
+
+    # AI tools
+    packages = [
+      pkgs.llm-agents.agent-browser
+    ];
+  };
 
   # Enable XDG Base Directory support
   xdg.enable = true;
-
-  # AI tools
-  home.packages = [
-    pkgs.llm-agents.agent-browser
-  ];
 
   # Shell configuration with convenient aliases
   programs.zsh = {
