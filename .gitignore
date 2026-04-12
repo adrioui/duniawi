@@ -8,3 +8,9 @@
 
 # macOS
 .DS_Store
+
+# HumanLayer local thoughts
+/thoughts/
+
+# Claude Code local settings
+.claude/settings.local.json

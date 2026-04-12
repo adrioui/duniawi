@@ -23,7 +23,7 @@ buildNpmPackage rec {
 
   nativeBuildInputs = [ makeWrapper ];
 
-  # Skip the prepack script that tries to copy .claude files
+  # Skip the prepack script (copies .claude); we install templates manually.
   npmPackFlags = [ "--ignore-scripts" ];
 
   # Just run the build
@@ -40,6 +40,9 @@ buildNpmPackage rec {
     mkdir -p $out/lib/humanlayer
     cp -r dist $out/lib/humanlayer/
     cp package.json $out/lib/humanlayer/
+
+    # Claude Code templates (used by `humanlayer claude init`)
+    cp -r ${src}/.claude $out/lib/humanlayer/
 
     # Copy node_modules for runtime dependencies
     cp -r node_modules $out/lib/humanlayer/
