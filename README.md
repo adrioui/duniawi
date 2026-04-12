@@ -26,7 +26,6 @@ Personal nix-darwin + home-manager configuration for macOS.
 ├── home/
 │   └── adrifadilah/
 │       ├── default.nix    # User config, shell aliases
-│       ├── opencode.nix   # AI assistant configuration
 │       └── starship.nix   # Shell prompt
 ├── pkgs/
 │   └── humanlayer.nix     # Custom package definition
