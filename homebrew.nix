@@ -15,6 +15,7 @@ _:
 
     
     casks = [
+      "anydesk"
       "dbeaver-community"
       "discord"
       "firefox"
@@ -22,11 +23,10 @@ _:
       "ghostty"
       "obsidian"
       "orbstack"
-      "warp"
-      "zed"
-      "yoink"
-      "anydesk"
       "typora"
+      "warp"
+      "yoink"
+      "zed"
     ];
 
     brews = [

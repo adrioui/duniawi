@@ -19,6 +19,10 @@ in
     humanlayer
 
     
+    pkgs.alacritty
+    pkgs.kitty
+
+    
     pkgs.btop
     pkgs.coreutils
     pkgs.direnv
