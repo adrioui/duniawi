@@ -48,7 +48,6 @@
             relativePath == "result"
             || pkgs.lib.hasPrefix "result-" relativePath
             || pkgs.lib.hasPrefix ".git/" relativePath
-            || pkgs.lib.hasPrefix ".opencode/node_modules/" relativePath
             || pkgs.lib.hasPrefix "thoughts/" relativePath
           );
       };
