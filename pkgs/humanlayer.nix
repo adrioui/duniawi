@@ -41,6 +41,9 @@ buildNpmPackage rec {
     cp -r dist $out/lib/humanlayer/
     cp package.json $out/lib/humanlayer/
 
+    # Claude Code templates (used by `humanlayer claude init`)
+    cp -r ${src}/.claude $out/lib/humanlayer/
+
     # Copy node_modules for runtime dependencies
     cp -r node_modules $out/lib/humanlayer/
 

@@ -72,6 +72,17 @@ nix flake check
 nix-tree .#darwinConfigurations.adri.system
 ```
 
+## Claude Code
+
+This setup installs `claude` via `pkgs.claude-code`.
+
+This repo also vendors HumanLayer’s `.claude/` workflow commands and agents.
+
+```bash
+# Initialize HumanLayer's Claude Code config in another repo
+humanlayer claude init --all
+```
+
 ## Applying Changes
 
 ```bash
