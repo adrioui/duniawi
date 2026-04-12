@@ -18,6 +18,10 @@ in
     pkgs.llm-agents.opencode
     humanlayer
 
+    # GUI apps managed by Nix
+    pkgs.alacritty
+    pkgs.kitty
+
     # CLI tools (migrated from Homebrew)
     pkgs.btop
     pkgs.coreutils

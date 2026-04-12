@@ -13,8 +13,9 @@ _:
       cleanup = "zap";
     };
 
-    # GUI applications only - CLI tools go in environment.systemPackages
+    # GUI applications that are still better managed through Homebrew
     casks = [
+      "anydesk"
       "dbeaver-community"
       "discord"
       "firefox"
@@ -22,11 +23,10 @@ _:
       "ghostty"
       "obsidian"
       "orbstack"
-      "warp"
-      "zed"
-      "yoink"
-      "anydesk"
       "typora"
+      "warp"
+      "yoink"
+      "zed"
     ];
 
     brews = [
