@@ -30,14 +30,14 @@
     enable = true;
     shellAliases = {
       # Quick rebuild
-      dr = "darwin-rebuild switch --flake ~/.config/nix";
-      drb = "darwin-rebuild build --flake ~/.config/nix";
+      dr = "sudo darwin-rebuild switch --flake ~/.config/nix";
+      drb = "sudo darwin-rebuild build --flake ~/.config/nix";
 
       # Update and rebuild
-      dru = "cd ~/.config/nix && nix flake update && darwin-rebuild switch --flake .";
+      dru = "cd ~/.config/nix && nix flake update && sudo darwin-rebuild switch --flake .#adri";
 
       # Preview what will change
-      drn = "darwin-rebuild build --flake ~/.config/nix && nix store diff-closures /run/current-system ./result";
+      drn = "sudo darwin-rebuild build --flake ~/.config/nix && nix store diff-closures /run/current-system ./result";
 
       # Edit config
       dre = "cd ~/.config/nix && $EDITOR flake.nix";
