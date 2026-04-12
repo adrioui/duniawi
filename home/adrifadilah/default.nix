@@ -8,6 +8,7 @@
   imports = [
     ./opencode.nix
     ./starship.nix
+    ./proxychains.nix
   ];
 
   home = {

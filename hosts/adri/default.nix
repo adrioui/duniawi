@@ -63,6 +63,8 @@ in
     pkgs.llm-agents.amp
     pkgs.llm-agents.pi
     pkgs.eslint
+    pkgs.proxychains-ng
+    pkgs.curl
     pkgs.age
     pkgs.sops
 
