@@ -18,6 +18,8 @@ Personal nix-darwin + home-manager configuration for macOS.
 ├── flake.nix              # Entry point - inputs and darwin config
 ├── flake.lock             # Locked input versions
 ├── homebrew.nix           # GUI apps via Homebrew casks
+├── hack/
+│   └── feedback_loop.sh   # Agent-friendly Nix validation harness
 ├── hosts/
 │   └── adri/
 │       └── default.nix    # System packages, services, nix settings
@@ -70,6 +72,26 @@ nix flake check
 
 # Browse dependencies
 nix-tree .#darwinConfigurations.adri.system
+```
+
+## Feedback Loop
+
+Use the feedback loop script for quick, text-first validation.
+
+```bash
+# Fast inner loop: format and evaluate the system derivation
+hack/feedback_loop.sh fast
+
+# Full configured checks
+hack/feedback_loop.sh check
+
+# Build playground
+hack/feedback_loop.sh dry-run
+hack/feedback_loop.sh build
+hack/feedback_loop.sh diff
+
+# Package experiment
+hack/feedback_loop.sh package kitty
 ```
 
 ## Claude Code
