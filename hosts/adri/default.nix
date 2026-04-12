@@ -13,7 +13,7 @@ in
   # $ nix-env -qaP | grep wget
   environment.systemPackages = [
     # Existing
-    pkgs.neofetch
+    pkgs.fastfetch
     pkgs.vim
     pkgs.llm-agents.opencode
     humanlayer
@@ -27,7 +27,7 @@ in
     pkgs.coreutils
     pkgs.direnv
     pkgs.gh
-    # go
+    pkgs.go
     pkgs.bun
     pkgs.lazydocker
     pkgs.neovim
@@ -59,9 +59,12 @@ in
     pkgs.codebuff
     pkgs.zellij
     pkgs.llm-agents.codex
-    pkgs.llm-agents.claude-code
+    pkgs.claude-code
     pkgs.llm-agents.amp
+    pkgs.llm-agents.pi
     pkgs.eslint
+    pkgs.age
+    pkgs.sops
 
     # Development tools for Nix
     pkgs.nixfmt-tree # Formatter for 'nix fmt'
