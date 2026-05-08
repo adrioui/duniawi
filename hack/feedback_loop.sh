@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 CONFIG="${NIX_DARWIN_CONFIG:-adri}"
-FLAKE="${NIX_FLAKE_REF:-$ROOT}"
+FLAKE="${NIX_FLAKE_REF:-path:$ROOT}"
 SYSTEM_REF="$FLAKE#darwinConfigurations.$CONFIG.system"
 PKGS_REF="$FLAKE#darwinConfigurations.$CONFIG.pkgs"
 
@@ -25,7 +25,7 @@ Commands:
 
 Environment:
   NIX_DARWIN_CONFIG Defaults to adri.
-  NIX_FLAKE_REF     Defaults to this repository path.
+  NIX_FLAKE_REF     Defaults to path:this repository (avoids git ownership issues under sudo).
 EOF
 }
 

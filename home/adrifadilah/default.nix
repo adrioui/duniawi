@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   username,
   ...
@@ -29,16 +30,17 @@
   
   programs.zsh = {
     enable = true;
+    dotDir = config.home.homeDirectory;
     shellAliases = {
       
-      dr = "sudo darwin-rebuild switch --flake ~/.config/nix";
-      drb = "sudo darwin-rebuild build --flake ~/.config/nix";
+      dr = "sudo darwin-rebuild switch --flake path:$HOME/.config/nix#adri";
+      drb = "sudo darwin-rebuild build --flake path:$HOME/.config/nix#adri";
 
       
-      dru = "cd ~/.config/nix && nix flake update && sudo darwin-rebuild switch --flake .#adri";
+      dru = "cd ~/.config/nix && nix flake update && sudo darwin-rebuild switch --flake path:$PWD#adri";
 
       
-      drn = "sudo darwin-rebuild build --flake ~/.config/nix && nix store diff-closures /run/current-system ./result";
+      drn = "cd ~/.config/nix && sudo darwin-rebuild build --flake path:$PWD#adri && nix store diff-closures /run/current-system ./result";
 
       
       dre = "cd ~/.config/nix && $EDITOR flake.nix";
