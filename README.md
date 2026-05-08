@@ -6,15 +6,16 @@ Personal nix-darwin + home-manager configuration for macOS.
 
 | Alias | Command | Description |
 |-------|---------|-------------|
-| `dr`  | `sudo darwin-rebuild switch --flake ~/.config/nix` | Apply changes |
-| `drb` | `sudo darwin-rebuild build --flake ~/.config/nix` | Build without applying |
-| `dru` | `nix flake update && sudo darwin-rebuild switch --flake .#adri` | Update flake inputs and rebuild |
-| `drn` | `sudo darwin-rebuild build && nix store diff-closures` | Preview what will change |
+| `dr`  | `sudo darwin-rebuild switch --flake path:$HOME/.config/nix#adri` | Apply changes |
+| `drb` | `sudo darwin-rebuild build --flake path:$HOME/.config/nix#adri` | Build without applying |
+| `dru` | `cd ~/.config/nix && nix flake update && sudo darwin-rebuild switch --flake path:$PWD#adri` | Update flake inputs and rebuild |
+| `drn` | `cd ~/.config/nix && sudo darwin-rebuild build --flake path:$PWD#adri && nix store diff-closures /run/current-system ./result` | Preview what will change |
 | `dre` | `cd ~/.config/nix && $EDITOR flake.nix` | Edit config |
 
 ## Structure
 
 ```
+├── AGENTS.md              # Repo instructions for coding agents and contributors
 ├── flake.nix              # Entry point - inputs and darwin config
 ├── flake.lock             # Locked input versions
 ├── homebrew.nix           # GUI apps via Homebrew casks
@@ -73,6 +74,12 @@ nix flake check
 nix-tree .#darwinConfigurations.adri.system
 ```
 
+## Agent Workflow
+
+- Read `AGENTS.md` before making structural changes.
+- Prefer `hack/feedback_loop.sh fast` while iterating and `hack/feedback_loop.sh check` before committing.
+- Use explicit `path:` flake refs for `darwin-rebuild` commands to avoid local Git ownership surprises under `sudo`.
+
 ## Feedback Loop
 
 Use the feedback loop script for quick, text-first validation.
@@ -108,8 +115,8 @@ humanlayer claude init --all
 
 ```bash
 # Build and switch (alias: dr)
-sudo darwin-rebuild switch --flake ~/.config/nix
+sudo darwin-rebuild switch --flake path:$HOME/.config/nix#adri
 
 # Or from the repo directory
-sudo darwin-rebuild switch --flake .#adri
+sudo darwin-rebuild switch --flake path:$PWD#adri
 ```
