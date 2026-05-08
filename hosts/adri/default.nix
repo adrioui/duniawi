@@ -91,6 +91,9 @@ in
   # Enable alternative shell support in nix-darwin.
   programs.zsh.enable = true;
 
+  # Tailscale client daemon (package + launchd service managed by nix-darwin)
+  services.tailscale.enable = true;
+
   # NetBird VPN daemon service
   launchd.daemons.netbird = {
     serviceConfig = {
