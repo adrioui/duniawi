@@ -7,6 +7,16 @@
 
 let
   humanlayer = pkgs.callPackage ../../pkgs/humanlayer.nix { };
+
+  # Ensure Pi installs user-scoped npm extensions without requiring sudo.
+  pi = pkgs.writeShellScriptBin "pi" ''
+    pi_npm_prefix="$HOME/.pi/npm-global"
+    mkdir -p "$pi_npm_prefix"
+    export NPM_CONFIG_PREFIX="$pi_npm_prefix"
+    export npm_config_prefix="$pi_npm_prefix"
+    export PATH="$pi_npm_prefix/bin:$PATH"
+    exec ${pkgs.llm-agents.pi}/bin/pi "$@"
+  '';
 in
 {
   # List packages installed in system profile. To search by name, run:
@@ -30,7 +40,11 @@ in
     pkgs.go
     pkgs.bun
     pkgs.lazydocker
+
+    # Editors
     pkgs.neovim
+    pkgs.helix
+
     pkgs.netbird
     pkgs.nodejs
     pkgs.podman
@@ -58,10 +72,13 @@ in
     pkgs.yarn
     pkgs.codebuff
     pkgs.zellij
+
+    # AI coding agents
     pkgs.llm-agents.codex
     pkgs.claude-code
     pkgs.llm-agents.amp
-    pkgs.llm-agents.pi
+    pi
+
     pkgs.eslint
     pkgs.proxychains-ng
     pkgs.curl

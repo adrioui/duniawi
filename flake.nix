@@ -54,7 +54,7 @@
     in
     {
       # Build darwin flake using:
-      # $ darwin-rebuild build --flake .#adri
+      # $ darwin-rebuild build --flake path:.#adri
       darwinConfigurations.adri = nix-darwin.lib.darwinSystem {
         inherit pkgs system;
 
