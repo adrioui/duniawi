@@ -92,6 +92,9 @@ in
   programs.zsh.enable = true;
 
   
+  services.tailscale.enable = true;
+
+  
   launchd.daemons.netbird = {
     serviceConfig = {
       Label = "io.netbird.client";
