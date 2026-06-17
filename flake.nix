@@ -25,11 +25,14 @@
       username = "adrifadilah";
       system = "aarch64-darwin";
 
+      # Keep unfree usage explicit so package creep is visible in reviews.
+      unfreePackages = [ "terraform" ];
+
       pkgsFor =
         system:
         import nixpkgs {
           inherit system;
-          config.allowUnfree = true;
+          config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) unfreePackages;
           overlays = [ llm-agents.overlays.default ];
         };
 
