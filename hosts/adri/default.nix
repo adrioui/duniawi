@@ -9,17 +9,16 @@
 }:
 
 let
-  humanlayer = pkgs.callPackage ../../pkgs/humanlayer.nix { };
-
-  # Ensure Pi installs user-scoped npm extensions without requiring sudo.
-  pi = pkgs.writeShellScriptBin "pi" ''
-    pi_npm_prefix="$HOME/.pi/npm-global"
-    mkdir -p "$pi_npm_prefix"
-    export NPM_CONFIG_PREFIX="$pi_npm_prefix"
-    export npm_config_prefix="$pi_npm_prefix"
-    export PATH="$pi_npm_prefix/bin:$PATH"
-    exec ${pkgs.llm-agents.pi}/bin/pi "$@"
-  '';
+  # Keep launchd command wiring declarative instead of depending on the mutable
+  # current-system profile path at runtime.
+  netbirdService = pkgs.writeShellApplication {
+    name = "netbird-service";
+    text = ''
+      /bin/wait4path /nix/store
+      /bin/mkdir -p /var/run/netbird
+      exec ${lib.getExe pkgs.netbird} service run
+    '';
+  };
 in
 {
   # List packages installed in system profile. To search by name, run:
@@ -28,8 +27,6 @@ in
     # Existing
     pkgs.fastfetch
     pkgs.vim
-    pkgs.llm-agents.opencode
-    humanlayer
 
     # GUI apps managed by Nix
     pkgs.alacritty
@@ -67,7 +64,6 @@ in
     pkgs.groovy
     pkgs.duckdb
     pkgs.trufflehog
-    pkgs.checkov
     pkgs.terraform
     pkgs.tflint
     pkgs.trivy
@@ -77,16 +73,16 @@ in
     pkgs.zellij
 
     # AI coding agents
-    pkgs.llm-agents.codex
-    pkgs.claude-code
-    pkgs.llm-agents.amp
-    pi
+    # pkgs.llm-agents.codex
+    pkgs.llm-agents.pi
+    pkgs.llm-agents.opencode
 
     pkgs.eslint
     pkgs.proxychains-ng
     pkgs.curl
     pkgs.age
     pkgs.sops
+    pkgs.rclone
 
     # Development tools for Nix
     pkgs.nixfmt-tree # Formatter for 'nix fmt'
@@ -179,11 +175,7 @@ in
   launchd.daemons.netbird = {
     serviceConfig = {
       Label = "io.netbird.client";
-      ProgramArguments = [
-        "/bin/sh"
-        "-c"
-        "/bin/wait4path /nix/store && /bin/mkdir -p /var/run/netbird && exec /run/current-system/sw/bin/netbird service run"
-      ];
+      ProgramArguments = [ (lib.getExe netbirdService) ];
       RunAtLoad = true;
       KeepAlive = true;
       StandardOutPath = "/var/log/netbird/client.log";

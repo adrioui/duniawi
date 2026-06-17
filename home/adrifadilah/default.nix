@@ -16,9 +16,7 @@
     inherit username;
     homeDirectory = "/Users/${username}";
 
-    # AI tools
     packages = [
-      pkgs.llm-agents.agent-browser
       pkgs.yt-dlp
       pkgs.cloudflared
     ];
