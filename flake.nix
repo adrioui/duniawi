@@ -54,14 +54,12 @@
             || pkgs.lib.hasPrefix "thoughts/" relativePath
           );
       };
-    in
-    {
-      # Build darwin flake using:
-      # $ darwin-rebuild build --flake path:.#adri
-      darwinConfigurations.adri = nix-darwin.lib.darwinSystem {
+      darwinConfiguration = nix-darwin.lib.darwinSystem {
         inherit pkgs system;
 
-        specialArgs = { inherit username self; };
+        specialArgs = {
+          inherit inputs username self;
+        };
 
         modules = [
           ./hosts/adri
@@ -78,16 +76,28 @@
           }
         ];
       };
+    in
+    {
+      # Build darwin flake using:
+      # $ darwin-rebuild build --flake path:.#adri
+      darwinConfigurations.adri = darwinConfiguration;
 
       devShells.${system}.default = pkgs.mkShell {
         packages = [
           pkgs.deadnix
+          pkgs.flake-checker
           pkgs.nixfmt-tree
           pkgs.statix
         ];
       };
 
       checks.${system} = {
+        # nix flake check does not validate darwinConfigurations by default, so
+        # wire the real system and Home Manager activation derivations in here.
+        darwin-system = darwinConfiguration.system;
+        home-manager-activation =
+          darwinConfiguration.config.home-manager.users.${username}.home.activationPackage;
+
         deadnix = pkgs.runCommand "deadnix-check" { src = srcForChecks; } ''
           ${pkgs.deadnix}/bin/deadnix "$src"
           touch "$out"
