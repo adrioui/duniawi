@@ -25,11 +25,14 @@
       username = "adrifadilah";
       system = "aarch64-darwin";
 
+      
+      unfreePackages = [ "terraform" ];
+
       pkgsFor =
         system:
         import nixpkgs {
           inherit system;
-          config.allowUnfree = true;
+          config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) unfreePackages;
           overlays = [ llm-agents.overlays.default ];
         };
 
