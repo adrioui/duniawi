@@ -16,9 +16,7 @@
     inherit username;
     homeDirectory = "/Users/${username}";
 
-    
     packages = [
-      pkgs.llm-agents.agent-browser
       pkgs.yt-dlp
       pkgs.cloudflared
     ];
