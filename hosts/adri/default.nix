@@ -77,6 +77,9 @@ in
     pkgs.llm-agents.pi
     pkgs.llm-agents.opencode
 
+    # Agent multiplexer (herdr.dev)
+    pkgs.herdr
+
     pkgs.eslint
     pkgs.proxychains-ng
     pkgs.curl
