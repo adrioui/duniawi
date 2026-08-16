@@ -19,7 +19,6 @@ hosts/adri/default.nix # system packages, services, nix-daemon settings
 home/adrifadilah/      # user packages, shell, env, aliases
 homebrew.nix           # Homebrew brews and casks
 pkgs/                  # custom package derivations
-hack/feedback_loop.sh  # preferred validation harness
 AGENTS.md              # this file
 README.md              # user-facing workflow
 ```
@@ -57,22 +56,25 @@ Do not silently revert these:
 ## Safe Workflow
 
 1. Read the relevant module before editing.
-2. Run `hack/feedback_loop.sh fast` after edits.
-3. Run `hack/feedback_loop.sh lint` for a quick read-only repo check.
-4. Run `hack/feedback_loop.sh check` (or `nix flake check`) before committing.
-5. Run `hack/feedback_loop.sh lock` when touching `flake.lock` or reviewing input freshness.
-6. For system changes, prefer `darwin-rebuild build --flake path:$PWD#adri` before any switch.
-7. Treat validation commands as read-only with respect to `flake.lock`.
+2. Run `nix fmt --no-write-lock-file --no-update-lock-file` after edits.
+3. Run `nix flake check --no-write-lock-file --no-update-lock-file` before committing; it covers nixfmt, deadnix, statix, lockfile freshness, and the real darwin/home-manager derivations.
+4. For system changes, prefer `darwin-rebuild build --flake path:$PWD#adri` before any switch.
+5. Treat validation commands as read-only with respect to `flake.lock`.
 
 ## Validation Commands
 
 ```bash
-hack/feedback_loop.sh fast
-hack/feedback_loop.sh lint
-hack/feedback_loop.sh check
-hack/feedback_loop.sh lock
-hack/feedback_loop.sh build
-hack/feedback_loop.sh diff
+# Format Nix files
+nix fmt --no-write-lock-file --no-update-lock-file
+
+# Full native gate: lint + lockfile + darwin/home-manager builds
+nix flake check --no-write-lock-file --no-update-lock-file
+
+# Build without applying
+darwin-rebuild build --flake path:$PWD#adri
+
+# Apply
+darwin-rebuild switch --flake path:$PWD#adri
 ```
 
 Use explicit `path:` flake references for local rebuilds to avoid Git ownership
