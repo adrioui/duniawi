@@ -11,6 +11,13 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     llm-agents.url = "github:numtide/llm-agents.nix";
+
+    
+    
+    xcodebuildmcp = {
+      url = "github:getsentry/XcodeBuildMCP/e6ef59b49b44012c824f0a0de261c96142e37390";
+      flake = false;
+    };
   };
 
   outputs =
@@ -20,23 +27,31 @@
       nixpkgs,
       home-manager,
       llm-agents,
+      xcodebuildmcp,
     }:
     let
       username = "adrifadilah";
       system = "aarch64-darwin";
 
       
-      unfreePackages = [ "terraform" ];
+      unfreePackages = [
+        "amp"
+        "terraform"
+      ];
 
       pkgsFor =
         system:
         import nixpkgs {
           inherit system;
           config.allowUnfreePredicate = pkg: builtins.elem (nixpkgs.lib.getName pkg) unfreePackages;
-          overlays = [ llm-agents.overlays.default ];
+          overlays = [ llm-agents.overlays.shared-nixpkgs ];
         };
 
       pkgs = pkgsFor system;
+
+      
+      
+      xcodebuildmcpPkg = pkgs.callPackage ./pkgs/xcodebuildmcp.nix { src = xcodebuildmcp; };
 
       srcForChecks = pkgs.lib.cleanSourceWith {
         src = self;
@@ -58,7 +73,12 @@
         inherit pkgs system;
 
         specialArgs = {
-          inherit inputs username self;
+          inherit
+            inputs
+            username
+            self
+            xcodebuildmcpPkg
+            ;
         };
 
         modules = [
@@ -78,6 +98,11 @@
       };
     in
     {
+      packages.${system} = {
+        inherit xcodebuildmcpPkg;
+        default = xcodebuildmcpPkg;
+      };
+
       
       
       darwinConfigurations.adri = darwinConfiguration;

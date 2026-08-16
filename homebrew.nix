@@ -31,8 +31,14 @@
       "yoink"
       "zen"
       "zed"
+      "raycast"
+      "cloudflare-warp"
+      
+      
+      "protonvpn"
+      "obs"
+      "plugdata"
     ];
-
     brews = [
       "steveyegge/beads/bd"
     ];
@@ -49,5 +55,3 @@
     }
   ];
 }
-
-

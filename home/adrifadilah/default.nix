@@ -4,7 +4,6 @@
   username,
   ...
 }:
-
 {
   imports = [
     ./starship.nix
@@ -17,6 +16,7 @@
     homeDirectory = "/Users/${username}";
 
     packages = [
+      (pkgs.callPackage ../../pkgs/dsh.nix { })
       pkgs.yt-dlp
       pkgs.cloudflared
     ];
@@ -26,9 +26,24 @@
   xdg.enable = true;
 
   
+  home.sessionVariables = {
+    MAGNITUDE_USE_LOCAL = "1";
+    MAGNITUDE_ENDPOINT = "http://100.87.7.118:8317/api/v1";
+  };
+
+  
+  home.sessionPath = [
+    "$HOME/.npm-global/bin"
+  ];
+
+  
   programs.zsh = {
     enable = true;
     dotDir = config.home.homeDirectory;
+    initContent = ''
+      export HCNOTE_API_KEY="$(/usr/bin/security find-generic-password -ws hcnote 2>/dev/null || true)"
+      export COMMANDCODE_API_KEY="$(/usr/bin/security find-generic-password -s commandcode-api-key -w 2>/dev/null || true)"
+    '';
     shellAliases = {
       
       dr = "sudo darwin-rebuild switch --flake path:$HOME/.config/nix#adri";

@@ -5,6 +5,7 @@
   pkgs,
   username,
   self,
+  xcodebuildmcpPkg,
   ...
 }:
 
@@ -38,8 +39,9 @@ in
     pkgs.direnv
     pkgs.gh
     pkgs.go
-    pkgs.bun
+    (pkgs.callPackage ../../pkgs/bun-1.3.14.nix { })
     pkgs.lazydocker
+    pkgs.qbittorrent
 
     
     pkgs.neovim
@@ -73,12 +75,16 @@ in
     pkgs.zellij
 
     
-    
     pkgs.llm-agents.pi
     pkgs.llm-agents.opencode
+    pkgs.llm-agents.amp
+    pkgs.llm-agents.reasonix
 
     
     pkgs.herdr
+
+    
+    xcodebuildmcpPkg
 
     pkgs.eslint
     pkgs.proxychains-ng
@@ -86,6 +92,8 @@ in
     pkgs.age
     pkgs.sops
     pkgs.rclone
+    pkgs.ffmpeg
+    (pkgs.callPackage ../../pkgs/puredata.nix { })
 
     
     pkgs.nixfmt-tree 
@@ -119,7 +127,10 @@ in
       ];
 
       
-      trusted-users = [ "root" username ];
+      trusted-users = [
+        "root"
+        username
+      ];
     };
 
     gc = {
