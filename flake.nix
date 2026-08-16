@@ -142,6 +142,11 @@
           ${pkgs.statix}/bin/statix check "$src"
           touch "$out"
         '';
+
+        lockfile = pkgs.runCommand "flake-lock-check" { src = ./flake.lock; } ''
+          ${pkgs.flake-checker}/bin/flake-checker "$src"
+          touch "$out"
+        '';
       };
 
       formatter.${system} = pkgs.nixfmt-tree;
