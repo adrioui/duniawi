@@ -61,11 +61,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1781557312,
-        "narHash": "sha256-QOIRYSUFSq7L5mY3dZymaVhcnne3tPgoR9riB0WocjA=",
+        "lastModified": 1786501082,
+        "narHash": "sha256-ROC70hdloiAY74yodpAgT0sP1dmYk+vchjYsrfmhfiM=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "c03e4752899e55705dfa63979abd885c582a5c48",
+        "rev": "99e84ee7387ff24cd112ff51f71c3465eb9cb770",
         "type": "github"
       },
       "original": {
@@ -96,23 +96,6 @@
         "type": "github"
       }
     },
-    "maka-agent": {
-      "flake": false,
-      "locked": {
-        "lastModified": 1785953475,
-        "narHash": "sha256-c/I7AxsLxd3KYHvi8BqY5aymHykplP70JsR8syQldeE=",
-        "owner": "maka-agent",
-        "repo": "maka-agent",
-        "rev": "2e4c1aabf1f562e0aa0f817201e60ee22e84c3f8",
-        "type": "github"
-      },
-      "original": {
-        "owner": "maka-agent",
-        "ref": "v0.1.6",
-        "repo": "maka-agent",
-        "type": "github"
-      }
-    },
     "nix-darwin": {
       "inputs": {
         "nixpkgs": [
@@ -120,11 +103,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1781242433,
-        "narHash": "sha256-bchLZZ3sRn740zyvD2icZSnNoTaanN0nw7l6fjVXO+E=",
+        "lastModified": 1785389976,
+        "narHash": "sha256-0tLW8Ff5yt8AH97jw4ZpFJ0OCJ122zIlgWGDmOfU/VU=",
         "owner": "nix-darwin",
         "repo": "nix-darwin",
-        "rev": "aabb2037edfc0f210723b72cd5f528aab5dd3f0b",
+        "rev": "15abb8c98f336cd8bd840d71059adebabe60bf04",
         "type": "github"
       },
       "original": {
@@ -152,11 +135,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1781454065,
-        "narHash": "sha256-d2xfDjnfRuf/xYGdu9VVRHiav/2w5hDL/5cw2TuVAXw=",
+        "lastModified": 1786348146,
+        "narHash": "sha256-we5zDEFfn8TgzeWKjKDMIjeQZ59omEPl23NIF+13/ys=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "9eac87a12312b8f60dd52e1c6e1a265f6fc7f5fc",
+        "rev": "d482ef84049d9b7276b83a06e4e4d76983830097",
         "type": "github"
       },
       "original": {
@@ -170,9 +153,9 @@
       "inputs": {
         "home-manager": "home-manager",
         "llm-agents": "llm-agents",
-        "maka-agent": "maka-agent",
         "nix-darwin": "nix-darwin",
-        "nixpkgs": "nixpkgs_2"
+        "nixpkgs": "nixpkgs_2",
+        "xcodebuildmcp": "xcodebuildmcp"
       }
     },
     "systems": {
@@ -208,6 +191,23 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "xcodebuildmcp": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1785667475,
+        "narHash": "sha256-ZxkyjWjqE8rySCFPP3LysefgR6cp6uYutrbXfrvWOUs=",
+        "owner": "getsentry",
+        "repo": "XcodeBuildMCP",
+        "rev": "e6ef59b49b44012c824f0a0de261c96142e37390",
+        "type": "github"
+      },
+      "original": {
+        "owner": "getsentry",
+        "repo": "XcodeBuildMCP",
+        "rev": "e6ef59b49b44012c824f0a0de261c96142e37390",
         "type": "github"
       }
     }

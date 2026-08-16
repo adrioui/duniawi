@@ -31,8 +31,14 @@
       "yoink"
       "zen"
       "zed"
+      "raycast"
+      "cloudflare-warp"
+      # Geo-unblocking VPN for streaming (e.g. SBS Australia for World Cup).
+      # Requires a paid account with AU servers; swap for nordvpn/surfshark/mullvad-vpn if preferred.
+      "protonvpn"
+      "obs"
+      "plugdata"
     ];
-
     brews = [
       "steveyegge/beads/bd"
     ];
@@ -49,5 +55,3 @@
     }
   ];
 }
-
-
