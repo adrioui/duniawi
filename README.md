@@ -43,7 +43,6 @@ darwin-rebuild switch --flake path:$PWD#adri
 | `home/adrifadilah/default.nix` | User packages, shell, env, aliases |
 | `homebrew.nix` | Homebrew brews and casks |
 | `pkgs/` | Custom package derivations |
-| `hack/feedback_loop.sh` | Preferred validation harness |
 | `AGENTS.md` | Agent context and non-negotiables |
 
 ## Quick Commands
@@ -90,33 +89,25 @@ programs.your-program.enable = true;
 
 Or create a new module file and import it.
 
-## Feedback Loop
+## Native Validation
 
-Use the feedback loop script for quick, text-first validation.
+Everything is a first-class flake check — no shell wrapper needed.
 
 ```bash
-# Fast inner loop: format and evaluate darwin + home-manager derivations
-hack/feedback_loop.sh fast
+# Format all Nix files
+nix fmt --no-write-lock-file --no-update-lock-file
 
-# Read-only repo checks: nixfmt + deadnix + statix
-hack/feedback_loop.sh lint
+# Evaluate darwin system + home-manager derivations (fast feedback)
+nix eval --raw --no-write-lock-file --no-update-lock-file .#darwinConfigurations.adri.system.drvPath
+nix eval --raw --no-write-lock-file --no-update-lock-file .#darwinConfigurations.adri.config.home-manager.users.adrifadilah.home.activationPackage.drvPath
 
-# Full configured checks (linters + darwin + home-manager builds)
-hack/feedback_loop.sh check
-
-# Audit flake.lock freshness/support
-hack/feedback_loop.sh lock
-
-# Build playground
-hack/feedback_loop.sh dry-run
-hack/feedback_loop.sh build
-hack/feedback_loop.sh diff
-
-# Package experiment
-hack/feedback_loop.sh package kitty
+# Lint Nix files: nixfmt --check, deadnix, statix
+# Audit flake.lock freshness
+# Build the real darwin system + home-manager activation
+nix flake check --no-write-lock-file --no-update-lock-file
 ```
 
-Validation commands are lockfile-read-only by default. Update inputs explicitly:
+Update inputs explicitly:
 
 ```sh
 nix flake update
@@ -141,7 +132,7 @@ Key ideas:
 
 - Keep the system declarative and reproducible: Nix for what Nix is good at, Homebrew for GUI apps that prefer their own update path.
 - Keep the repo flake-first: pinned nixpkgs, no legacy channels, no separate tracked `nix.conf`.
-- Keep validation agent-friendly: `hack/feedback_loop.sh` gives fast, read-only feedback without mutating `flake.lock`.
+- Keep validation agent-friendly: `nix flake check` is the native read-only gate and never mutates `flake.lock`.
 - Keep the package list explicit: unfree allowlist is narrow, Homebrew cleanup is `zap`, and package creep is visible in review.
 
 ## License
