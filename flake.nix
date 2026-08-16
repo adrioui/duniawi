@@ -123,26 +123,25 @@
         home-manager-activation =
           darwinConfiguration.config.home-manager.users.${username}.home.activationPackage;
 
-        deadnix = pkgs.runCommand "deadnix-check" { src = srcForChecks; } ''
-          ${pkgs.deadnix}/bin/deadnix "$src"
-          touch "$out"
-        '';
-
+        # Lint Nix files with the formatter's check mode; fail on any diff.
         nixfmt = pkgs.runCommand "nixfmt-check" { src = srcForChecks; } ''
-          work="$TMPDIR/src"
-          mkdir -p "$work"
-          cp -R "$src"/. "$work"/
-          chmod -R u+w "$work"
-          cd "$work"
-          ${pkgs.nixfmt-tree}/bin/treefmt --ci --tree-root "$work" --walk filesystem
+          ${pkgs.nixfmt}/bin/nixfmt --check $(find "$src" -name '*.nix' -type f)
           touch "$out"
         '';
 
+        # Dead code in .nix files.
+        deadnix = pkgs.runCommand "deadnix-check" { src = srcForChecks; } ''
+          ${pkgs.deadnix}/bin/deadnix --fail "$src"
+          touch "$out"
+        '';
+
+        # Statix lints: explicit, no hidden .gitignore surprises.
         statix = pkgs.runCommand "statix-check" { src = srcForChecks; } ''
           ${pkgs.statix}/bin/statix check "$src"
           touch "$out"
         '';
 
+        # flake.lock freshness/support.
         lockfile = pkgs.runCommand "flake-lock-check" { src = ./flake.lock; } ''
           ${pkgs.flake-checker}/bin/flake-checker "$src"
           touch "$out"
