@@ -10,13 +10,13 @@
   <a href="https://github.com/adrioui/nix/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-58A6FF?style=flat&colorA=222222" alt="License"></a>
 </p>
 
-Personal Apple Silicon Mac setup managed with **nix-darwin**, **home-manager**, and **Homebrew**. One repo, one flake, same machine every time.
+Personal setup for an Apple Silicon Mac. Uses nix-darwin, home-manager, and Homebrew. One config file tree, one command to rebuild.
 
-**Stack:** nix-darwin system profile, home-manager user profile, Homebrew GUI apps, flake-first CLI, zsh + starship, AI coding agents, and a validation harness agents can actually run.
+**What's in it:** system packages, user dotfiles, Homebrew GUI apps, zsh aliases, AI coding agents, audio tools (PureData, Max/MSP with neural audio models), and a validation suite that checks everything before you apply.
 
-## Install
+## Quick Start
 
-Requires [Nix](https://nixos.org/download/) with flakes enabled, and [Homebrew](https://brew.sh).
+You need [Nix](https://nixos.org/download/) with flakes, and [Homebrew](https://brew.sh).
 
 ```sh
 git clone git@github.com:adrioui/nix.git ~/.config/nix
@@ -24,81 +24,71 @@ cd ~/.config/nix
 darwin-rebuild switch --flake path:$PWD#adri
 ```
 
-After that, apply changes with:
-
-```sh
-darwin-rebuild switch --flake path:$PWD#adri
-```
+After that, rebuild with the same command.
 
 **Defaults:** user `adrifadilah`, host `adri`, `aarch64-darwin`.
 
-**Homebrew:** `homebrew.onActivation.cleanup = "zap"` removes undeclared brews/casks on every switch. Read `modules/homebrew.nix` before installing anything ad hoc.
+**Homebrew note:** `homebrew.onActivation.cleanup = "zap"` removes anything you install outside the config. See `modules/homebrew.nix` before running `brew install` by hand.
 
 ## Layout
 
-| Path | Role |
+| Path | What it does |
 | --- | --- |
-| `flake.nix` | Entry: inputs, thin flake-parts + import-tree shell |
-| `modules/hosts/adri.nix` | Host assembly: wires aspects into darwinConfigurations |
-| `modules/` | Feature aspects: each file is a cross-cutting flake-parts module |
-| `modules/base.nix` | Base darwin config (nix settings, users, system) |
-| `modules/homebrew.nix` | Homebrew brews and casks |
-| `modules/vpn.nix` | VPN: tailscale, netbird, cloudflared, protonvpn, cloudflare-warp |
-| `modules/audio.nix` | Audio: puredata, plugdata |
-| `modules/ai.nix` | AI agents: llm-agents, herdr, dsh |
+| `flake.nix` | Entry point: lists inputs, hands off to modules |
+| `modules/hosts/adri.nix` | Wires all features together for this machine |
+| `modules/base.nix` | Core system settings: Nix config, users, host platform |
+| `modules/homebrew.nix` | Homebrew apps and packages |
+| `modules/vpn.nix` | VPN tools: tailscale, netbird, cloudflared |
+| `modules/audio.nix` | Audio: PureData with nn~ and RAVE models |
+| `modules/max.nix` | Max/MSP with nn~ external and RAVE models |
+| `modules/ai.nix` | AI coding agents: pi, opencode, herdr, dsh |
 | `modules/shell.nix` | Shell: zsh, starship, aliases, terminals |
 | `modules/editor.nix` | Editors: neovim, helix, vim |
 | `modules/dev.nix` | Dev tools: go, rust, node, direnv, nix tooling |
-| `modules/media.nix` | Media: qbittorrent, ffmpeg, yt-dlp, obs |
-| `modules/xcode.nix` | Xcode: XcodeBuildMCP |
-| `pkgs/` | Custom package derivations |
-| `AGENTS.md` | Agent context and non-negotiables |
+| `modules/media.nix` | Media tools: qbittorrent, ffmpeg, yt-dlp, obs |
+| `modules/xcode.nix` | Xcode helper: XcodeBuildMCP |
+| `pkgs/` | Custom packages (PureData with externals, nn~ Max, RAVE models) |
+| `AGENTS.md` | Agent context: conventions and rules for AI tools |
 
 ## Quick Commands
 
-| Alias | Command | Description |
+| Alias | Command | What it does |
 | --- | --- | --- |
 | `dr` | `sudo darwin-rebuild switch --flake path:$HOME/.config/nix#adri` | Apply changes |
 | `drb` | `sudo darwin-rebuild build --flake path:$HOME/.config/nix#adri` | Build without applying |
-| `dru` | `cd ~/.config/nix && nix flake update && sudo darwin-rebuild switch --flake path:$PWD#adri` | Update flake inputs and rebuild |
+| `dru` | `cd ~/.config/nix && nix flake update && sudo darwin-rebuild switch --flake path:$PWD#adri` | Update inputs and rebuild |
 | `drn` | `cd ~/.config/nix && sudo darwin-rebuild build --flake path:$PWD#adri && nix store diff-closures /run/current-system ./result` | Preview what will change |
-| `dre` | `cd ~/.config/nix && $EDITOR flake.nix` | Edit config |
+| `dre` | `cd ~/.config/nix && $EDITOR flake.nix` | Edit the config |
 
-## Adding Packages
+## Adding Stuff
 
-### CLI Tool (via Nix)
+### CLI tool (via Nix)
 
-Add to the relevant aspect module in `modules/` (e.g. `modules/dev.nix`):
+Add it to the right feature module in `modules/`. For example, in `modules/dev.nix`:
 
 ```nix
 { pkgs, ... }: {
   flake.modules.darwin.dev = { ... }: {
-    environment.systemPackages = [
-      pkgs.your-package
-    ];
+    environment.systemPackages = [ pkgs.your-package ];
   };
 }
 ```
 
-### GUI App (via Homebrew)
+### GUI app (via Homebrew)
 
-Add to `modules/homebrew.nix`:
+Add it to `modules/homebrew.nix`:
 
 ```nix
 { ... }: {
   flake.modules.darwin.homebrew = { ... }: {
-    homebrew = {
-      casks = [
-        "your-app"
-      ];
-    };
+    homebrew.casks = [ "your-app" ];
   };
 }
 ```
 
-### Home-manager Program
+### Home-manager program
 
-Add to the relevant aspect module (e.g. `modules/shell.nix`):
+Add it to the right feature module. For example, in `modules/shell.nix`:
 
 ```nix
 { ... }: {
@@ -108,51 +98,41 @@ Add to the relevant aspect module (e.g. `modules/shell.nix`):
 }
 ```
 
-## Native Validation
+## Max/MSP and Neural Audio
 
-Everything is a first-class flake check — no shell wrapper needed.
+This setup includes:
+
+- **Max/MSP** (via Homebrew cask `cycling74-max`).
+- **nn~ for Max/MSP**: the nn~ external loads TorchScript audio models. Installed into `~/Documents/Max 9/Packages/nn_tilde`.
+- **RAVE models**: three pretrained models (isis, percussion, vschaos2) included in the nn~ package so you can use them right away.
+
+Open Max, create an `nn~` object, and try `isis`, `percussion`, or `ordinario_1024` as the model name.
+
+The PureData side (in `modules/audio.nix`) has the same models available through its own nn~ external.
+
+## Validation
+
+Every change is checked before it gets applied.
 
 ```bash
-# Format all Nix files
+# Format all files
 nix fmt --no-write-lock-file --no-update-lock-file
 
-# Evaluate darwin system + home-manager derivations (fast feedback)
-nix eval --raw --no-write-lock-file --no-update-lock-file .#darwinConfigurations.adri.system.drvPath
-nix eval --raw --no-write-lock-file --no-update-lock-file .#darwinConfigurations.adri.config.home-manager.users.adrifadilah.home.activationPackage.drvPath
-
-# Lint Nix files: nixfmt --check, deadnix, statix
-# Audit flake.lock freshness
-# Build the real darwin system + home-manager activation
+# Lint, check lockfile, build the real system and home environment
 nix flake check --no-write-lock-file --no-update-lock-file
-```
 
-Update inputs explicitly:
-
-```sh
+# Update inputs
 nix flake update
 ```
 
-## Development
-
-```bash
-# Format all Nix files
-nix fmt
-
-# Run repo checks plus darwin/home-manager build validation
-nix flake check
-
-# Browse dependencies
-nix-tree .#darwinConfigurations.adri.system
-```
+These commands are read-only regarding `flake.lock` except for `nix flake update`.
 
 ## Philosophy
 
-Key ideas:
-
-- Keep the system declarative and reproducible: Nix for what Nix is good at, Homebrew for GUI apps that prefer their own update path.
-- Keep the repo flake-first: pinned nixpkgs, no legacy channels, no separate tracked `nix.conf`.
-- Keep validation agent-friendly: `nix flake check` is the native read-only gate and never mutates `flake.lock`.
-- Keep the package list explicit: unfree allowlist is narrow, Homebrew cleanup is `zap`, and package creep is visible in review.
+- Declarative and reproducible. Nix for packages and services, Homebrew for GUI apps.
+- Flake-only. No legacy channels, no separate nix.conf.
+- Package list is explicit. Unfree packages are in a narrow allowlist. Homebrew cleanup is `zap`.
+- Validation is agent-friendly. `nix flake check` is the one gate.
 
 ## License
 
