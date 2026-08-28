@@ -2,103 +2,11 @@
   config,
   inputs,
   lib,
-  pkgs,
   username,
   self,
-  xcodebuildmcpPkg,
   ...
 }:
-
-let
-  puredataPkg = pkgs.callPackage ../../pkgs/puredata.nix { };
-  pdElse = pkgs.callPackage ../../pkgs/pd-else-darwin.nix { };
-  nnTilde = pkgs.callPackage ../../pkgs/nn-tilde.nix { };
-  raveIsis = pkgs.callPackage ../../pkgs/rave-isis-model.nix { };
-  ravePercussion = pkgs.callPackage ../../pkgs/rave-percussion-model.nix { };
-  vschaos2 = pkgs.callPackage ../../pkgs/vschaos2-ordinario-1024-model.nix { };
-  puredataWithExternals = pkgs.callPackage ../../pkgs/puredata-with-externals.nix {
-    puredata = puredataPkg;
-    plugins = [
-      pdElse
-      nnTilde
-      raveIsis
-      ravePercussion
-      vschaos2
-    ];
-  };
-in
 {
-  # List packages installed in system profile. To search by name, run:
-  # $ nix-env -qaP | grep wget
-  environment.systemPackages = [
-    # Existing
-    pkgs.fastfetch
-    pkgs.vim
-
-    # GUI apps managed by Nix
-    pkgs.alacritty
-    pkgs.kitty
-
-    # CLI tools (migrated from Homebrew)
-    pkgs.btop
-    pkgs.coreutils
-    pkgs.direnv
-    pkgs.gh
-    pkgs.go
-    (pkgs.callPackage ../../pkgs/bun-1.3.14.nix { })
-    pkgs.lazydocker
-    pkgs.qbittorrent
-
-    # Editors
-    pkgs.neovim
-    pkgs.helix
-
-    pkgs.nodejs
-    pkgs.podman
-    pkgs.rclone
-    pkgs.rustup
-    pkgs.sshpass
-    pkgs.ripgrep
-    pkgs.uv
-    pkgs.mkdocs
-    pkgs.pnpm
-    pkgs.graphviz
-    pkgs.lazygit
-    pkgs.emscripten
-    pkgs.javaPackages.compiler.openjdk11
-    pkgs.gradle_9
-    pkgs.groovy
-    pkgs.yarn
-    pkgs.zellij
-
-    # AI coding agents
-    pkgs.llm-agents.pi
-    pkgs.llm-agents.opencode
-    pkgs.llm-agents.amp
-    pkgs.llm-agents.reasonix
-    pkgs.llm-agents.freebuff
-
-    # Agent multiplexer (herdr.dev)
-    pkgs.herdr
-
-    # XcodeBuild MCP (MCP server + CLI for Xcode/iOS/macOS projects)
-    xcodebuildmcpPkg
-
-    pkgs.eslint
-    pkgs.curl
-    pkgs.age
-    pkgs.sops
-    pkgs.rclone
-    pkgs.ffmpeg
-    puredataWithExternals
-
-    # Development tools for Nix
-    pkgs.nixfmt-tree # Formatter for 'nix fmt'
-    pkgs.statix # Nix linter
-    pkgs.deadnix # Find unused Nix code
-    pkgs.nix-tree # Browse Nix dependencies
-  ];
-
   nix = {
     # This repo is flake-first. Keep imperative CLI commands aligned with the
     # same pinned nixpkgs revision instead of falling back to mutable channels.
@@ -175,9 +83,6 @@ in
   users.users.${username} = {
     home = "/Users/${username}";
   };
-
-  # Enable alternative shell support in nix-darwin.
-  programs.zsh.enable = true;
 
   system = {
     # Required for homebrew and other user-specific features
