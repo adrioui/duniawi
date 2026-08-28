@@ -6,7 +6,7 @@ This is my personal macOS setup. It builds my system, my user environment, and m
 
 My machine is an Apple Silicon Mac. I use nix-darwin for system-level stuff, home-manager for my user config, and Homebrew for GUI apps that prefer their own update path. The config is split by feature, not by layer, so a feature like VPN or audio lives in one place.
 
-I do a lot of audio work. PureData and Max/MSP both get the same neural audio models through the nn~ external. The RAVE models are part of the config, so they show up in both programs without me copying files around.
+I'm currently learning DAW. PureData and Max/MSP both get the same neural audio models through the nn~ external. The RAVE models are part of the config, so they show up in both programs without me copying files around.
 
 I also use AI coding agents heavily. The AI feature module installs pi, opencode, herdr, and dsh together, because they are part of the same workflow for me.
 
