@@ -1,56 +1,56 @@
 # Adri's Nix Config
 
-Personal macOS setup for my Apple Silicon Mac. Managed with nix-darwin, home-manager, Homebrew, and flake-parts.
+This is my personal macOS setup. It builds my system, my user environment, and my GUI apps from one Nix flake. I keep it here so my Mac is always one command away from being the same Mac again.
 
-## Machine
+## How I Use It
 
-| | |
+My machine is an Apple Silicon Mac. I use nix-darwin for system-level stuff, home-manager for my user config, and Homebrew for GUI apps that prefer their own update path. The config is split by feature, not by layer, so a feature like VPN or audio lives in one place.
+
+I do a lot of audio work. PureData and Max/MSP both get the same neural audio models through the nn~ external. The RAVE models are part of the config, so they show up in both programs without me copying files around.
+
+I also use AI coding agents heavily. The AI feature module installs pi, opencode, herdr, and dsh together, because they are part of the same workflow for me.
+
+## What's In It
+
+| Area | What I use |
 | --- | --- |
-| Host | `adri` |
-| User | `adrifadilah` |
-| System | `aarch64-darwin` |
-| Shell | zsh + starship |
+| System | nix-darwin, Nix flakes, Homebrew |
+| Shell | zsh, starship, kitty, alacritty |
 | Editors | neovim, helix, vim |
-| Audio | PureData + Max/MSP with RAVE models |
-
-## Features
-
-- **VPN.** Tailscale, NetBird, cloudflared.
-- **Audio.** PureData with the nn~ external and RAVE models.
-- **Max/MSP.** Max with the nn~ external and the same RAVE models.
-- **AI agents.** pi, opencode, herdr, dsh.
-- **Shell.** zsh, starship, aliases, kitty, alacritty.
-- **Editors.** neovim, helix, vim.
-- **Dev.** go, rust, node, direnv, and Nix tooling.
-- **Media.** qbittorrent, ffmpeg, yt-dlp, OBS.
-- **Xcode.** XcodeBuildMCP.
+| VPN | Tailscale, NetBird, cloudflared |
+| Audio | PureData, nn~, RAVE models |
+| Max/MSP | Max, nn~, RAVE models |
+| AI agents | pi, opencode, herdr, dsh |
+| Dev | go, rust, node, direnv, Nix tooling |
+| Media | qbittorrent, ffmpeg, yt-dlp, OBS |
+| Xcode | XcodeBuildMCP |
 
 ## Layout
 
 ```
 flake.nix
 modules/
-├── hosts/adri.nix
-├── base.nix
-├── homebrew.nix
-├── vpn.nix
-├── audio.nix
-├── max.nix
-├── ai.nix
-├── shell.nix
-├── editor.nix
-├── dev.nix
-├── media.nix
-├── xcode.nix
-├── options.nix
-├── nixpkgs.nix
-└── per-system.nix
+├── hosts/adri.nix        # wires features together
+├── base.nix              # Nix settings, users, host platform
+├── homebrew.nix          # GUI apps
+├── vpn.nix               # tailscale, netbird, cloudflared
+├── audio.nix             # PureData + nn~ + RAVE models
+├── max.nix               # Max/MSP + nn~ + RAVE models
+├── ai.nix                # pi, opencode, herdr, dsh
+├── shell.nix             # zsh, starship, aliases, terminals
+├── editor.nix            # neovim, helix, vim
+├── dev.nix               # dev tools and Nix tooling
+├── media.nix             # qbittorrent, ffmpeg, yt-dlp, OBS
+├── xcode.nix             # XcodeBuildMCP
+├── options.nix           # shared values
+├── nixpkgs.nix           # nixpkgs config and unfree allowlist
+└── per-system.nix        # checks, packages, dev shell
 pkgs/
 ```
 
-Every file in `modules/` is a feature module. They are loaded automatically through flake-parts and import-tree.
+Every file under `modules/` is a feature module. flake-parts and import-tree load them automatically. I never maintain an import list.
 
-## Commands
+## Commands I Actually Run
 
 | Alias | What it does |
 | --- | --- |
@@ -58,10 +58,19 @@ Every file in `modules/` is a feature module. They are loaded automatically thro
 | `drb` | Build without applying |
 | `dru` | Update inputs and rebuild |
 | `drn` | Preview what will change |
-| `dre` | Edit the config |
+| `dre` | Open the config for editing |
 
-## Notes
+Full validation before I apply:
 
-- Homebrew cleanup is `zap`. Anything installed outside the config is removed on the next rebuild.
-- Unfree packages are limited to the allowlist in `modules/nixpkgs.nix`.
-- Max/MSP models are installed to `~/Documents/Max 9/Packages/nn_tilde`. In Max, create an `nn~` object and use `isis`, `percussion`, or `ordinario_1024`.
+```sh
+nix fmt --no-write-lock-file --no-update-lock-file
+nix flake check --no-write-lock-file --no-update-lock-file
+darwin-rebuild build --flake path:$PWD#adri
+```
+
+## Things To Remember
+
+- Homebrew cleanup is `zap`. If I install something with `brew` but forget to declare it here, the next rebuild deletes it.
+- Unfree packages are limited to a small allowlist in `modules/nixpkgs.nix`.
+- Max/MSP models live in `~/Documents/Max 9/Packages/nn_tilde`. In Max, an `nn~` object loads them by name: `isis`, `percussion`, or `ordinario_1024`.
+- `flake.lock` is read-only during validation. I only change it with `nix flake update`.
