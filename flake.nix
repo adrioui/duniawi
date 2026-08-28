@@ -26,6 +26,11 @@
     den.url = "github:denful/den";
 
     dsh-nix.url = "github:Samuka007/dsh-nix";
+
+    helium = {
+      url = "github:schembriaiden/helium-browser-nix-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } (inputs.import-tree ./modules);

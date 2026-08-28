@@ -12,6 +12,7 @@
     den.aspects.dev
     den.aspects.media
     den.aspects.xcode
+    den.aspects.browser
   ];
 
   den.aspects.adrifadilah.includes = [

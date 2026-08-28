@@ -95,7 +95,10 @@
         # The platform the configuration will be used on.
         nixpkgs = {
           hostPlatform = "aarch64-darwin";
-          overlays = [ inputs.llm-agents.overlays.shared-nixpkgs ];
+          overlays = [
+            inputs.llm-agents.overlays.shared-nixpkgs
+            inputs.helium.overlays.default
+          ];
         };
       };
 
