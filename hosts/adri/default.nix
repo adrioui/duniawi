@@ -10,17 +10,6 @@
 }:
 
 let
-  # Keep launchd command wiring declarative instead of depending on the mutable
-  # current-system profile path at runtime.
-  netbirdService = pkgs.writeShellApplication {
-    name = "netbird-service";
-    text = ''
-      /bin/wait4path /nix/store
-      /bin/mkdir -p /var/run/netbird
-      exec ${lib.getExe pkgs.netbird} service run
-    '';
-  };
-
   puredataPkg = pkgs.callPackage ../../pkgs/puredata.nix { };
   pdElse = pkgs.callPackage ../../pkgs/pd-else-darwin.nix { };
   nnTilde = pkgs.callPackage ../../pkgs/nn-tilde.nix { };
@@ -64,7 +53,6 @@ in
     pkgs.neovim
     pkgs.helix
 
-    pkgs.netbird
     pkgs.nodejs
     pkgs.podman
     pkgs.rclone
@@ -199,21 +187,6 @@ in
 
   # Enable alternative shell support in nix-darwin.
   programs.zsh.enable = true;
-
-  # Tailscale client daemon (package + launchd service managed by nix-darwin)
-  services.tailscale.enable = true;
-
-  # NetBird VPN daemon service
-  launchd.daemons.netbird = {
-    serviceConfig = {
-      Label = "io.netbird.client";
-      ProgramArguments = [ (lib.getExe netbirdService) ];
-      RunAtLoad = true;
-      KeepAlive = true;
-      StandardOutPath = "/var/log/netbird/client.log";
-      StandardErrorPath = "/var/log/netbird/client.error.log";
-    };
-  };
 
   system = {
     # Required for homebrew and other user-specific features
