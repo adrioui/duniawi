@@ -32,16 +32,25 @@ darwin-rebuild switch --flake path:$PWD#adri
 
 **Defaults:** user `adrifadilah`, host `adri`, `aarch64-darwin`.
 
-**Homebrew:** `homebrew.onActivation.cleanup = "zap"` removes undeclared brews/casks on every switch. Read `homebrew.nix` before installing anything ad hoc.
+**Homebrew:** `homebrew.onActivation.cleanup = "zap"` removes undeclared brews/casks on every switch. Read `modules/homebrew.nix` before installing anything ad hoc.
 
 ## Layout
 
 | Path | Role |
 | --- | --- |
-| `flake.nix` | Entry: inputs, unfree allowlist, outputs, checks |
-| `hosts/adri/default.nix` | System packages, services, nix-daemon settings |
-| `home/adrifadilah/default.nix` | User packages, shell, env, aliases |
-| `homebrew.nix` | Homebrew brews and casks |
+| `flake.nix` | Entry: inputs, thin flake-parts + import-tree shell |
+| `modules/hosts/adri.nix` | Host assembly: wires aspects into darwinConfigurations |
+| `modules/` | Feature aspects: each file is a cross-cutting flake-parts module |
+| `modules/base.nix` | Base darwin config (nix settings, users, system) |
+| `modules/homebrew.nix` | Homebrew brews and casks |
+| `modules/vpn.nix` | VPN: tailscale, netbird, cloudflared, protonvpn, cloudflare-warp |
+| `modules/audio.nix` | Audio: puredata, plugdata |
+| `modules/ai.nix` | AI agents: llm-agents, herdr, dsh |
+| `modules/shell.nix` | Shell: zsh, starship, aliases, terminals |
+| `modules/editor.nix` | Editors: neovim, helix, vim |
+| `modules/dev.nix` | Dev tools: go, rust, node, direnv, nix tooling |
+| `modules/media.nix` | Media: qbittorrent, ffmpeg, yt-dlp, obs |
+| `modules/xcode.nix` | Xcode: XcodeBuildMCP |
 | `pkgs/` | Custom package derivations |
 | `AGENTS.md` | Agent context and non-negotiables |
 
@@ -59,35 +68,45 @@ darwin-rebuild switch --flake path:$PWD#adri
 
 ### CLI Tool (via Nix)
 
-Add to `hosts/adri/default.nix`:
+Add to the relevant aspect module in `modules/` (e.g. `modules/dev.nix`):
 
 ```nix
-environment.systemPackages = [
-  pkgs.your-package
-];
+{ pkgs, ... }: {
+  flake.modules.darwin.dev = { ... }: {
+    environment.systemPackages = [
+      pkgs.your-package
+    ];
+  };
+}
 ```
 
 ### GUI App (via Homebrew)
 
-Add to `homebrew.nix`:
+Add to `modules/homebrew.nix`:
 
 ```nix
-homebrew = {
-  casks = [
-    "your-app"
-  ];
-};
+{ ... }: {
+  flake.modules.darwin.homebrew = { ... }: {
+    homebrew = {
+      casks = [
+        "your-app"
+      ];
+    };
+  };
+}
 ```
 
 ### Home-manager Program
 
-Add to `home/adrifadilah/default.nix`:
+Add to the relevant aspect module (e.g. `modules/shell.nix`):
 
 ```nix
-programs.your-program.enable = true;
+{ ... }: {
+  flake.modules.homeManager.shell = { ... }: {
+    programs.your-program.enable = true;
+  };
+}
 ```
-
-Or create a new module file and import it.
 
 ## Native Validation
 

@@ -15,9 +15,22 @@ managed outside Nix.
 ```
 flake.nix              # flake inputs, unfree allowlist, outputs, checks
 flake.lock             # locked input versions
-hosts/adri/default.nix # system packages, services, nix-daemon settings
-home/adrifadilah/      # user packages, shell, env, aliases
-homebrew.nix           # Homebrew brews and casks
+modules/
+  flake-parts.nix      # flake-parts + import-tree infrastructure
+  options.nix          # shared flake options (username, system, etc.)
+  nixpkgs.nix          # nixpkgs config, overlays, unfree allowlist
+  per-system.nix       # perSystem outputs: packages, devShells, checks, formatter
+  hosts/adri.nix       # host assembly: darwinConfigurations.adri
+  base.nix             # base darwin config (nix settings, users, system)
+  homebrew.nix         # Homebrew brews and casks
+  vpn.nix              # VPN feature: tailscale, netbird, cloudflared
+  audio.nix            # Audio feature: puredata, plugdata
+  ai.nix               # AI feature: llm-agents, herdr, dsh
+  shell.nix            # Shell feature: zsh, starship, aliases
+  editor.nix           # Editor feature: neovim, helix, vim
+  dev.nix              # Dev tools: go, rust, node, direnv, nix tooling
+  media.nix            # Media feature: qbittorrent, ffmpeg, yt-dlp, obs
+  xcode.nix            # Xcode feature: XcodeBuildMCP
 pkgs/                  # custom package derivations
 AGENTS.md              # this file
 README.md              # user-facing workflow
@@ -25,12 +38,11 @@ README.md              # user-facing workflow
 
 ## Placement Rules
 
-- **CLI/system-wide packages** → `hosts/adri/default.nix`.
-- **User-scoped packages/shell config** → `home/adrifadilah/default.nix`.
-- **GUI apps (Homebrew-managed)** → `homebrew.nix`.
-- **Nix daemon settings** → `hosts/adri/default.nix`; do not introduce a separate tracked `nix.conf`.
-- **Custom package definitions** → `pkgs/`; import them from modules.
-- **Unfree allowlist** → keep narrow and explicit in `flake.nix` via `allowUnfreePredicate`.
+- **Feature-based modules** → `modules/`; each file is a flake-parts module that defines a cross-cutting aspect (darwin + homeManager + homebrew classes).
+- **Base system config** (nix settings, users, hostPlatform) → `modules/base.nix` (darwin.base aspect).
+- **Homebrew casks/brews** → `modules/homebrew.nix` (darwin.homebrew aspect).
+- **Custom package definitions** → `pkgs/`; called via `callPackage`.
+- **Unfree allowlist** → keep narrow and explicit in `modules/nixpkgs.nix` via `allowUnfreePredicate`.
 - **Flake-first CLI policy** → keep `nix.registry.nixpkgs` pinned to the flake input and `nix.nixPath` aligned; do not re-enable legacy channels.
 - **Homebrew activation** → keep `homebrew.onActivation.autoUpdate` and `upgrade` `false`; activation must stay idempotent.
 
@@ -38,7 +50,7 @@ README.md              # user-facing workflow
 
 Do not silently revert these:
 
-- `homebrew.onActivation.cleanup = "zap"` is intentional. Every brew/cask must be declared in `homebrew.nix`; ad-hoc `brew install` is removed on the next rebuild.
+- `homebrew.onActivation.cleanup = "zap"` is intentional. Every brew/cask must be declared in `modules/homebrew.nix` or a feature aspect; ad-hoc `brew install` is removed on the next rebuild.
 - The repo is flake-first. Keep `nix.channel.enable = false`, the exact system `nix.registry.nixpkgs` entry, aligned `nix.nixPath`, and `experimental-features = "nix-command flakes"`.
 - `flake.lock` is read-only during validation. Update inputs only with an explicit `nix flake update`.
 - `thoughts/` stays uncommitted and is excluded from checks.
