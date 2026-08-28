@@ -22,6 +22,7 @@
             || pkgs.lib.hasPrefix "result-" relativePath
             || pkgs.lib.hasPrefix ".git/" relativePath
             || pkgs.lib.hasPrefix "thoughts/" relativePath
+            || pkgs.lib.hasPrefix "dsh-nix-patch/" relativePath
           );
       };
     in
