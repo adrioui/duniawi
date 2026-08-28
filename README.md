@@ -17,6 +17,7 @@ I also use AI coding agents heavily. The AI feature module installs pi, opencode
 | System | nix-darwin, Nix flakes, Homebrew |
 | Shell | zsh, starship, kitty, alacritty |
 | Editors | neovim, helix, vim |
+| Browser | Helium |
 | VPN | Tailscale, NetBird, cloudflared |
 | Audio | PureData, nn~, RAVE models |
 | Max/MSP | Max, nn~, RAVE models |
@@ -30,20 +31,22 @@ I also use AI coding agents heavily. The AI feature module installs pi, opencode
 ```
 flake.nix
 modules/
-├── hosts/adri.nix        # wires features together
-├── base.nix              # Nix settings, users, host platform
-├── homebrew.nix          # GUI apps
+├── den.nix               # host/user declarations, defaults, batteries
+├── flake-parts.nix       # flake-parts + Den module
+├── host.nix              # wires features into host and user aspects
+├── base.nix              # Nix settings, overlays, host platform
+├── homebrew.nix          # Homebrew apps
 ├── vpn.nix               # tailscale, netbird, cloudflared
 ├── audio.nix             # PureData + nn~ + RAVE models
 ├── max.nix               # Max/MSP + nn~ + RAVE models
 ├── ai.nix                # pi, opencode, herdr, dsh
 ├── shell.nix             # zsh, starship, aliases, terminals
 ├── editor.nix            # neovim, helix, vim
+├── browser.nix           # Helium
 ├── dev.nix               # dev tools and Nix tooling
-├── media.nix             # qbittorrent, ffmpeg, yt-dlp, OBS
+├── media.nix             # qbittorrent, ffmpeg, yt-dlp
 ├── xcode.nix             # XcodeBuildMCP
-├── options.nix           # shared values
-├── nixpkgs.nix           # nixpkgs config and unfree allowlist
+├── dsh.nix               # dsh-nix profile management
 └── per-system.nix        # checks, packages, dev shell
 pkgs/
 ```
