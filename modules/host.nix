@@ -21,6 +21,5 @@
     den.aspects.shell
     den.aspects.media
     den.aspects.max
-    den.aspects.dsh
   ];
 }

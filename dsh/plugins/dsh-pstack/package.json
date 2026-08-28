@@ -1,0 +1,44 @@
+{
+  "name": "@wayanjimmy/dsh-pstack",
+  "version": "0.1.0",
+  "description": "Native DeepSeek Harness plugin for rigorous pstack engineering workflows",
+  "license": "MIT",
+  "main": "./index.js",
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime",
+        "@deepseek-ai/dsh-client-ui-settings",
+        "@deepseek-ai/dsh-client-ui-settings-plugins"
+      ],
+      "platform": "web"
+    }
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "lib/",
+    "skills/",
+    "scripts/",
+    "legacy-skill-manifest.json",
+    "README.md",
+    "INSTALL.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "verify": "node scripts/verify.mjs"
+  },
+  "dependencies": {
+    "@deepseek-ai/schemastery": "^3.18.1",
+    "yaml": "^2.4.2"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

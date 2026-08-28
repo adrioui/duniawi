@@ -1,0 +1,16 @@
+### Shipping
+
+**You own what lands. Verify each PR independently, land only the verified run from the root, then keep your hands off the queue.** For "land the stack", "ship it", or the second half of a stack that **Babysit** already drove to green.
+
+This is the half after `playbooks/babysit.md`. Babysit makes a stack mergeable. Shipping decides what is actually safe to merge and lets the queue drain. Green is not safe, and the gap between those two words is where this playbook lives.
+
+1. **Verify every PR independently before arming anything.** One subagent per PR, not batched, each exercising the real surface against parent versus head. Each returns `PASS`, `PASS+NOTES` or `FAIL` and posts that verdict on its own PR so the record outlives the chat. Safe means a verdict from an agent that did not write the code. CI green is not a verdict, and an approving bot review is not a verdict.
+2. **Land only the contiguous verified run rooted at the bottom.** Walk up from the lowest unmerged PR and stop at the first one without a passing verdict, where both `PASS` and `PASS+NOTES` pass. A verified PR sitting above an unverified one is not landable, because merging it would pull the gap in underneath it. Report the ceiling as a PR number and say what breaks the chain.
+3. **Re-check that the verdicts still describe the code.** A restack rewrites every SHA above it and silently invalidates every verdict without touching a single check. Compare `git patch-id` at the verdict SHA against the current head before trusting an older verdict, and re-verify anything that actually drifted.
+4. **Merge verified PRs sequentially from the bottom.** Walk the verified run from root upward, merging each with `gh pr merge <n> --squash --auto` (or merge immediately if the user asked to land now). Wait for each merge to land before merging the next — the base of PR N+1 is PR N's branch. Never merge out of order.
+5. **Do not enable GitHub auto-merge on the whole stack at once.** Only the root targets protected trunk. Every child targets its parent branch and GitHub would merge children into parents immediately if auto-merge were armed on all of them. Merge sequentially: arm one, wait for it to land, then arm the next.
+6. **Once the queue is draining, stop touching the stack.** No restack, no speculative pushes. Independent work gets re-parented onto trunk and shipped on its own.
+7. **Watch the drain, do not drive it.** Use DSH **goal tools** — create a goal with a predicate like "all PRs in verified run merged" and let automatic continuation rounds monitor. Re-arm after any verdict you act on, until the ceiling is reached. Each merge is progress, not termination. Bases retarget as each PR merges; that is normal, not damage. Report each merge and the new ceiling. If the queue stalls, diagnose before mutating, because a stalled queue and a broken stack look identical from the outside.
+8. **Stop at the ceiling.** When the verified run is merged, report what landed, what the next unverified PR is, and what verifying it would take. Extending the run is a new pass through step 1, not a judgment call you make at 3am.
+
+**Reply:** the verified run and its ceiling, each PR's verdict and who produced it, what you merged and how, what landed, and what the next gap needs.

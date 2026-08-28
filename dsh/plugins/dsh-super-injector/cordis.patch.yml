@@ -1,0 +1,6 @@
+
+
+- insert:
+    - id: dsh-super-injector
+      name: '@dsh-external/dsh-super-injector'
+      config: {}

@@ -24,6 +24,8 @@
     import-tree.url = "github:vic/import-tree";
 
     den.url = "github:denful/den";
+
+    dsh-nix.url = "github:Samuka007/dsh-nix";
   };
 
   outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } (inputs.import-tree ./modules);
