@@ -1,5 +1,5 @@
 {
-  flake.modules.darwin.homebrew =
+  den.aspects.homebrew.darwin =
     { config, ... }:
     {
       homebrew = {

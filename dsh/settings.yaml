@@ -1,0 +1,182 @@
+# dsh profile settings — hot-reloaded by dsh-settings-file.
+# The official deepseek-official route remains mounted by dsh-base.
+llm-commandcode:
+  apiKeyEnv: COMMANDCODE_API_KEY
+  apiBase: https://api.commandcode.ai
+
+agent-default-model:
+  provider: commandcode
+  model: deepseek/deepseek-v4-flash
+  reasoningEffort: high
+
+ui-onboarding:
+  welcomeNoticeVersion: 2026-08-13.1
+
+# OpenCode Zen (opencode-zen) via the pi-ai multi-provider adapter (dsh-llm-pi-ai).
+# Hand-declared route: pi-ai's bundled opencode catalog is stale and omits
+# hy3-free / nemotron-3.5-lightning-free, so the free-model set is spelled out.
+# apiKeyEnv resolves OPENCODE_API_KEY from $DSH_HOME/.credentials.yaml.
+llm-pi-ai:
+  providers:
+    opencode-zen:
+      displayName: OpenCode Zen
+      apiKeyEnv: OPENCODE_API_KEY
+      api: openai-completions
+      baseURL: https://opencode.ai/zen/v1
+      models:
+        - id: deepseek-v4-flash-free
+          name: DeepSeek V4 Flash Free
+          contextWindow: 262144
+          maxTokens: 32768
+          input: [ text ]
+          reasoningEfforts:
+            off: null
+            high: high
+        - id: hy3-free
+          name: HY3 Free
+          contextWindow: 262144
+          maxTokens: 32768
+          input: [ text ]
+          reasoningEfforts:
+            off: null
+            high: high
+        - id: laguna-s-2.1-free
+          name: Laguna S 2.1 Free
+          contextWindow: 262144
+          maxTokens: 32768
+          input: [ text ]
+          reasoningEfforts:
+            off: null
+            high: high
+        - id: mimo-v2.5-free
+          name: Mimo V2.5 Free
+          contextWindow: 262144
+          maxTokens: 32768
+          input: [ text ]
+          reasoningEfforts:
+            off: null
+            high: high
+        - id: nemotron-3.5-lightning-free
+          name: Nemotron 3.5 Lightning Free
+          contextWindow: 262144
+          maxTokens: 32768
+          input: [ text ]
+          reasoningEfforts:
+            off: null
+            high: high
+        - id: nemotron-3-ultra-free
+          name: Nemotron 3 Ultra Free
+          contextWindow: 262144
+          maxTokens: 32768
+          input: [ text ]
+          reasoningEfforts:
+            off: null
+            high: high
+    bitdeer-ai:
+      models:
+        - id: moonshotai/Kimi-K3
+        - id: deepseek-ai/DeepSeek-V4-Flash
+          name: DeepSeek V4 Flash
+          contextWindow: 128000
+          maxTokens: 64000
+          input:
+            - text
+          compat:
+            thinkingFormat: openai
+            supportsReasoningEffort: true
+          reasoning: false
+        - id: deepseek-ai/DeepSeek-V4-Pro
+        - id: zai-org/GLM-5.2
+        - id: Qwen/Qwen3.8-2.4T-A95B
+        - id: nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16
+        - id: nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B
+        - id: moonshotai/Kimi-K2.6
+        - id: nvidia/NVIDIA-Nemotron-3-Super-120B-A12B
+        - id: MiniMaxAI/MiniMax-M3
+        - id: MiniMaxAI/MiniMax-M2.5
+        - id: zai-org/GLM-5.1
+        - id: Qwen/Qwen3.5-397B-A17B
+        - id: moonshotai/Kimi-K2.5
+        - id: XiaomiMiMo/MiMo-V2.5-Pro
+        - id: Qwen/Qwen3-235B-A22B
+        - id: deepseek-ai/DeepSeek-V3.2
+        - id: Qwen/Qwen3-VL-235B-A22B-Instruct
+        - id: zai-org/GLM-5
+        - id: openai/gpt-oss-20b
+        - id: Qwen/Qwen3-VL-32B-Instruct
+        - id: ByteDance-Seed/Seed-1.6
+        - id: mistralai/Mistral-Small-4-119B-2603
+        - id: zai-org/GLM-4.6V
+        - id: zai-org/GLM-4.7
+        - id: zai-org/GLM-4.5V
+        - id: Qwen/Qwen3-30B-A3B-Instruct-2507
+        - id: ByteDance-Seed/Seed-1.6-Flash
+        - id: Qwen/Qwen3-Next-80B-A3B-Instruct
+        - id: Qwen/Qwen3-Coder-Plus
+        - id: Qwen/Qwen3-Max
+        - id: mistralai/Devstral-2-123B-Instruct-2512
+        - id: google/gemma-3n-E4B-it
+        - id: mistralai/Mistral-Large-3-675B-Instruct-2512
+        - id: mistralai/Ministral-3-14B-Instruct-2512
+        - id: mistralai/Ministral-3-8B-Instruct-2512
+        - id: mistralai/Ministral-3-3B-Instruct-2512
+        - id: deepseek-ai/DeepSeek-R1-0528
+        - id: deepseek-ai/DeepSeek-V3-0324
+        - id: deepseek-ai/DeepSeek-V3.1
+        - id: google/gemma-3-12b-it
+        - id: baidu/ERNIE-4.5-VL-424B-A47B
+        - id: google/gemma-3-27b-it
+        - id: meta-llama/Llama-4-Scout-17B-16E-Instruct
+        - id: MiniMaxAI/MiniMax-M2.1
+        - id: MiniMaxAI/MiniMax-M1
+        - id: MiniMaxAI/MiniMax-M2
+    bai:
+      models:
+        - id: minimax-m3
+        - id: minimax-m2.7
+        - id: glm-5.1
+        - id: glm-5.2
+        - id: gpt-5.6-sol
+        - id: gpt-5.6-terra
+        - id: gpt-5.6-luna
+        - id: gpt-5.5
+        - id: gpt-5.5-instant
+        - id: gpt-5.4
+        - id: gpt-5.2
+        - id: gpt-5.4-pro
+        - id: gpt-5.4-mini
+        - id: gpt-5-mini
+        - id: gpt-5.4-nano
+        - id: gpt-5-nano
+        - id: claude-opus-5
+        - id: claude-fable-5
+        - id: claude-opus-4.8
+        - id: claude-opus-4.7
+        - id: claude-opus-4.6
+        - id: claude-opus-4.5
+        - id: claude-sonnet-5
+        - id: claude-sonnet-4.6
+        - id: claude-sonnet-4.5
+        - id: claude-haiku-4.5
+        - id: gemini-3.1-pro
+        - id: gemini-3-flash
+        - id: gemini-3.5-flash-lite
+        - id: gemini-3.6-flash
+        - id: hy3
+        - id: kimi-k2.6
+        - id: glm-5.3
+        - id: kimi-k3
+        - id: qwen3.8-max
+        - id: deepseek-v4-flash
+          name: DeepSeek V4 Flash
+          contextWindow: 128000
+          maxTokens: 64000
+          input:
+            - text
+          reasoning: false
+        - id: deepseek-v4-flash-vision-exp
+        - id: deepseek-v4-pro
+        - id: gemini-3.5-flash
+        - id: qwen3.8-27b
+        - id: mimo-v2.5
+        - id: mimo-v2.5-pro

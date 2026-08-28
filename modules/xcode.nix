@@ -1,6 +1,13 @@
-{ config, ... }:
 {
-  flake.modules.darwin.xcode = {
-    environment.systemPackages = [ config.flake.xcodebuildmcpPkg ];
-  };
+  inputs,
+  ...
+}:
+{
+  den.aspects.xcode.darwin =
+    { pkgs, ... }:
+    {
+      environment.systemPackages = [
+        (pkgs.callPackage ../pkgs/xcodebuildmcp.nix { src = inputs.xcodebuildmcp; })
+      ];
+    };
 }

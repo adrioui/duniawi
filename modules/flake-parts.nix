@@ -3,9 +3,6 @@
   ...
 }:
 {
-  imports = [
-    inputs.flake-parts.flakeModules.modules
-    inputs.home-manager.flakeModules.home-manager
-  ];
+  imports = [ inputs.den.flakeModule ];
   systems = [ "aarch64-darwin" ];
 }

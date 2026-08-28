@@ -1,5 +1,5 @@
 {
-  flake.modules.darwin.dev =
+  den.aspects.dev.darwin =
     { pkgs, ... }:
     {
       environment.systemPackages = [

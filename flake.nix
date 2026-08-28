@@ -4,8 +4,8 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
-    nix-darwin.url = "github:nix-darwin/nix-darwin/master";
-    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
+    darwin.url = "github:nix-darwin/nix-darwin/master";
+    darwin.inputs.nixpkgs.follows = "nixpkgs";
 
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
@@ -22,6 +22,8 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
 
     import-tree.url = "github:vic/import-tree";
+
+    den.url = "github:denful/den";
   };
 
   outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } (inputs.import-tree ./modules);
