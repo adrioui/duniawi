@@ -1,0 +1,96 @@
+# Your patch layer for this dsh profile, applied after every bundle layer:
+# a top-level YAML array of loader patch entries (id-targeted config
+# overrides, disables, and insert lists; `!!js` expressions allowed).
+
+# Gateway auto-discovery (dsh-gateway-provider): the DSH equivalent of pi.dev's
+# pi-ai-gateway. Discovers models from the gateway at startup (GET /v1/models),
+# enriches with models.dev, routes per model over its native wire protocol.
+# Keys are credential refs only; never store secrets in YAML.
+- id: llm-newapi
+  config:
+    # Gateway plugin treats baseURL as the gateway ROOT and appends
+    # /v1/models for discovery and /v1 for the OpenAI SDK — do NOT include
+    # the trailing /v1 here (that would hit .../v1/v1/models → 404).
+    label: OpenCode Go
+    baseURL: https://opencode.ai/zen/go
+    apiKeyEnv: OPENCODE_GO_API_KEY
+    flavor: openai-compatible
+    catalogMode: auto
+    # 2026-08-19: bai 429/timeout storms — retry deeper than defaults
+    # (2 tries/<=10s) before surfacing errors to the chat. Executed by
+    # llm-retry (mounted below). Permanents (401/403/quota) never retried.
+    # Root-level: the plugin shares this across every gateway route.
+    retryPolicy:
+      mode: normal
+      maxRetries: 5
+      retryableCodes: [EMPTY_RESPONSE, RATE_LIMIT, SERVER, TIMEOUT, TRANSPORT]
+      backoff:
+        initialDelayMs: 1000
+        maxDelayMs: 30000
+        jitterRatio: 0.1
+    gateways:
+      - id: bai
+        label: B.AI
+        baseURL: https://api.b.ai
+        apiKeyEnv: BAI_API_KEY
+        flavor: newapi
+        catalogMode: auto
+
+# Stop writing `activity/status` events into the SHARED session log
+# (~/.dsh/sessions) that other profiles (web/headless) can't read: dsh-session
+# append() cannot mark events ignorable, and the web reader refuses logs with
+# unknown non-ignorable types. The live status line (TUI prompt slot) is
+# unaffected by publish — this only stops log pollution.
+- id: working-activity
+  config:
+    publish: false
+    publishIntervalMs: 500
+
+# dsh-routing-suite on TUI:
+# The super-injector bundle's host plugin requires the `webServer` service,
+# which the TUI composition normally does not mount. Provide a loopback
+# HTTP carrier (port 0 = OS-assigned) so the plugin tree activates; the TUI
+# itself does not use it.
+- insert:
+    - id: webserver
+      name: '@deepseek-ai/dsh-host-webserver'
+      config:
+        host: 127.0.0.1
+        port: 0
+
+# Point the super-injector at THIS profile. Its default target is
+# ~/.dsh/profiles/web/node_modules, which would make dev_install_package and
+# junction self-healing edit the web profile while running the TUI profile.
+- id: dsh-super-injector
+  config:
+    profileNodeModules: !!js dshHomePath('profiles/tui/node_modules')
+
+# Default model for TUI: OpenRouter Ox Alpha
+- id: dsh-tui
+  config:
+    provider: openrouter
+    model: stealth/ox-alpha
+    reasoning: max
+# Network resilience (2026-08-19): the retry executor ships @1.0-rc.6 inside the
+# runtime but does NOT auto-load (no dsh.bundle). Mount it explicitly; it
+# executes each provider's retryPolicy on the agent failed-step extension point
+# (429/TIMEOUT/5xx/transport get backoff-retried before surfacing).
+- id: llm-retry
+  name: '@deepseek-ai/dsh-llm-retry'
+# pstack-dsh: packaged skill provider for poteto-mode + principles. Host
+# entry loads via this insert; skills resolve from
+# node_modules/@wayanjimmy/dsh-pstack/skills.
+- insert:
+    - id: pstack
+      name: '@wayanjimmy/dsh-pstack'
+
+# dsh-tui >= 0.9 bundles dsh-auth (`@deepseek-harness-tui/dsh-tui/oauth`),
+# which by default registers OAuth adapters for [openai-codex, anthropic,
+# xai]. That collides with the separately installed dsh-codex-connect
+# (entry llm-openai-codex), which asserts exclusive ownership of the
+# `openai-codex` provider and aborts the boot. The live Codex login
+# (~/.dsh/.openai-codex-auth.json) belongs to dsh-codex-connect, so keep it
+# as the owner and trim the bundled auth route to the remaining providers.
+- id: dsh-tui-auth
+  config:
+    providers: [anthropic, xai]

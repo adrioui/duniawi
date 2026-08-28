@@ -1,0 +1,44 @@
+{
+  "name": "dsh-computer-use",
+  "version": "0.3.0",
+  "description": "Text-first browser and background macOS computer use for DSH",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZRui-C/dsh-computer-use.git"
+  },
+  "homepage": "https://computer-use.zrui.tech/",
+  "bugs": {
+    "url": "https://github.com/ZRui-C/dsh-computer-use/issues"
+  },
+  "type": "module",
+  "exports": {
+    "./host": {
+      "types": "./dist/host.d.ts",
+      "default": "./dist/host.js"
+    },
+    "./tool": {
+      "types": "./dist/tool.d.ts",
+      "default": "./dist/tool.js"
+    }
+  },
+  "dependencies": {
+    "playwright-core": "^1.62.1"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1",
+    "@deepseek-ai/dsh-agent": "^0.1.0-rc.6",
+    "@deepseek-ai/dsh-subprocess": "^0.1.0-rc.6",
+    "@deepseek-ai/dsh-system-prompt": "^0.1.0-rc.6",
+    "@deepseek-ai/dsh-tools": "^0.1.0-rc.6",
+    "@deepseek-ai/schemastery": "^3.18.1"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  }
+}

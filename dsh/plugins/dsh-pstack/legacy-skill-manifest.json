@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "base": "b82187f5d305063fed8cb1cf8eab0af874c43f30",
+  "skills": {
+    "architect": "a12c5e2a5ccc425126679745a7a46e0b3d8bf3d7fc710251b0cb8c6f051b7cc1",
+    "how": "cbb0e5b87aa41e9a55ae0ecf363fcd6d204e10ea2fec486346b5ec09c477a97a",
+    "poteto-mode": "5bfa1057298ea75df4c557fec7fd667819115fc7955170e3903bb741ffcccf0f",
+    "principle-boundary-discipline": "6da2145bdf1ad90cde746ef756aae10251003ec7bbab30c46b7cbd5bb970d667",
+    "principle-build-the-lever": "d4168132d7ec70aa5879ded17c81683421114e1bbd40cbe044acba21c78960da",
+    "principle-encode-lessons-in-structure": "d210825a8246977dc5fec51a91dd8e0621710dba6f827b785108e049ea3ebbaa",
+    "principle-exhaust-the-design-space": "68955790a73f18c16b5ee8adaed0a71a793828f58c499d8d5505c7f136d08c29",
+    "principle-experience-first": "16e53a28da4ef9f29cd4ed71461a90195e1d35bb4e13987d2cc9bacf0f951829",
+    "principle-fix-root-causes": "968e53d7e97d69f28a9271624637145fa245b324b76ccb81111c64f47254da83",
+    "principle-foundational-thinking": "b298df1ea02d76a483399009b69202f6b4a249bf1388f6aa505d06acc8978f6e",
+    "principle-guard-the-context-window": "34c1a40906b37240f40b6b1a5886eede040dc0c08d36115191d2b2605571ff06",
+    "principle-laziness-protocol": "37686a45c7136e7ee327da990aca179e3bf73f9da1b5075d579d1321463858e9",
+    "principle-make-operations-idempotent": "ecf1fb4fc63728ad4986e1d9a6e13541c4d431280fc73fea93587cb7b37d7384",
+    "principle-migrate-callers-then-delete-legacy-apis": "da119118650ff97893a0fd17c08851470fb3cbdf525e88969b114a444d1daf7d",
+    "principle-minimize-reader-load": "baad629f8019830440337f68c8f7ce2a586c3d09e80b9266c53aa6268725504c",
+    "principle-model-the-domain": "4fd4499ab3ce59a8fc80dc3caebb1449adc4293c544e61e6c45ddedb0a3e6fb8",
+    "principle-never-block-on-the-human": "1ee6160a5ca5f2b46cb52b18ef9c2db6f4f6631c90652409fd5c4b141a5c8704",
+    "principle-outcome-oriented-execution": "81781ef1eb22d73ae1bb5d507c5d53ba70f35c93d954e7d8cf26b53e92016385",
+    "principle-prove-it-works": "292160ca812b7a5b2193d282808a42e67cc51005d8d481d3fbbae028cd3148a2",
+    "principle-redesign-from-first-principles": "a682a7cccf48fb751d397ca815c4effd6c206db294a39b01fa42bd903fa388b1",
+    "principle-separate-before-serializing-shared-state": "0eac408cd04f0ba6dba24f5c6b9ed1f625062cf6449d81c58a08cc24183332fd",
+    "principle-sequence-verifiable-units": "3006614391e7de1c199d3cce98773741f98c2666ef41bcdf8a14d40b87fa1b42",
+    "principle-subtract-before-you-add": "2e5917583787dfecb168e51a7bcfa6504b83ab24f813a8d53741d166476c41f9",
+    "principle-type-system-discipline": "40e550ac1a8cbec4f254d3c9553dc6f9bb71a6db9919c053cfe50646cb0bf589",
+    "show-me-your-work": "2336e359bbc812e7cd3fa173c228aa85db9ce540aa28a29707671b988b23bf3e",
+    "unslop": "53e9d5647d8e1c6c3072f8af2e1354f274d0844f4456ea86162d6073b63b0d3a",
+    "why": "6df4491c6f599338bcacee9626f9d09f9afe03338e1d215f65ba0e1cc2bac0e8"
+  }
+}

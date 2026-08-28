@@ -1,0 +1,12 @@
+{
+  "name": "@dsh-local/dsh-herdr",
+  "version": "0.1.0",
+  "description": "Report dsh's agent lifecycle (idle/working) to the Herdr multiplexer via `herdr pane report-agent`, so dsh appears as an agent row in Herdr's agents pane",
+  "private": false,
+  "type": "module",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js"
+  },
+  "license": "MIT"
+}

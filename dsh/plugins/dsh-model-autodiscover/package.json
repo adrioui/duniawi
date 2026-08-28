@@ -1,0 +1,16 @@
+{
+  "name": "@dsh-local/dsh-model-autodiscover",
+  "version": "0.1.0",
+  "description": "Keep hand-declared llm-pi-ai routes current: interrogate each configured endpoint's model listing on a TTL and adopt the result into the llm-pi-ai settings section (omp-style automatic model discovery)",
+  "private": true,
+  "type": "module",
+  "main": "./lib/index.js",
+  "exports": {
+    ".": "./lib/index.js"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@oxlint/plugins": "1.79.0",
+    "oxlint": "1.79.0"
+  }
+}
