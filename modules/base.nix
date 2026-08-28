@@ -103,13 +103,11 @@ in
       nixpkgs.hostPlatform = "aarch64-darwin";
     };
 
-  flake.modules.homeManager.base =
-    { ... }:
-    {
-      home = {
-        stateVersion = "23.11";
-        inherit username;
-        homeDirectory = "/Users/${username}";
-      };
+  flake.modules.homeManager.base = _: {
+    home = {
+      stateVersion = "23.11";
+      inherit username;
+      homeDirectory = "/Users/${username}";
     };
+  };
 }
