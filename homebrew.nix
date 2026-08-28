@@ -19,7 +19,6 @@
     # GUI applications that are still better managed through Homebrew
     casks = [
       "anydesk"
-      "dbeaver-community"
       "discord"
       "firefox"
       "font-hack-nerd-font"

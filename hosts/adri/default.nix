@@ -58,7 +58,6 @@ in
     pkgs.rclone
     pkgs.rustup
     pkgs.sshpass
-    pkgs.freetds
     pkgs.ripgrep
     pkgs.uv
     pkgs.mkdocs
@@ -69,14 +68,7 @@ in
     pkgs.javaPackages.compiler.openjdk11
     pkgs.gradle_9
     pkgs.groovy
-    pkgs.duckdb
-    pkgs.trufflehog
-    pkgs.terraform
-    pkgs.tflint
-    pkgs.trivy
-    pkgs.tfsec
     pkgs.yarn
-    pkgs.codebuff
     pkgs.zellij
 
     # AI coding agents
@@ -93,7 +85,6 @@ in
     xcodebuildmcpPkg
 
     pkgs.eslint
-    pkgs.proxychains-ng
     pkgs.curl
     pkgs.age
     pkgs.sops

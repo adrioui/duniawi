@@ -7,7 +7,6 @@
 {
   imports = [
     ./starship.nix
-    ./proxychains.nix
   ];
 
   home = {

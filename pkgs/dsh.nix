@@ -24,6 +24,13 @@ buildNpmPackage {
 
   # dsh ships prebuilt JS; there is no build script to run.
   dontNpmBuild = true;
+  # cordis-plugin-hmr requires Node internals; fixes
+  # "failed to apply loader entry ... HMR: --expose-internals is required".
+  postFixup = ''
+    if [ -f "$out/bin/dsh" ]; then
+      substituteInPlace "$out/bin/dsh" --replace-fail 'bin/node"' 'bin/node" --expose-internals'
+    fi
+  '';
 
   inherit nodejs;
 
