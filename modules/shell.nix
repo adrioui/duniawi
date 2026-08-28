@@ -3,15 +3,22 @@
     { pkgs, ... }:
     {
       programs.zsh.enable = true;
-      environment.systemPackages = [ pkgs.alacritty pkgs.kitty ];
+      environment.systemPackages = [
+        pkgs.alacritty
+        pkgs.kitty
+      ];
     };
 
   flake.modules.homeManager.shell =
     { config, ... }:
     {
-      imports = [ ../home/adrifadilah/starship.nix ];
-
       xdg.enable = true;
+
+      programs.starship = {
+        enable = true;
+        enableZshIntegration = true;
+        presets = [ "nerd-font-symbols" ];
+      };
 
       home.sessionVariables = {
         MAGNITUDE_USE_LOCAL = "1";

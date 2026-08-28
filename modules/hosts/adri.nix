@@ -29,7 +29,7 @@ in
     };
 
     modules = [
-      config.flake.modules.darwin.legacy
+      config.flake.modules.darwin.base
       config.flake.modules.darwin.homebrew
       config.flake.modules.darwin.vpn
       config.flake.modules.darwin.audio
@@ -46,7 +46,7 @@ in
           useUserPackages = true;
           backupFileExtension = "backup";
           users.${username}.imports = [
-            config.flake.modules.homeManager.legacy
+            config.flake.modules.homeManager.base
             config.flake.modules.homeManager.vpn
             config.flake.modules.homeManager.ai
             config.flake.modules.homeManager.shell
