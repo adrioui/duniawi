@@ -25,6 +25,7 @@ modules/
   homebrew.nix         # Homebrew brews and casks
   vpn.nix              # VPN feature: tailscale, netbird, cloudflared
   audio.nix            # Audio feature: puredata, plugdata
+  max.nix              # Max/MSP feature: cycling74-max, nn~ external, RAVE models
   ai.nix               # AI feature: llm-agents, herdr, dsh
   shell.nix            # Shell feature: zsh, starship, aliases
   editor.nix           # Editor feature: neovim, helix, vim
