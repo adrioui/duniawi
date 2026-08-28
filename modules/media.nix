@@ -7,7 +7,6 @@
           pkgs.qbittorrent
           pkgs.ffmpeg
         ];
-        homebrew.casks = [ "obs" ];
       };
 
     homeManager =
