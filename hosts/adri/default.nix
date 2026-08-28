@@ -20,6 +20,23 @@ let
       exec ${lib.getExe pkgs.netbird} service run
     '';
   };
+
+  puredataPkg = pkgs.callPackage ../../pkgs/puredata.nix { };
+  pdElse = pkgs.callPackage ../../pkgs/pd-else-darwin.nix { };
+  nnTilde = pkgs.callPackage ../../pkgs/nn-tilde.nix { };
+  raveIsis = pkgs.callPackage ../../pkgs/rave-isis-model.nix { };
+  ravePercussion = pkgs.callPackage ../../pkgs/rave-percussion-model.nix { };
+  vschaos2 = pkgs.callPackage ../../pkgs/vschaos2-ordinario-1024-model.nix { };
+  puredataWithExternals = pkgs.callPackage ../../pkgs/puredata-with-externals.nix {
+    puredata = puredataPkg;
+    plugins = [
+      pdElse
+      nnTilde
+      raveIsis
+      ravePercussion
+      vschaos2
+    ];
+  };
 in
 {
   # List packages installed in system profile. To search by name, run:
@@ -79,6 +96,7 @@ in
     pkgs.llm-agents.opencode
     pkgs.llm-agents.amp
     pkgs.llm-agents.reasonix
+    pkgs.llm-agents.freebuff
 
     # Agent multiplexer (herdr.dev)
     pkgs.herdr
@@ -93,7 +111,7 @@ in
     pkgs.sops
     pkgs.rclone
     pkgs.ffmpeg
-    (pkgs.callPackage ../../pkgs/puredata.nix { })
+    puredataWithExternals
 
     # Development tools for Nix
     pkgs.nixfmt-tree # Formatter for 'nix fmt'
