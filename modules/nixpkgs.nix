@@ -19,7 +19,6 @@ in
       system = "aarch64-darwin";
       unfreePackages = [
         "amp"
-        "terraform"
         
         "rave-isis-model"
         

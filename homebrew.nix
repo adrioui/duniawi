@@ -19,7 +19,6 @@
     
     casks = [
       "anydesk"
-      "dbeaver-community"
       "discord"
       "firefox"
       "font-hack-nerd-font"

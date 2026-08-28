@@ -24,6 +24,13 @@ buildNpmPackage {
 
   
   dontNpmBuild = true;
+  
+  
+  postFixup = ''
+    if [ -f "$out/bin/dsh" ]; then
+      substituteInPlace "$out/bin/dsh" --replace-fail 'bin/node"' 'bin/node" --expose-internals'
+    fi
+  '';
 
   inherit nodejs;
 
