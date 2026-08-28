@@ -39,6 +39,7 @@ in
       config.flake.modules.darwin.dev
       config.flake.modules.darwin.media
       config.flake.modules.darwin.xcode
+      config.flake.modules.darwin.max
       inputs.home-manager.darwinModules.home-manager
       {
         home-manager = {
@@ -51,6 +52,7 @@ in
             config.flake.modules.homeManager.ai
             config.flake.modules.homeManager.shell
             config.flake.modules.homeManager.media
+            config.flake.modules.homeManager.max
           ];
           extraSpecialArgs = { inherit inputs username; };
         };
