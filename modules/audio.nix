@@ -1,5 +1,5 @@
 {
-  flake.modules.darwin.audio =
+  den.aspects.audio.darwin =
     { pkgs, ... }:
     let
       puredataPkg = pkgs.callPackage ../pkgs/puredata.nix { };

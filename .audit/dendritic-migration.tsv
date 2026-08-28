@@ -1,4 +1,0 @@
-ts	phase	decision	why	evidence	result
-2026-08-28T14:29:37Z	phase1	add flake-parts and import-tree inputs	step 1 of standard migration	commit 5db837f	passed
-2026-08-28T14:29:37Z	phase2	wrap flake in flake-parts without behavior change	step 2 of standard migration	commit ff386e4	passed
-2026-08-28T14:29:37Z	phase3	create modules skeleton with legacy aspects	step 3 of standard migration	in progress	n/a
