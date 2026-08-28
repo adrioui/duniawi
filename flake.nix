@@ -37,6 +37,12 @@
       unfreePackages = [
         "amp"
         "terraform"
+        
+        "rave-isis-model"
+        
+        "rave-percussion-model"
+        
+        "vschaos2-ordinario-1024-model"
       ];
 
       pkgsFor =
