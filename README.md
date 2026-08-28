@@ -8,7 +8,7 @@ My machine is an Apple Silicon Mac. I use nix-darwin for system-level stuff, hom
 
 I do a lot of audio work. PureData and Max/MSP both get the same neural audio models through the nn~ external. The RAVE models are part of the config, so they show up in both programs without me copying files around.
 
-I also use AI coding agents heavily. The AI feature module installs pi, opencode, amp, reasonix, freebuff, herdr, and dsh together, because they are part of the same workflow for me.
+I also use AI coding agents heavily. The AI feature module installs pi, opencode, herdr, and dsh together, because they are part of the same workflow for me.
 
 ## What's In It
 
@@ -20,7 +20,7 @@ I also use AI coding agents heavily. The AI feature module installs pi, opencode
 | VPN | Tailscale, NetBird, cloudflared |
 | Audio | PureData, nn~, RAVE models |
 | Max/MSP | Max, nn~, RAVE models |
-| AI agents | pi, opencode, amp, reasonix, freebuff, herdr, dsh |
+| AI agents | pi, opencode, herdr, dsh |
 | Dev | go, rust, node, direnv, Nix tooling |
 | Media | qbittorrent, ffmpeg, yt-dlp, OBS |
 | Xcode | XcodeBuildMCP |
