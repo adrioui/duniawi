@@ -32,6 +32,13 @@ in
       config.flake.modules.darwin.legacy
       config.flake.modules.darwin.homebrew
       config.flake.modules.darwin.vpn
+      config.flake.modules.darwin.audio
+      config.flake.modules.darwin.ai
+      config.flake.modules.darwin.shell
+      config.flake.modules.darwin.editor
+      config.flake.modules.darwin.dev
+      config.flake.modules.darwin.media
+      config.flake.modules.darwin.xcode
       inputs.home-manager.darwinModules.home-manager
       {
         home-manager = {
@@ -41,6 +48,9 @@ in
           users.${username}.imports = [
             config.flake.modules.homeManager.legacy
             config.flake.modules.homeManager.vpn
+            config.flake.modules.homeManager.ai
+            config.flake.modules.homeManager.shell
+            config.flake.modules.homeManager.media
           ];
           extraSpecialArgs = { inherit inputs username; };
         };

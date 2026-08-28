@@ -33,8 +33,6 @@
       "raycast"
       
       
-      "obs"
-      "plugdata"
     ];
     brews = [
       "steveyegge/beads/bd"

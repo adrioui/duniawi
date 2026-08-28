@@ -2,103 +2,11 @@
   config,
   inputs,
   lib,
-  pkgs,
   username,
   self,
-  xcodebuildmcpPkg,
   ...
 }:
-
-let
-  puredataPkg = pkgs.callPackage ../../pkgs/puredata.nix { };
-  pdElse = pkgs.callPackage ../../pkgs/pd-else-darwin.nix { };
-  nnTilde = pkgs.callPackage ../../pkgs/nn-tilde.nix { };
-  raveIsis = pkgs.callPackage ../../pkgs/rave-isis-model.nix { };
-  ravePercussion = pkgs.callPackage ../../pkgs/rave-percussion-model.nix { };
-  vschaos2 = pkgs.callPackage ../../pkgs/vschaos2-ordinario-1024-model.nix { };
-  puredataWithExternals = pkgs.callPackage ../../pkgs/puredata-with-externals.nix {
-    puredata = puredataPkg;
-    plugins = [
-      pdElse
-      nnTilde
-      raveIsis
-      ravePercussion
-      vschaos2
-    ];
-  };
-in
 {
-  
-  
-  environment.systemPackages = [
-    
-    pkgs.fastfetch
-    pkgs.vim
-
-    
-    pkgs.alacritty
-    pkgs.kitty
-
-    
-    pkgs.btop
-    pkgs.coreutils
-    pkgs.direnv
-    pkgs.gh
-    pkgs.go
-    (pkgs.callPackage ../../pkgs/bun-1.3.14.nix { })
-    pkgs.lazydocker
-    pkgs.qbittorrent
-
-    
-    pkgs.neovim
-    pkgs.helix
-
-    pkgs.nodejs
-    pkgs.podman
-    pkgs.rclone
-    pkgs.rustup
-    pkgs.sshpass
-    pkgs.ripgrep
-    pkgs.uv
-    pkgs.mkdocs
-    pkgs.pnpm
-    pkgs.graphviz
-    pkgs.lazygit
-    pkgs.emscripten
-    pkgs.javaPackages.compiler.openjdk11
-    pkgs.gradle_9
-    pkgs.groovy
-    pkgs.yarn
-    pkgs.zellij
-
-    
-    pkgs.llm-agents.pi
-    pkgs.llm-agents.opencode
-    pkgs.llm-agents.amp
-    pkgs.llm-agents.reasonix
-    pkgs.llm-agents.freebuff
-
-    
-    pkgs.herdr
-
-    
-    xcodebuildmcpPkg
-
-    pkgs.eslint
-    pkgs.curl
-    pkgs.age
-    pkgs.sops
-    pkgs.rclone
-    pkgs.ffmpeg
-    puredataWithExternals
-
-    
-    pkgs.nixfmt-tree 
-    pkgs.statix 
-    pkgs.deadnix 
-    pkgs.nix-tree 
-  ];
-
   nix = {
     
     
@@ -175,9 +83,6 @@ in
   users.users.${username} = {
     home = "/Users/${username}";
   };
-
-  
-  programs.zsh.enable = true;
 
   system = {
     
