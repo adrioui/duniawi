@@ -1,22 +1,12 @@
-<p align="center">
-  <strong>A macOS dev environment that rebuilds itself.</strong>
-  <strong><a href="https://github.com/adrioui/nix">github.com/adrioui/nix</a></strong>
-</p>
+# Adri's Nix Config
 
-<p align="center">
-  <a href="https://github.com/LnL7/nix-darwin"><img src="https://img.shields.io/badge/nix--darwin-5277C3?style=flat&colorA=222222" alt="nix-darwin"></a>
-  <a href="https://github.com/nix-community/home-manager"><img src="https://img.shields.io/badge/home--manager-7D6B91?style=flat&colorA=222222" alt="home-manager"></a>
-  <a href="https://github.com/NixOS/nixpkgs"><img src="https://img.shields.io/badge/nixpkgs-unstable-7D6B91?style=flat&colorA=222222" alt="nixpkgs unstable"></a>
-  <a href="https://github.com/adrioui/nix/blob/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-58A6FF?style=flat&colorA=222222" alt="License"></a>
-</p>
+A personal macOS setup that rebuilds itself from one config repo. It manages system packages, user settings, Homebrew apps, and audio tools.
 
-Personal setup for an Apple Silicon Mac. Uses nix-darwin, home-manager, and Homebrew. One config file tree, one command to rebuild.
-
-**What's in it:** system packages, user dotfiles, Homebrew GUI apps, zsh aliases, AI coding agents, audio tools (PureData, Max/MSP with neural audio models), and a validation suite that checks everything before you apply.
+Built on [nix-darwin](https://github.com/LnL7/nix-darwin), [home-manager](https://github.com/nix-community/home-manager), [flake-parts](https://flake.parts), and [Homebrew](https://brew.sh).
 
 ## Quick Start
 
-You need [Nix](https://nixos.org/download/) with flakes, and [Homebrew](https://brew.sh).
+You need [Nix](https://nixos.org/download/) with flakes enabled, and [Homebrew](https://brew.sh).
 
 ```sh
 git clone git@github.com:adrioui/nix.git ~/.config/nix
@@ -24,47 +14,56 @@ cd ~/.config/nix
 darwin-rebuild switch --flake path:$PWD#adri
 ```
 
-After that, rebuild with the same command.
+To apply later changes, run the same command again.
 
 **Defaults:** user `adrifadilah`, host `adri`, `aarch64-darwin`.
 
-**Homebrew note:** `homebrew.onActivation.cleanup = "zap"` removes anything you install outside the config. See `modules/homebrew.nix` before running `brew install` by hand.
+## What's Inside
+
+This repo sets up one machine. The config is split into small feature files, each in `modules/`. Features include:
+
+- **Base system.** Nix settings, users, and host platform.
+- **Homebrew.** GUI apps that prefer their own update path.
+- **VPN.** Tailscale, NetBird, and Cloudflare tools.
+- **Audio.** PureData with the nn~ external and RAVE neural models.
+- **Max/MSP.** Max with the nn~ external and the same RAVE models.
+- **AI agents.** pi, opencode, herdr, and dsh.
+- **Shell.** zsh, starship, aliases, and terminal apps.
+- **Editors.** neovim, helix, and vim.
+- **Dev tools.** go, rust, node, direnv, and Nix tooling.
+- **Media.** qbittorrent, ffmpeg, yt-dlp, and OBS.
+- **Xcode.** XcodeBuildMCP helper.
 
 ## Layout
 
 | Path | What it does |
 | --- | --- |
-| `flake.nix` | Entry point: lists inputs, hands off to modules |
-| `modules/hosts/adri.nix` | Wires all features together for this machine |
-| `modules/base.nix` | Core system settings: Nix config, users, host platform |
-| `modules/homebrew.nix` | Homebrew apps and packages |
-| `modules/vpn.nix` | VPN tools: tailscale, netbird, cloudflared |
-| `modules/audio.nix` | Audio: PureData with nn~ and RAVE models |
-| `modules/max.nix` | Max/MSP with nn~ external and RAVE models |
-| `modules/ai.nix` | AI coding agents: pi, opencode, herdr, dsh |
-| `modules/shell.nix` | Shell: zsh, starship, aliases, terminals |
-| `modules/editor.nix` | Editors: neovim, helix, vim |
-| `modules/dev.nix` | Dev tools: go, rust, node, direnv, nix tooling |
-| `modules/media.nix` | Media tools: qbittorrent, ffmpeg, yt-dlp, obs |
-| `modules/xcode.nix` | Xcode helper: XcodeBuildMCP |
-| `pkgs/` | Custom packages (PureData with externals, nn~ Max, RAVE models) |
-| `AGENTS.md` | Agent context: conventions and rules for AI tools |
+| `flake.nix` | Entry point. Lists inputs and hands off to the modules. |
+| `modules/hosts/adri.nix` | Wires all features together for this machine. |
+| `modules/base.nix` | Core system settings: Nix config, users, host platform. |
+| `modules/homebrew.nix` | Homebrew apps and packages. |
+| `modules/vpn.nix` | Tailscale, NetBird, cloudflared. |
+| `modules/audio.nix` | PureData with nn~ and RAVE models. |
+| `modules/max.nix` | Max/MSP with nn~ and RAVE models. |
+| `modules/ai.nix` | AI coding agents. |
+| `modules/shell.nix` | zsh, starship, aliases, terminals. |
+| `modules/editor.nix` | neovim, helix, vim. |
+| `modules/dev.nix` | Dev tools and Nix tooling. |
+| `modules/media.nix` | qbittorrent, ffmpeg, yt-dlp, OBS. |
+| `modules/xcode.nix` | XcodeBuildMCP. |
+| `modules/options.nix` | Shared values like username and system. |
+| `modules/nixpkgs.nix` | Nixpkgs config and the unfree allowlist. |
+| `modules/per-system.nix` | Checks, packages, and the dev shell. |
+| `pkgs/` | Custom packages built from source. |
+| `AGENTS.md` | Rules and context for AI tools working here. |
 
-## Quick Commands
+Every `.nix` file under `modules/` is a feature module. They are loaded automatically. There is no import list to maintain.
 
-| Alias | Command | What it does |
-| --- | --- | --- |
-| `dr` | `sudo darwin-rebuild switch --flake path:$HOME/.config/nix#adri` | Apply changes |
-| `drb` | `sudo darwin-rebuild build --flake path:$HOME/.config/nix#adri` | Build without applying |
-| `dru` | `cd ~/.config/nix && nix flake update && sudo darwin-rebuild switch --flake path:$PWD#adri` | Update inputs and rebuild |
-| `drn` | `cd ~/.config/nix && sudo darwin-rebuild build --flake path:$PWD#adri && nix store diff-closures /run/current-system ./result` | Preview what will change |
-| `dre` | `cd ~/.config/nix && $EDITOR flake.nix` | Edit the config |
+## Common Tasks
 
-## Adding Stuff
+### Add a CLI tool
 
-### CLI tool (via Nix)
-
-Add it to the right feature module in `modules/`. For example, in `modules/dev.nix`:
+Add it to the matching feature module in `modules/`. For a dev tool, edit `modules/dev.nix`:
 
 ```nix
 { pkgs, ... }: {
@@ -74,7 +73,7 @@ Add it to the right feature module in `modules/`. For example, in `modules/dev.n
 }
 ```
 
-### GUI app (via Homebrew)
+### Add a GUI app
 
 Add it to `modules/homebrew.nix`:
 
@@ -86,9 +85,9 @@ Add it to `modules/homebrew.nix`:
 }
 ```
 
-### Home-manager program
+### Add a home-manager program
 
-Add it to the right feature module. For example, in `modules/shell.nix`:
+Add it to the matching feature module. For a shell program, edit `modules/shell.nix`:
 
 ```nix
 { ... }: {
@@ -98,41 +97,77 @@ Add it to the right feature module. For example, in `modules/shell.nix`:
 }
 ```
 
+### Add a new feature
+
+Create a new file in `modules/`, for example `modules/gaming.nix`. Define what it should do for the system and for the user:
+
+```nix
+{
+  flake.modules.darwin.gaming = { pkgs, ... }: {
+    environment.systemPackages = [ pkgs.steam ];
+  };
+}
+```
+
+Then add the feature name to the module lists in `modules/hosts/adri.nix`. It is now part of the machine.
+
 ## Max/MSP and Neural Audio
 
-This setup includes:
+This setup includes Max/MSP through Homebrew, plus the nn~ external for Max. The nn~ external loads neural audio models.
 
-- **Max/MSP** (via Homebrew cask `cycling74-max`).
-- **nn~ for Max/MSP**: the nn~ external loads TorchScript audio models. Installed into `~/Documents/Max 9/Packages/nn_tilde`.
-- **RAVE models**: three pretrained models (isis, percussion, vschaos2) included in the nn~ package so you can use them right away.
+Three RAVE models are included: `isis`, `percussion`, and `ordinario_1024`. They are installed into `~/Documents/Max 9/Packages/nn_tilde` so Max can find them.
 
-Open Max, create an `nn~` object, and try `isis`, `percussion`, or `ordinario_1024` as the model name.
+To use one, open Max, create an `nn~` object, and type a model name like `isis`.
 
-The PureData side (in `modules/audio.nix`) has the same models available through its own nn~ external.
+PureData has the same setup through its own nn~ external. The models work in both programs.
 
-## Validation
+## Homebrew Note
 
-Every change is checked before it gets applied.
+`homebrew.onActivation.cleanup = "zap"` is on. Anything installed with `brew install` that is not declared in this repo gets removed on the next rebuild.
+
+Check `modules/homebrew.nix` before installing anything by hand.
+
+## Unfree Packages
+
+A small allowlist of unfree packages lives in `modules/nixpkgs.nix`. Only packages on that list are allowed. This keeps package creep visible in code review.
+
+## Keeping It Working
+
+Every change is checked before it is applied.
 
 ```bash
 # Format all files
 nix fmt --no-write-lock-file --no-update-lock-file
 
-# Lint, check lockfile, build the real system and home environment
+# Lint, check the lockfile, and build the real system and home environment
 nix flake check --no-write-lock-file --no-update-lock-file
 
-# Update inputs
+# Build without applying
+darwin-rebuild build --flake path:$PWD#adri
+
+# Apply
+darwin-rebuild switch --flake path:$PWD#adri
+```
+
+Update inputs explicitly:
+
+```sh
 nix flake update
 ```
 
-These commands are read-only regarding `flake.lock` except for `nix flake update`.
+These commands do not touch `flake.lock` except for `nix flake update`.
 
-## Philosophy
+## Everyday Aliases
 
-- Declarative and reproducible. Nix for packages and services, Homebrew for GUI apps.
-- Flake-only. No legacy channels, no separate nix.conf.
-- Package list is explicit. Unfree packages are in a narrow allowlist. Homebrew cleanup is `zap`.
-- Validation is agent-friendly. `nix flake check` is the one gate.
+The zsh config in `modules/shell.nix` defines these:
+
+| Alias | What it does |
+| --- | --- |
+| `dr` | Apply changes |
+| `drb` | Build without applying |
+| `dru` | Update inputs and rebuild |
+| `drn` | Preview what will change |
+| `dre` | Open the config for editing |
 
 ## License
 
