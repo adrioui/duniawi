@@ -32,10 +32,8 @@
       "zen"
       "zed"
       "raycast"
-      "cloudflare-warp"
       
       
-      "protonvpn"
       "obs"
       "plugdata"
     ];

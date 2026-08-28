@@ -18,7 +18,6 @@
     packages = [
       (pkgs.callPackage ../../pkgs/dsh.nix { })
       pkgs.yt-dlp
-      pkgs.cloudflared
     ];
   };
 
