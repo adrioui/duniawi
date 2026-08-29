@@ -18,20 +18,11 @@
         pkgs.uv
         pkgs.mkdocs
         pkgs.pnpm
-        pkgs.graphviz
         pkgs.lazygit
-        pkgs.emscripten
-        pkgs.javaPackages.compiler.openjdk11
-        pkgs.gradle_9
-        pkgs.groovy
-        pkgs.yarn
         pkgs.zellij
         pkgs.lazydocker
         pkgs.eslint
         pkgs.curl
-        pkgs.age
-        pkgs.sops
-        pkgs.sshpass
         # Development tools for Nix
         pkgs.nixfmt-tree # Formatter for 'nix fmt'
         pkgs.statix # Nix linter
