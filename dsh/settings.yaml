@@ -73,6 +73,10 @@ llm-pi-ai:
             off: null
             high: high
     bitdeer-ai:
+      displayName: Bitdeer AI
+      api: openai-completions
+      baseURL: https://api-inference.bitdeer.ai/v1
+      apiKeyEnv: BITDEER_AI_API_KEY
       models:
         - id: moonshotai/Kimi-K3
         - id: deepseek-ai/DeepSeek-V4-Flash
@@ -180,3 +184,10 @@ llm-pi-ai:
         - id: qwen3.8-27b
         - id: mimo-v2.5
         - id: mimo-v2.5-pro
+
+# pstack delegation routes: workers pinned to B.AI glm-5.3-flash (2026-08-31, user directive).
+pstack:
+  workers:
+    mode: model
+    provider: gateway:bai
+    model: glm-5.3-flash
