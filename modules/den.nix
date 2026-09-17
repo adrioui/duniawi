@@ -18,6 +18,7 @@
       (den.batteries.unfree [
         "rave-isis-model"
         "rave-percussion-model"
+        "rave-water-model"
         "vschaos2-ordinario-1024-model"
       ])
     ];
