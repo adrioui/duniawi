@@ -4,6 +4,7 @@
     let
       puredataPkg = pkgs.callPackage ../pkgs/puredata.nix { };
       pdElse = pkgs.callPackage ../pkgs/pd-else-darwin.nix { };
+      pdGem = pkgs.callPackage ../pkgs/pd-gem-darwin.nix { };
       nnTilde = pkgs.callPackage ../pkgs/nn-tilde.nix { };
       raveIsis = pkgs.callPackage ../pkgs/rave-isis-model.nix { };
       ravePercussion = pkgs.callPackage ../pkgs/rave-percussion-model.nix { };
@@ -12,6 +13,7 @@
         puredata = puredataPkg;
         plugins = [
           pdElse
+          pdGem
           nnTilde
           raveIsis
           ravePercussion
