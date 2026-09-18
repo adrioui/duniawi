@@ -12,7 +12,7 @@
 {
   stdenv,
   fetchurl,
-  undmg,
+  _7zz,
   lib,
 }:
 
@@ -25,21 +25,21 @@ stdenv.mkDerivation rec {
     hash = "sha256-71t9wK9xq+yyQnAAEP3VVFpyun7pulqhx71A4NYLu28=";
   };
 
-  nativeBuildInputs = [ undmg ];
+  nativeBuildInputs = [ _7zz ];
 
   dontConfigure = true;
   dontBuild = true;
 
   unpackPhase = ''
     runHook preUnpack
-    undmg "$src"
+    7zz x "$src"
     runHook postUnpack
   '';
 
   installPhase = ''
     runHook preInstall
     mkdir -p $out
-    # undmg layout varies; find the payload dir by its objects.
+    # Archive layout varies; find the payload dir by its objects.
     payload=$(dirname "$(find . -name 'fluid.loudness~.pd_darwin' | head -n 1)")
     cp -R "$payload"/. $out/
     runHook postInstall
