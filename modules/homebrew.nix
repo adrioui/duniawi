@@ -10,6 +10,10 @@
 
         
         
+        enableZshIntegration = true;
+
+        
+        
         
         onActivation = {
           autoUpdate = false;
