@@ -34,6 +34,10 @@
           initContent = ''
             export HCNOTE_API_KEY="$(/usr/bin/security find-generic-password -ws hcnote 2>/dev/null || true)"
             export COMMANDCODE_API_KEY="$(/usr/bin/security find-generic-password -s commandcode-api-key -w 2>/dev/null || true)"
+            # OpenCode Zen/Go key for opencode CLI and codex-router (opencode-go).
+            # Stored in Keychain as `opencode-api-key`, never in the repo.
+            export OPENCODE_API_KEY="$(/usr/bin/security find-generic-password -s opencode-api-key -w 2>/dev/null || true)"
+            export OPENCODE_GO_API_KEY="$OPENCODE_API_KEY"
           '';
           shellAliases = {
             dr = "sudo darwin-rebuild switch --flake path:$HOME/.config/nix#adri";

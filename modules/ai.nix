@@ -8,6 +8,11 @@
           pkgs.llm-agents.opencode
           pkgs.herdr
         ];
+
+        
+        
+        
+        
       };
 
     homeManager =
