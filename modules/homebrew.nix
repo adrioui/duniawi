@@ -8,6 +8,10 @@
         # /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
         enable = true;
 
+        # Put brew shellenv (PATH, MANPATH) on interactive shells.
+        # Without this, brews/casks like `codex` are not found in zsh.
+        enableZshIntegration = true;
+
         # Declarative cleanup - removes anything not declared here
         # Keep rebuilds idempotent. Update Homebrew metadata explicitly instead of
         # turning every darwin-rebuild into an imperative brew update.
