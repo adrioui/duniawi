@@ -5,6 +5,7 @@
       puredataPkg = pkgs.callPackage ../pkgs/puredata.nix { };
       pdElse = pkgs.callPackage ../pkgs/pd-else-darwin.nix { };
       pdGem = pkgs.callPackage ../pkgs/pd-gem-darwin.nix { };
+      pdZexy = pkgs.callPackage ../pkgs/pd-zexy-darwin.nix { };
       pdida = pkgs.callPackage ../pkgs/pdida.nix { };
       nnTilde = pkgs.callPackage ../pkgs/nn-tilde.nix { };
       raveIsis = pkgs.callPackage ../pkgs/rave-isis-model.nix { };
@@ -16,6 +17,7 @@
         plugins = [
           pdElse
           pdGem
+          pdZexy
           pdida
           nnTilde
           raveIsis
