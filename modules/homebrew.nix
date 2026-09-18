@@ -33,6 +33,7 @@
           "zen"
           "zed"
           "raycast"
+          "codex"
         ];
         brews = [ "steveyegge/beads/bd" ];
       };
