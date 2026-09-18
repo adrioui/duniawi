@@ -98,6 +98,31 @@
           overlays = [
             inputs.llm-agents.overlays.shared-nixpkgs
             inputs.helium.overlays.default
+            # Upstream 0.17.1.1 DMG nests Helium.app under Helium/.
+            # Find the bundle instead of assuming unpack layout.
+            (_final: prev: {
+              helium = prev.helium.overrideAttrs (_old: {
+                installPhase = ''
+                  runHook preInstall
+                  appSrc=$(find . -maxdepth 4 -name "Helium.app" -type d | head -n 1)
+                  if [ -z "$appSrc" ]; then
+                    echo "Helium.app not found, contents:"
+                    find . -maxdepth 3 -print
+                    exit 1
+                  fi
+                  echo "Using Helium.app at $appSrc"
+                  mkdir -p $out/Applications
+                  cp -R "$appSrc" $out/Applications/Helium.app
+                  mkdir -p $out/bin
+                  makeWrapper $out/Applications/Helium.app/Contents/MacOS/Helium $out/bin/helium \
+                    --add-flags "--disable-component-update" \
+                    --add-flags "--simulate-outdated-no-au='Tue, 31 Dec 2099 23:59:59 GMT'" \
+                    --add-flags "--check-for-update-interval=0" \
+                    --add-flags "--disable-background-networking"
+                  runHook postInstall
+                '';
+              });
+            })
           ];
         };
       };
