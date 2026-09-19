@@ -39,7 +39,9 @@
           "raycast"
           "codex"
         ];
-        brews = [ "steveyegge/beads/bd" ];
+        # `beads` (bd) lives in Homebrew core now; the old
+        # steveyegge/gastownhall tap formulas are deprecated shims.
+        brews = [ "beads" ];
       };
 
       assertions = [
