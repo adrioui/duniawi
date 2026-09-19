@@ -39,7 +39,9 @@
           "raycast"
           "codex"
         ];
-        brews = [ "steveyegge/beads/bd" ];
+        
+        
+        brews = [ "beads" ];
       };
 
       assertions = [
