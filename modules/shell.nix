@@ -38,6 +38,11 @@
             # Stored in Keychain as `opencode-api-key`, never in the repo.
             export OPENCODE_API_KEY="$(/usr/bin/security find-generic-password -s opencode-api-key -w 2>/dev/null || true)"
             export OPENCODE_GO_API_KEY="$OPENCODE_API_KEY"
+            # Route Claude Code through routatic-proxy to OpenCode Go.
+            # Key stored in Keychain as `routatic-proxy-api-key`, never in the repo.
+            export ROUTATIC_PROXY_API_KEY="$(/usr/bin/security find-generic-password -s routatic-proxy-api-key -w 2>/dev/null || true)"
+            export ANTHROPIC_BASE_URL="http://127.0.0.1:3456"
+            export ANTHROPIC_AUTH_TOKEN="unused"
           '';
           shellAliases = {
             dr = "sudo darwin-rebuild switch --flake path:$HOME/.config/nix#adri";
