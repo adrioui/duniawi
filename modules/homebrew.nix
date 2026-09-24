@@ -31,6 +31,7 @@
           "ghostty"
           "obsidian"
           "orbstack"
+          "steam"
           "typora"
           "warp"
           "yoink"
