@@ -7,7 +7,6 @@
     den.aspects.audio
     den.aspects.max
     den.aspects.ai
-    den.aspects.routatic
     den.aspects.shell
     den.aspects.editor
     den.aspects.dev
@@ -20,7 +19,6 @@
     den.aspects.base
     den.aspects.vpn
     den.aspects.ai
-    den.aspects.routatic
     den.aspects.shell
     den.aspects.media
     den.aspects.max
