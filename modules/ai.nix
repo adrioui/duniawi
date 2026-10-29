@@ -23,10 +23,8 @@
         
       };
 
-    homeManager =
-      { pkgs, ... }:
-      {
-        home.packages = [ (pkgs.callPackage ../pkgs/dsh.nix { }) ];
-      };
+    homeManager = {
+      home.packages = [ ];
+    };
   };
 }
