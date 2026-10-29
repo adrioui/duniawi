@@ -1,16 +1,9 @@
-# Nix build artifacts
-/result
-/result-*
-
-# Direnv
-/.direnv/
-/.envrc
-
-# macOS
-.DS_Store
-
-# HumanLayer local thoughts
-/thoughts/
-
-# Claude Code local settings
-.claude/settings.local.json
+# Inverse gitignore – ignore everything except the whitelisted paths below
+*
+!/result
+!/result-*
+!/.direnv/
+!/.envrc
+!/.DS_Store
+!/thoughts/
+!/.claude/settings.local.json
