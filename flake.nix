@@ -25,8 +25,6 @@
 
     den.url = "github:denful/den";
 
-    dsh-nix.url = "github:Samuka007/dsh-nix";
-
     helium = {
       url = "github:schembriaiden/helium-browser-nix-flake";
       inputs.nixpkgs.follows = "nixpkgs";
