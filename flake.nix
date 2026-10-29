@@ -12,8 +12,6 @@
 
     llm-agents.url = "github:numtide/llm-agents.nix";
 
-    
-    
     xcodebuildmcp = {
       url = "github:getsentry/XcodeBuildMCP/e6ef59b49b44012c824f0a0de261c96142e37390";
       flake = false;

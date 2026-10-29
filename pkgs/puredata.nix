@@ -1,7 +1,3 @@
-
-
-
-
 { puredata }:
 
 puredata.overrideAttrs (old: {

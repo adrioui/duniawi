@@ -1,9 +1,3 @@
-
-
-
-
-
-
 {
   buildNpmPackage,
   lib,
@@ -19,8 +13,6 @@ buildNpmPackage {
 
   npmDepsHash = "sha256-PWvpblzfn0yM6hRmdJXzcqyegsytBRZGr0vJQYWdcuA=";
 
-  
-  
   npmBuildScript = "build:tsup";
   npmBuildFlags = [
     "--"

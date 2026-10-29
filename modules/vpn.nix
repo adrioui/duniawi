@@ -3,8 +3,6 @@
     darwin =
       { pkgs, ... }:
       let
-        
-        
         netbirdService = pkgs.writeShellApplication {
           name = "netbird-service";
           text = ''

@@ -7,10 +7,8 @@
   den = {
     hosts.aarch64-darwin.adri.users.adrifadilah = { };
 
-    
     schema.user.classes = lib.mkDefault [ "homeManager" ];
 
-    
     default.includes = [
       den.batteries.define-user
       den.batteries.primary-user

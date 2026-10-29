@@ -8,30 +8,21 @@
       { config, lib, ... }:
       {
         nix = {
-          
-          
           channel.enable = false;
           registry.nixpkgs.flake = inputs.nixpkgs;
           nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
 
           settings = {
-            
             experimental-features = "nix-command flakes";
 
-            
-            
-            
             show-trace = true;
             log-lines = 50;
 
-            
-            
             extra-substituters = [ "https://ibis.cachix.org" ];
             extra-trusted-public-keys = [
               "ibis.cachix.org-1:tKNWCdKmBXJFK1JE/SnA41z7U7XPFOnB7Nw0vLKXaLA="
             ];
 
-            
             trusted-users = [
               "root"
               "adrifadilah"
@@ -43,8 +34,6 @@
             options = "--delete-older-than 14d";
           };
 
-          
-          
           optimise.automatic = true;
         };
 
@@ -81,25 +70,18 @@
         ];
 
         system = {
-          
           primaryUser = "adrifadilah";
 
-          
           configurationRevision = inputs.self.rev or inputs.self.dirtyRev or null;
 
-          
-          
           stateVersion = 6;
         };
 
-        
         nixpkgs = {
           hostPlatform = "aarch64-darwin";
           overlays = [
             inputs.llm-agents.overlays.shared-nixpkgs
             inputs.helium.overlays.default
-            
-            
             (_final: prev: {
               helium = prev.helium.overrideAttrs (_old: {
                 installPhase = ''

@@ -1,9 +1,3 @@
-
-
-
-
-
-
 {
   stdenv,
   fetchFromGitHub,

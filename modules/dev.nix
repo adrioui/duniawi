@@ -23,7 +23,6 @@
         pkgs.lazydocker
         pkgs.eslint
         pkgs.curl
-        
         pkgs.nixfmt-tree 
         pkgs.statix 
         pkgs.deadnix 

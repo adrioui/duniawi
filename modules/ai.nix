@@ -11,16 +11,6 @@
           pkgs.herdr
         ];
 
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
       };
 
     homeManager = {

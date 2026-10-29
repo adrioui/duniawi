@@ -3,25 +3,16 @@
     { config, ... }:
     {
       homebrew = {
-        
-        
-        
         enable = true;
 
-        
-        
         enableZshIntegration = true;
 
-        
-        
-        
         onActivation = {
           autoUpdate = false;
           cleanup = "zap";
           upgrade = false;
         };
 
-        
         casks = [
           "anydesk"
           "dbeaver-community"
@@ -40,8 +31,6 @@
           "raycast"
           "codex"
         ];
-        
-        
         brews = [ "beads" ];
       };
 

@@ -1,18 +1,3 @@
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 {
   stdenv,
   fetchurl,
@@ -43,7 +28,6 @@ stdenv.mkDerivation rec {
   installPhase = ''
     runHook preInstall
     mkdir -p $out
-    # Archive layout varies; find the payload dir by its objects.
     payload=$(dirname "$(find . -name 'fluid.loudness~.pd_darwin' | head -n 1)")
     cp -R "$payload"/. $out/
     runHook postInstall

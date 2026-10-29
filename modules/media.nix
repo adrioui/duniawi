@@ -8,8 +8,6 @@
           pkgs.ffmpeg
         ];
 
-        
-        
         homebrew.casks = [
           "obs"
           "touchdesigner"
