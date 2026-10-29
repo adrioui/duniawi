@@ -1,9 +1,7 @@
-
-*
-!/result
-!/result-*
-!/.direnv/
-!/.envrc
-!/.DS_Store
-!/thoughts/
-!/.claude/settings.local.json
+/result
+/result-*
+/.direnv/
+/.envrc
+.DS_Store
+/thoughts/
+/.claude/settings.local.json
