@@ -34,23 +34,9 @@
           initContent = ''
             export HCNOTE_API_KEY="$(/usr/bin/security find-generic-password -ws hcnote 2>/dev/null || true)"
             export COMMANDCODE_API_KEY="$(/usr/bin/security find-generic-password -s commandcode-api-key -w 2>/dev/null || true)"
-            # OpenCode Zen/Go key for opencode CLI and codex-router (opencode-go).
-            # Stored in Keychain as `opencode-api-key`, never in the repo.
             export OPENCODE_API_KEY="$(/usr/bin/security find-generic-password -s opencode-api-key -w 2>/dev/null || true)"
             export OPENCODE_GO_API_KEY="$OPENCODE_API_KEY"
-            # Route Claude Code through routatic-proxy to OpenCode Go.
-            # Key stored in Keychain as `routatic-proxy-api-key`, never in the repo.
-            export ROUTATIC_PROXY_API_KEY="$(/usr/bin/security find-generic-password -s routatic-proxy-api-key -w 2>/dev/null || true)"
-            export ANTHROPIC_BASE_URL="http://127.0.0.1:3456"
-            export ANTHROPIC_AUTH_TOKEN="unused"
           '';
-          shellAliases = {
-            dr = "sudo darwin-rebuild switch --flake path:$HOME/.config/nix#adri";
-            drb = "sudo darwin-rebuild build --flake path:$HOME/.config/nix#adri";
-            dru = "cd ~/.config/nix && nix flake update && sudo darwin-rebuild switch --flake path:$PWD#adri";
-            drn = "cd ~/.config/nix && sudo darwin-rebuild build --flake path:$PWD#adri && nix store diff-closures /run/current-system ./result";
-            dre = "cd ~/.config/nix && $EDITOR flake.nix";
-          };
         };
       };
   };
