@@ -1,8 +1,3 @@
-# RAVE "water" model, from the Intelligent Instruments Lab model collection.
-#
-# The response is a TorchScript .ts archive. Pd's nn~ resolves models by bare
-# filename inside a -path search directory, so the store hash prefix must not
-# end up on the installed name.
 {
   stdenv,
   fetchurl,

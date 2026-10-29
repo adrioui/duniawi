@@ -1,8 +1,3 @@
-# IRCAM nn~ Pd external, fetched from an upstream release tarball.
-#
-# The release bundles the TorchScript runtime and the Pd external in one
-# directory. We flatten that directory into the store root so the Pd wrapper
-# can pass it directly as a -path plugin search directory.
 {
   stdenv,
   fetchurl,

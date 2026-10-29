@@ -1,9 +1,3 @@
-# XcodeBuild MCP — MCP server + CLI for Xcode/iOS/macOS projects.
-# https://github.com/getsentry/XcodeBuildMCP
-#
-# Source is pinned in flake.nix. `src/version.ts` is upstream-gitignored and
-# generated at build time, so it is reconstructed from the checked-in
-# package.json fields instead of running upstream's npx-based generator.
 {
   buildNpmPackage,
   lib,
@@ -19,8 +13,6 @@ buildNpmPackage {
 
   npmDepsHash = "sha256-PWvpblzfn0yM6hRmdJXzcqyegsytBRZGr0vJQYWdcuA=";
 
-  # Upstream's `build` script delegates to wireit, which needs npx; build the
-  # equivalent tsup target directly with the dev deps still installed.
   npmBuildScript = "build:tsup";
   npmBuildFlags = [
     "--"

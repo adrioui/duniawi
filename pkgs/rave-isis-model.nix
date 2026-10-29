@@ -1,7 +1,3 @@
-# IRCAM RAVE "isis" vocal model, fetched from the official RAVE API.
-#
-# The response is a TorchScript .ts archive. We keep the original filename so
-# Pd's nn~ can load it by name from a -path search directory.
 {
   stdenv,
   fetchurl,

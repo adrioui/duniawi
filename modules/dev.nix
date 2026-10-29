@@ -23,7 +23,6 @@
         pkgs.lazydocker
         pkgs.eslint
         pkgs.curl
-        # Development tools for Nix
         pkgs.nixfmt-tree # Formatter for 'nix fmt'
         pkgs.statix # Nix linter
         pkgs.deadnix # Find unused Nix code

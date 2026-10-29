@@ -1,9 +1,3 @@
-# PDida: a flat collection of ~390 rr_* Pure Data abstractions for generative
-# music, by Rolando Rampoldi.
-#
-# The repository is flat (every .pd sits at the root, with no package index and
-# no -lib startup file), so unpacking it to the store root and adding that root
-# as a Pd -path search directory is the whole install.
 {
   stdenv,
   fetchFromGitHub,

@@ -1,5 +1,3 @@
-# Bun pinned to 1.3.14 via store zip. Upstream re-published the release
-# zip, so its hash uses the verified SRI value. Remove when nixpkgs updates.
 { fetchurl, bun }:
 
 bun.overrideAttrs (_old: {

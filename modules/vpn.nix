@@ -3,8 +3,6 @@
     darwin =
       { pkgs, ... }:
       let
-        # Keep launchd command wiring declarative instead of depending on the mutable
-        # current-system profile path at runtime.
         netbirdService = pkgs.writeShellApplication {
           name = "netbird-service";
           text = ''

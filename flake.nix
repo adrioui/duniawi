@@ -12,8 +12,6 @@
 
     llm-agents.url = "github:numtide/llm-agents.nix";
 
-    # Pin to a known-good upstream commit (v2.7.0). Bump intentionally:
-    # refresh the source and the npmDeps hash in pkgs/xcodebuildmcp.nix.
     xcodebuildmcp = {
       url = "github:getsentry/XcodeBuildMCP/e6ef59b49b44012c824f0a0de261c96142e37390";
       flake = false;

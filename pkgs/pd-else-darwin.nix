@@ -1,9 +1,3 @@
-# Pure Data ELSE externals, from the upstream prebuilt macOS release.
-#
-# nixpkgs' pd-else source build is marked broken on Darwin. The upstream
-# release already ships darwin-fat binaries, so this derivation just unpacks
-# the prebuilt package and puts the else contents at the store root. The Pd
-# wrapper adds that root as a -path search directory.
 {
   stdenv,
   fetchurl,

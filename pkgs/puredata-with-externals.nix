@@ -1,8 +1,3 @@
-# Pd wrapper that adds Nix-managed external/abstraction search paths.
-#
-# This mirrors nixpkgs' puredata-with-plugins wrapper but takes an already
-# overridden puredata package (the nixpkgs puredata build needs the SDK
-# availability warning relaxed on this Darwin setup).
 {
   symlinkJoin,
   puredata,

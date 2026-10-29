@@ -1,9 +1,3 @@
-# IRCAM nn~ Max/MSP external, fetched from the upstream release tarball.
-#
-# The release bundles the TorchScript runtime, the Max external (.mxo), and
-# example models. We flatten the package into the store root and add the RAVE
-# models (isis, percussion, vschaos2) into the models/ folder so nn~ can load
-# them by name from the Max Package's default search path.
 {
   stdenv,
   fetchurl,
