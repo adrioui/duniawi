@@ -9,6 +9,10 @@
 
 
 
+
+
+
+
 {
   stdenv,
   fetchurl,
@@ -18,11 +22,11 @@
 
 stdenv.mkDerivation rec {
   pname = "pd-flucoma";
-  version = "nightly-2026-07-28";
+  version = "1.0.10";
 
   src = fetchurl {
-    url = "https://github.com/flucoma/flucoma-pd/releases/download/nightly/FluCoMa-PD-Mac-nightly.dmg";
-    hash = "sha256-71t9wK9xq+yyQnAAEP3VVFpyun7pulqhx71A4NYLu28=";
+    url = "https://github.com/flucoma/flucoma-pd/releases/download/${version}/FluCoMa-PD-Mac.dmg";
+    hash = "sha256-g/78an4EWceesj5lQKysxevTAJZJZzfzxaQEkoHsVC0=";
   };
 
   nativeBuildInputs = [ _7zz ];
