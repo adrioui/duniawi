@@ -23,10 +23,8 @@
         # Source installer needs Node 24 + uv/python + git (from dev aspect).
       };
 
-    homeManager =
-      { pkgs, ... }:
-      {
-        home.packages = [ (pkgs.callPackage ../pkgs/dsh.nix { }) ];
-      };
+    homeManager = {
+      home.packages = [ ];
+    };
   };
 }
