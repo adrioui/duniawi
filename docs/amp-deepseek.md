@@ -61,13 +61,13 @@ The first line makes the requested DeepSeek V4.1 Flash model resolve to the API'
 
 ## Dial
 
-The `medium` Dial slot is tuned to `deepseek/deepseek-v4.1-flash` at `high` effort:
+No model is pinned to a Dial slot. Use the raw model mode:
 
-```json
-{"preset":"chatgpt-only","medium":{"main":{"model":"deepseek/deepseek-v4.1-flash","effort":"high"}}}
+```bash
+amp --mode deepseek/deepseek-v4.1-flash
 ```
 
-The other Dial modes continue to follow the ChatGPT Only preset. This is an Amp account setting, not a Nix-managed value. It can be changed under Settings → Mode Dial → Tune Modes.
+The Dial keeps the ChatGPT Only preset. The raw model mode selects DeepSeek V4.1 Flash without changing the built-in low, medium, high, or ultra slots.
 
 ## Local services
 
