@@ -4,7 +4,7 @@
 
 Amp connects directly to DeepSeek's Anthropic-compatible endpoint. There is no local adapter, no Cloudflare tunnel, no Bifrost, and no Bifrost virtual-key proxy for this path.
 
-The Amp CLI is installed by `modules/ai.nix` through `pkgs.llm-agents.amp`.
+The Amp CLI is installed by `modules/ai.nix` through `pkgs.amp-cli`. It is unfree, so `modules/den.nix` includes `amp-cli` in the unfree allowlist.
 
 ## Topology
 
