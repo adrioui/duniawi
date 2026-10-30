@@ -63,6 +63,8 @@ The first line makes the requested DeepSeek V4.1 Flash model resolve to the API'
 
 The official Amp agent-modes plugin is installed as a system plugin at `~/.config/amp/plugins/official-modes`. It registers the official modes from `https://ampcode.com/models`, including DeepSeek V4.1 Flash and the other models served to the account.
 
+After the first activation, restart Amp or run `plugins: reload` from the command palette so the plugin is loaded into the running session.
+
 No model is pinned to a Dial slot. The Dial keeps the ChatGPT Only preset.
 
 Interactive TUI:
