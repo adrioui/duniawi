@@ -14,6 +14,7 @@
       den.batteries.primary-user
       den.batteries.hostname
       (den.batteries.unfree [
+        "amp-cli"
         "rave-isis-model"
         "rave-percussion-model"
         "rave-water-model"
