@@ -43,6 +43,8 @@ _: {
         pkgs.cloudflared
       ];
 
+      home.file.".config/amp/plugins/official-modes".source = ../pkgs/amp-official-modes;
+
       launchd.agents.amp-deepseek-proxy = {
         enable = true;
         config = {
