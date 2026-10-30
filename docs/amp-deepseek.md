@@ -1,8 +1,8 @@
-# Amp → DeepSeek direct
+# Amp → DeepSeek via Cloudflare Tunnel
 
 ## Status
 
-Amp connects directly to DeepSeek's Anthropic-compatible endpoint. There is no local adapter, no Cloudflare tunnel, no Bifrost, and no Bifrost virtual-key proxy for this path.
+Amp connects to DeepSeek through a Cloudflare Tunnel and a minimal local proxy. The proxy forwards the Anthropic Messages body unchanged, validates an inbound bearer key, injects the DeepSeek key from Keychain, and streams the response back. There are no schema repairs, no Bifrost, and no Bifrost virtual-key proxy.
 
 The Amp CLI is installed by `modules/ai.nix` through `pkgs.amp-cli`. It is unfree, so `modules/den.nix` includes `amp-cli` in the unfree allowlist.
 
@@ -11,155 +11,147 @@ The Amp CLI is installed by `modules/ai.nix` through `pkgs.amp-cli`. It is unfre
 ```text
 Amp cloud
   |
-  |  HTTPS + Anthropic Messages
-  |  Authorization: Bearer <DeepSeek key>
+  |  https://amp-deepseek.adrioui.xyz/anthropic/v1/messages
+  |  Authorization: Bearer <inbound key>
+  v
+Cloudflare Tunnel "amp-deepseek-mac"
+  |
+  v
+cloudflared
+  |
+  v
+127.0.0.1:4014  amp-deepseek-proxy
+  |
+  |  validates the inbound key
+  |  injects x-api-key from Keychain
   v
 https://api.deepseek.com/anthropic/v1/messages
 ```
 
-The local Mac does not listen on a new port for this integration. LiteLLM on `:4000` and `:3456`, the cline shim on `:8788`, and codex-router on `:4200` are unchanged.
+The proxy does not mutate the request body. It only validates the inbound credential, removes inbound credentials, injects the DeepSeek key, and forwards the body and SSE stream.
 
-## Why this is the minimal topology
+## Why this topology
 
-Real Amp traffic was captured on `bluefin-adri` with a recording pass-through that forwarded the body unchanged to DeepSeek. The corpus covered normal text, a tool call with a result, a continuation after the result, an interrupted tool turn, and streaming responses.
-
-Every request succeeded without any body mutation. The existing adapter's repairs were therefore not necessary for this machine's Amp traffic:
-
-| Candidate repair | Real Amp evidence | Decision |
-|---|---|---|
-| Missing thinking on assistant turns | Amp sends signed `thinking` blocks on tool turns and continuations | removed |
-| Dangling `tool_use` | Amp synthesizes an error `tool_result` when a tool is cancelled | removed |
-| Orphan `tool_result` | Amp pairs every result | removed |
-| `tool_result` block ordering | Amp already leads with `tool_result` | removed |
-| `redacted_thinking` filtering | Not emitted by Amp with DeepSeek | removed; DeepSeek rejects explicitly |
-| Unsupported document and MCP blocks | Not emitted | removed; DeepSeek rejects explicitly |
-| Model alias normalization | The Amp connection mapping sends `deepseek-flash` | moved to the connection mapping |
-| `output_config.effort=max` injection | Three low-cost reasoning tasks showed no quality gain and higher token use | removed |
-
-Bifrost and its vk proxy were rejected because they add a second credential layer and are not installed or required. Cloudflare was rejected for this path because Amp's servers can reach DeepSeek directly.
+* Amp sends model requests from its servers, so the endpoint must be publicly reachable.
+* The Cloudflare Tunnel is the only ingress. The origin proxy listens on `127.0.0.1:4014` only.
+* The inbound bearer key is the public authentication layer. It is stored in Keychain and in Amp's encrypted provider config.
+* Bifrost and its vk proxy are not installed or required.
+* The previous adapter repairs were removed because the real Amp corpus passes without them. The proxy is a transport, not a protocol adapter.
+* `output_config.effort=max` is not injected. A three-task benchmark showed no quality gain over `high`, with extra token use and latency.
+* Unsupported DeepSeek blocks are passed through and rejected explicitly by DeepSeek.
 
 ## Amp connection
 
-Create a personal Custom URL connection:
-
 | Field | Value |
 |---|---|
-| Name | `amp-deepseek-direct` |
-| Base URL | `https://api.deepseek.com/anthropic` |
+| Name | `amp-deepseek-tunnel` |
+| Base URL | `https://amp-deepseek.adrioui.xyz/anthropic` |
 | API format | `anthropic-messages` |
-| API key | DeepSeek API key |
-| Model mapping | see below |
+| API key | inbound key from Keychain `amp-deepseek-inbound-key` |
 | Priority | `0` |
 
 Model mapping:
 
 ```text
-anthropic/claude-opus-5-5 -> deepseek-flash
 deepseek/deepseek-v4.1-flash -> deepseek-flash
+anthropic/claude-opus-5-5 -> deepseek-flash
 ```
 
-The first line makes Amp's default `medium` agent use `deepseek-flash` instead of allowing DeepSeek's automatic `claude-opus*` mapping to `deepseek-v4-pro`. The second line makes explicit DeepSeek model selections resolve to the same model.
+The first line makes the requested DeepSeek V4.1 Flash model resolve to the API's `deepseek-flash` model. The second makes Amp's default `medium` agent use DeepSeek Flash instead of DeepSeek V4 Pro.
 
-Amp's other connections, including `amp-commandcode-zen`, are left in place. Models not mapped by `amp-deepseek-direct` continue to route through the remaining connections or Amp itself.
+## Local services
 
-## Provisioning
+`modules/amp-deepseek.nix` declares two home-manager launchd agents:
 
-On a machine with the Amp CLI and a DeepSeek key file:
+| Agent | Purpose |
+|---|---|
+| `amp-deepseek-proxy` | runs `pkgs/amp-deepseek/proxy.mjs` on `127.0.0.1:4014` |
+| `amp-deepseek-tunnel` | runs `cloudflared tunnel --no-autoupdate run` with `TUNNEL_TOKEN` from Keychain |
 
-```bash
-amp config model-providers add-router custom-url \
-  --name amp-deepseek-direct \
-  --base-url https://api.deepseek.com/anthropic \
-  --api-format anthropic-messages \
-  --api-key-file "$HOME/.config/litellm/deepseek-direct.key" \
-  --model-mapping "anthropic/claude-opus-5-5 -> deepseek-flash
-deepseek/deepseek-v4.1-flash -> deepseek-flash" \
-  --personal \
-  --active \
-  --acknowledge-hosted-in-china
-```
+The proxy reads `deepseek-api-key` and `amp-deepseek-inbound-key` from Keychain at launch. The tunnel reads `amp-deepseek-tunnel-token` from Keychain at launch. No value is written to a plist, the Nix store, or a log.
 
-Then move it to the front:
+## Cloudflare resources
 
-```bash
-amp config model-providers set-priority <connection-id> 0
-```
+| Resource | Value |
+|---|---|
+| Tunnel | `amp-deepseek-mac` |
+| Hostname | `amp-deepseek.adrioui.xyz` |
+| Origin | `http://127.0.0.1:4014` |
 
-On the Mac, the DeepSeek key is already in Keychain as `deepseek-api-key`. If a file is needed for the Amp CLI:
+There is no separate Cloudflare Access application for this hostname. The inbound bearer key is validated by the proxy.
 
-```bash
-security find-generic-password -s deepseek-api-key -w > "$HOME/.config/litellm/deepseek-direct.key"
-chmod 600 "$HOME/.config/litellm/deepseek-direct.key"
-```
-
-Alternatively, add the same connection through Amp's Model Routing settings in the web app. The connection is cloud-side and applies to the Amp account, not to this Nix configuration.
-
-Do not add this key to the Nix store, a plist, a launchd environment, or the repository.
+The existing `amp.adrioui.xyz` tunnel and `amp-commandcode-zen` connection are unchanged.
 
 ## Verification
 
-List the connection without printing secrets:
+Local proxy:
 
 ```bash
-amp config model-providers list --json \
-  | jq -r '.[] | [.name, .priority, .active] | @tsv'
+curl -sS http://127.0.0.1:4014/health
 ```
 
-Run a one-token inference through the connection:
+Expected:
+
+```json
+{"ok":true,"upstream":"https://api.deepseek.com/anthropic"}
+```
+
+Public endpoint with the inbound key:
+
+```bash
+curl -sS -o /dev/null -w '%{http_code}\n' \
+  -H "Authorization: Bearer $(security find-generic-password -s amp-deepseek-inbound-key -w)" \
+  https://amp-deepseek.adrioui.xyz/anthropic/v1/messages \
+  -H 'content-type: application/json' \
+  -d '{"model":"deepseek-flash","max_tokens":16,"messages":[{"role":"user","content":"Say OK"}]}'
+```
+
+Amp provider check:
 
 ```bash
 amp config model-providers check-access \
-  --provider-model anthropic/claude-opus-5-5 \
+  --provider-model deepseek/deepseek-v4.1-flash \
   --thread <thread-id>
 ```
 
-Expected result:
+Expected: `ok: true`, provider `amp-deepseek-tunnel`, provider model `deepseek-flash`.
 
-```json
-{
-  "ok": true,
-  "modelProviderName": "amp-deepseek-direct",
-  "providerModelID": "deepseek-flash"
-}
-```
-
-Run a real tool turn:
+Real tool turn:
 
 ```bash
-amp -x "Use the shell_command tool to run: printf amp-direct-final. Then report the output. Do not use any other tool." \
+amp -x "Use the shell_command tool to run: printf cloudflare-proven. Then report the output. Do not use any other tool." \
   --stream-json-thinking
 ```
 
-Expected: a `tool_use` block, a `tool_result` block, and a final assistant text block. No local listener is involved.
+Expected: `tool_use`, `tool_result`, and a final text block.
 
 ## Compatibility notes
 
-DeepSeek supports the Anthropic Messages surface with these limits:
-
-* `x-api-key` is supported.
+* `x-api-key` is supported by DeepSeek.
 * `anthropic-version` is ignored.
 * `anthropic-beta` is ignored except for the Files API image variant.
 * `thinking` is supported; `budget_tokens` is ignored.
 * `output_config.effort` accepts `low`, `high`, and `max`; the default is `high`.
-* With `tools`, all prior thinking blocks must be passed back. Amp already does this.
-* `document`, `redacted_thinking`, `mcp_tool_use`, `mcp_tool_result`, `code_execution_tool_result`, and `container_upload` are not supported. DeepSeek rejects them explicitly; the integration does not silently drop them.
-* Streaming uses `text/event-stream`. Amp uses streaming for all captured agent requests. Non-streaming works at DeepSeek but is not exercised by Amp.
+* With `tools`, all prior thinking blocks must be passed back. Amp does this.
+* `document`, `redacted_thinking`, `mcp_tool_use`, `mcp_tool_result`, `code_execution_tool_result`, and `container_upload` are not supported by DeepSeek. They are forwarded and rejected explicitly.
+* Streaming uses `text/event-stream`. Amp uses streaming for agent requests.
 
 ## Security
 
-* The DeepSeek key is stored in Amp's encrypted cloud provider configuration.
-* On the Mac, the source of truth remains Keychain item `deepseek-api-key`.
-* No secret is added to the Nix store, repository, plists, logs, or launchd environment.
-* There is no public ingress on the Mac for this path.
-* No local service, temporary file, or background process is created.
+* The inbound bearer key is the public authentication layer.
+* The origin proxy listens only on `127.0.0.1:4014`.
+* The proxy strips `Authorization`, `x-api-key`, `x-amp-thread-id`, and all inbound gateway headers before calling DeepSeek.
+* The DeepSeek key, inbound key, and tunnel token are read from Keychain at launch.
+* No secret appears in the repository, Nix store, plists, logs, or launchd environment.
+* The proxy logs only status, request size, and duration.
 
 ## Troubleshooting
 
 | Symptom | Check |
 |---|---|
-| `401` | DeepSeek key is missing or wrong in the Amp connection |
-| `400` for a model | Model mapping does not cover the selected model |
-| `claude-opus*` bills as `deepseek-v4-pro` | Add `anthropic/claude-opus-5-5 -> deepseek-flash` to the mapping |
-| `422` for a block type | Amp sent `document`, `redacted_thinking`, MCP, code-execution, or container block; DeepSeek does not support it |
-| Check-access uses a different provider | Move `amp-deepseek-direct` to priority `0` |
-| No `amp` CLI on the Mac | Create the connection from Amp's Model Routing web settings |
+| `401` from the proxy | Inbound key is missing or wrong in the Amp connection |
+| `502` from the proxy | `cloudflared` cannot reach `127.0.0.1:4014` or the proxy is down |
+| `503` from the proxy | Keychain item `deepseek-api-key` or `amp-deepseek-inbound-key` is missing |
+| Tunnel exits at launch | Keychain item `amp-deepseek-tunnel-token` is missing |
+| `400` for a model | Amp model mapping does not map the selected model to `deepseek-flash` |
+| `422` for a block type | Amp sent a block DeepSeek does not support |
