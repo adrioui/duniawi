@@ -4,7 +4,7 @@
       { pkgs, ... }:
       {
         environment.systemPackages = [
-          pkgs.amp-cli
+          (pkgs.callPackage ../pkgs/amp-cli.nix { })
           pkgs.llm-agents.pi
           pkgs.llm-agents.opencode
           pkgs.llm-agents.cursor-agent
