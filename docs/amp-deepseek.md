@@ -59,6 +59,16 @@ anthropic/claude-opus-5-5 -> deepseek-flash
 
 The first line makes the requested DeepSeek V4.1 Flash model resolve to the API's `deepseek-flash` model. The second makes Amp's default `medium` agent use DeepSeek Flash instead of DeepSeek V4 Pro.
 
+## Dial
+
+The `medium` Dial slot is tuned to `deepseek/deepseek-v4.1-flash` at `high` effort:
+
+```json
+{"preset":"chatgpt-only","medium":{"main":{"model":"deepseek/deepseek-v4.1-flash","effort":"high"}}}
+```
+
+The other Dial modes continue to follow the ChatGPT Only preset. This is an Amp account setting, not a Nix-managed value. It can be changed under Settings → Mode Dial → Tune Modes.
+
 ## Local services
 
 `modules/amp-deepseek.nix` declares two home-manager launchd agents:
