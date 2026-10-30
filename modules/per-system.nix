@@ -64,6 +64,19 @@
           ${pkgs.flake-checker}/bin/flake-checker "$src"
           touch "$out"
         '';
+
+        amp-deepseek =
+          pkgs.runCommand "amp-deepseek-tests"
+            {
+              src = ../pkgs/amp-deepseek;
+              nativeBuildInputs = [ pkgs.nodejs ];
+            }
+            ''
+              cp -r "$src" "$TMPDIR/amp-deepseek"
+              cd "$TMPDIR/amp-deepseek"
+              node --test test/*.test.mjs
+              touch "$out"
+            '';
       };
 
       formatter = pkgs.nixfmt-tree;
