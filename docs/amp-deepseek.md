@@ -59,15 +59,27 @@ anthropic/claude-opus-5-5 -> deepseek-flash
 
 The first line makes the requested DeepSeek V4.1 Flash model resolve to the API's `deepseek-flash` model. The second makes Amp's default `medium` agent use DeepSeek Flash instead of DeepSeek V4 Pro.
 
-## Dial
+## Modes and Dial
 
-No model is pinned to a Dial slot. Use the raw model mode:
+The official Amp agent-modes plugin is installed as a system plugin at `~/.config/amp/plugins/official-modes`. It registers the official modes from `https://ampcode.com/models`, including DeepSeek V4.1 Flash and the other models served to the account.
+
+No model is pinned to a Dial slot. The Dial keeps the ChatGPT Only preset.
+
+Interactive TUI:
+
+1. Run `amp`.
+2. Press `Ctrl+S`.
+3. Press `Tab` to switch from the Dial to the full mode list.
+4. Select **DeepSeek V4.1 Flash**.
+5. Send the first message.
+
+Execute mode:
 
 ```bash
-amp --mode deepseek/deepseek-v4.1-flash
+amp -x "your prompt" --mode deepseek-v4.1-flash
 ```
 
-The Dial keeps the ChatGPT Only preset. The raw model mode selects DeepSeek V4.1 Flash without changing the built-in low, medium, high, or ultra slots.
+The plugin mode key is `deepseek-v4.1-flash`; the canonical model is `deepseek/deepseek-v4.1-flash`, which the connection maps to `deepseek-flash`.
 
 ## Local services
 
