@@ -1,6 +1,6 @@
 _: {
   den.aspects.ampDeepseek.homeManager =
-    { config, pkgs, ... }:
+    { config, lib, pkgs, ... }:
     let
       proxy = pkgs.callPackage ../pkgs/amp-deepseek { };
 
@@ -43,7 +43,14 @@ _: {
         pkgs.cloudflared
       ];
 
-      home.file.".config/amp/plugins/official-modes".source = ../pkgs/amp-official-modes;
+      home.activation.ampOfficialModes = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+        target="$HOME/.config/amp/plugins/official-modes"
+        source="${../pkgs/amp-official-modes}"
+        rm -rf "$target"
+        mkdir -p "$target"
+        cp -R "$source"/. "$target"/
+        chmod -R u+w "$target"
+      '';
 
       launchd.agents.amp-deepseek-proxy = {
         enable = true;
