@@ -56,7 +56,7 @@ preflight_base() {
   check "repo-lock" "$EXPECT_LOCK" "$(sha "$REPO/flake.lock")"
   check "repo-proxy" "$EXPECT_PROXY" "$(sha "$REPO/pkgs/amp-deepseek/proxy.mjs")"
   check "repo-module" "$EXPECT_MODULE" "$(sha "$REPO/modules/amp-deepseek-nixos.nix")"
-  check "repo-clean" "0" "$("$GIT" -C "$REPO" status --porcelain | wc -l)"
+  check "repo-clean" "0" "$("$GIT" -c safe.directory='*' -C "$REPO" status --porcelain | wc -l)"
   [ -d "$SRC" ] || die "backup home not found at $SRC"
 }
 
@@ -168,9 +168,9 @@ do_stage() {
     "$RG" -l -0 --hidden --no-ignore --no-messages -F "$old" "$STAGE" >>"$EVID/path-rewrite.files" || true
   done
 
-  tr '\0' '\n' <"$EVID/path-rewrite.files" | sort -u >"$EVID/path-rewrite.list"
-  log "files carrying the old home prefix (dry-run): $(wc -l <"$EVID/path-rewrite.list")"
-  while IFS= read -r f; do
+  sort -zu "$EVID/path-rewrite.files" >"$EVID/path-rewrite.list"
+  log "files carrying the old home prefix (dry-run): $(tr -cd '\0' <"$EVID/path-rewrite.list" | wc -c)"
+  while IFS= read -r -d '' f; do
     [ -n "$f" ] || continue
     sed -i "s|/var/home/adrifadilah|$STAGE|g; s|/home/adrifadilah|$STAGE|g; s|/mnt/disk/adrifadilah|$STAGE|g" "$f"
   done <"$EVID/path-rewrite.list"
@@ -267,7 +267,7 @@ do_build() {
   log "=== durable repo copy ==="
   rm -rf "$DURABLE_REPO"
   "$GIT" clone -q --local "$REPO" "$DURABLE_REPO"
-  "$GIT" -C "$DURABLE_REPO" checkout -q "$("$GIT" -C "$REPO" rev-parse HEAD)"
+  "$GIT" -C "$DURABLE_REPO" checkout -q "$("$GIT" -c safe.directory='*' -C "$REPO" rev-parse HEAD)"
   log "durable commit: $("$GIT" -C "$DURABLE_REPO" rev-parse HEAD)"
   log "=== nixos-rebuild build ==="
   nixos-rebuild build --flake "$DURABLE_REPO#t14" 2>&1 | tee "$EVID/build.log"
@@ -296,12 +296,12 @@ do_cutover() {
   log "=== durable repo copy ==="
   rm -rf "$DURABLE_REPO"
   "$GIT" clone -q --local "$REPO" "$DURABLE_REPO"
-  "$GIT" -C "$DURABLE_REPO" checkout -q "$("$GIT" -C "$REPO" rev-parse HEAD)"
+  "$GIT" -C "$DURABLE_REPO" checkout -q "$("$GIT" -c safe.directory='*' -C "$REPO" rev-parse HEAD)"
 
   log "=== rewrite stage prefix to the live home ==="
   "$RG" -l -0 --hidden --no-ignore --no-messages -F "$STAGE" "$STAGE" >"$EVID/cutover.files" || true
-  tr '\0' '\n' <"$EVID/cutover.files" | sort -u >"$EVID/cutover.list"
-  while IFS= read -r f; do [ -n "$f" ] && sed -i "s|$STAGE|/home/adrioui|g" "$f"; done <"$EVID/cutover.list"
+  sort -zu "$EVID/cutover.files" >"$EVID/cutover.list"
+  while IFS= read -r -d '' f; do [ -n "$f" ] && sed -i "s|$STAGE|/home/adrioui|g" "$f"; done <"$EVID/cutover.list"
   check "cutover-rewrite-complete" "0" "$("$RG" -l --hidden --no-ignore --no-messages -F "$STAGE" "$STAGE" 2>/dev/null | wc -l)"
 
   log "=== swap homes ==="
