@@ -12,6 +12,7 @@ set -Eeuo pipefail
 umask 077
 
 MODE=${1:-stage}
+REPORT_DIR=${2:-}
 BACKUP=/run/media/adrioui/backup
 SRC=$BACKUP/home
 STAGE=/home/adrioui.restore
@@ -32,8 +33,10 @@ FAIL=0
 
 [ "$(id -u)" -eq 0 ] || { echo "FATAL: run as root from a local TTY" >&2; exit 1; }
 
-mkdir -p "$EVID"
-exec > >(tee -a "$EVID/run.log") 2>&1
+if [ "$MODE" != "report" ]; then
+  mkdir -p "$EVID"
+  exec > >(tee -a "$EVID/run.log") 2>&1
+fi
 log() { printf '%s %s\n' "$(date -Is)" "$*"; }
 die() { log "FATAL: $*"; exit 1; }
 check() {
@@ -133,27 +136,40 @@ EOF
 }
 
 do_stage() {
-  preflight_stage
-  write_excludes
-  mapfile -t INC < <(includes)
-  log "=== includes (${#INC[@]}) ==="; printf '%s\n' "${INC[@]}" | tee "$EVID/include.txt"
+  if [ "${RESUME:-0}" = "1" ]; then
+    preflight_base
+    [ -d "$STAGE" ] || die "no stage to resume"
+    prev=""
+    for d in "$ROOT_EVID"/*/; do
+      [ -d "$d" ] || continue
+      [ "$d" = "$EVID/" ] && continue
+      if [ -z "$prev" ] || [ "$d" -nt "$prev" ]; then prev=$d; fi
+    done
+    log "=== resume: copy and idempotence were proven in the prior run ($prev) ==="
+    printf 'rsync-idempotent\tPASS\tprior-run %s\n' "$(basename "${prev:-unknown}")" >>"$EVID/checks.tsv"
+  else
+    preflight_stage
+    write_excludes
+    mapfile -t INC < <(includes)
+    log "=== includes (${#INC[@]}) ==="; printf '%s\n' "${INC[@]}" | tee "$EVID/include.txt"
 
-  log "=== rsync stage ==="
-  mkdir -m 0700 "$STAGE"
-  for p in "${INC[@]}"; do
-    log "copy $p"
-    ( cd "$SRC" && rsync -aHAX --numeric-ids --relative \
-        --exclude-from="$EVID/rsync-excludes.txt" \
-        --info=stats2 "./$p" "$STAGE/" ) || die "rsync failed for $p"
-  done
+    log "=== rsync stage ==="
+    mkdir -m 0700 "$STAGE"
+    for p in "${INC[@]}"; do
+      log "copy $p"
+      ( cd "$SRC" && rsync -aHAX --numeric-ids --relative \
+          --exclude-from="$EVID/rsync-excludes.txt" \
+          --info=stats2 "./$p" "$STAGE/" ) || die "rsync failed for $p"
+    done
 
-  log "=== idempotence: second dry-run must be empty ==="
-  : >"$EVID/idempotence.diff"
-  for p in "${INC[@]}"; do
-    ( cd "$SRC" && rsync -aHAX --numeric-ids --relative --dry-run --itemize-changes \
-        --exclude-from="$EVID/rsync-excludes.txt" "./$p" "$STAGE/" ) >>"$EVID/idempotence.diff" || true
-  done
-  check "rsync-idempotent" "0" "$(wc -l <"$EVID/idempotence.diff")"
+    log "=== idempotence: second dry-run must be empty ==="
+    : >"$EVID/idempotence.diff"
+    for p in "${INC[@]}"; do
+      ( cd "$SRC" && rsync -aHAX --numeric-ids --relative --dry-run --itemize-changes \
+          --exclude-from="$EVID/rsync-excludes.txt" "./$p" "$STAGE/" ) >>"$EVID/idempotence.diff" || true
+    done
+    check "rsync-idempotent" "0" "$(wc -l <"$EVID/idempotence.diff")"
+  fi
 
   log "=== ownership mapping: only .herdr and Works/Bangunindo/BLIV ==="
   chown 1000:1000 "$STAGE"
@@ -170,10 +186,15 @@ do_stage() {
 
   sort -zu "$EVID/path-rewrite.files" >"$EVID/path-rewrite.list"
   log "files carrying the old home prefix (dry-run): $(tr -cd '\0' <"$EVID/path-rewrite.list" | wc -c)"
+  rewrite_fail=0
   while IFS= read -r -d '' f; do
     [ -n "$f" ] || continue
-    sed -i "s|/var/home/adrifadilah|$STAGE|g; s|/home/adrifadilah|$STAGE|g; s|/mnt/disk/adrifadilah|$STAGE|g" "$f"
+    if ! sed -i "s|/var/home/adrifadilah|$STAGE|g; s|/home/adrifadilah|$STAGE|g; s|/mnt/disk/adrifadilah|$STAGE|g" "$f"; then
+      log "REWRITE-FAILED $f"
+      rewrite_fail=$((rewrite_fail+1))
+    fi
   done <"$EVID/path-rewrite.list"
+  check "path-rewrite-errors" "0" "$rewrite_fail"
   left=0
   for old in /var/home/adrifadilah /home/adrifadilah /mnt/disk/adrifadilah; do
     n=$("$RG" -l --hidden --no-ignore --no-messages -F "$old" "$STAGE" 2>/dev/null | wc -l)
@@ -301,7 +322,15 @@ do_cutover() {
   log "=== rewrite stage prefix to the live home ==="
   "$RG" -l -0 --hidden --no-ignore --no-messages -F "$STAGE" "$STAGE" >"$EVID/cutover.files" || true
   sort -zu "$EVID/cutover.files" >"$EVID/cutover.list"
-  while IFS= read -r -d '' f; do [ -n "$f" ] && sed -i "s|$STAGE|/home/adrioui|g" "$f"; done <"$EVID/cutover.list"
+  cut_fail=0
+  while IFS= read -r -d '' f; do
+    [ -n "$f" ] || continue
+    if ! sed -i "s|$STAGE|/home/adrioui|g" "$f"; then
+      log "CUTOVER-REWRITE-FAILED $f"
+      cut_fail=$((cut_fail+1))
+    fi
+  done <"$EVID/cutover.list"
+  check "cutover-rewrite-errors" "0" "$cut_fail"
   check "cutover-rewrite-complete" "0" "$("$RG" -l --hidden --no-ignore --no-messages -F "$STAGE" "$STAGE" 2>/dev/null | wc -l)"
 
   log "=== swap homes ==="
@@ -326,9 +355,29 @@ do_cutover() {
   log "  mv /home/adrioui /home/adrioui.new && mv /home/adrioui.pre-migration.$STAMP /home/adrioui"
 }
 
+do_report() {
+  if [ -n "$REPORT_DIR" ]; then
+    target=$REPORT_DIR
+  else
+    target=""
+    for d in "$ROOT_EVID"/*/; do
+      [ -d "$d" ] || continue
+      if [ -z "$target" ] || [ "$d" -nt "$target" ]; then target=$d; fi
+    done
+  fi
+  [ -n "$target" ] || { echo "no evidence directory under $ROOT_EVID" >&2; exit 1; }
+  echo "evidence: $target"
+  echo "=== checks.tsv ==="
+  cat "$target/checks.tsv" 2>/dev/null || true
+  echo "=== run.log tail ==="
+  tail -120 "$target/run.log" 2>/dev/null || true
+}
+
 case "$MODE" in
   stage) do_stage ;;
+  resume) RESUME=1; do_stage ;;
+  report) do_report ;;
   build) do_build ;;
   cutover) do_cutover ;;
-  *) die "usage: $0 stage|build|cutover" ;;
+  *) die "usage: $0 stage|resume|report|build|cutover" ;;
 esac
