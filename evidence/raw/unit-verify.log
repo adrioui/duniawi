@@ -1,0 +1,5 @@
+# start 2026-10-31T17:59:12+07:00
+# unit: /nix/store/6xvb1vg1n7wq5f5x16z5884shfb9gvhx-home-manager-generation/home-files/.config/systemd/user/amp-deepseek-proxy.service
+/etc/systemd/system/cups.socket:5: ListenStream= references a path below legacy directory /var/run/, updating /var/run/cups/cups.sock → /run/cups/cups.sock; please update the unit file accordingly.
+# exit 0
+# end 2026-10-31T17:59:12+07:00

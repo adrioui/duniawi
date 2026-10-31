@@ -29,4 +29,26 @@
         pkgs.nix-tree 
       ];
     };
+
+  den.aspects.dev.nixos =
+    { config, ... }:
+    {
+      
+      
+      virtualisation.podman = {
+        enable = true;
+        dockerCompat = true;
+      };
+
+      
+      
+      programs.nix-ld.enable = true;
+
+      assertions = [
+        {
+          assertion = config.virtualisation.podman.enable;
+          message = "t14 uses rootless Podman instead of the old Fedora container units.";
+        }
+      ];
+    };
 }

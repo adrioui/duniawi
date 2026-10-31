@@ -1,0 +1,95 @@
+# shell:
+  readlink -f /run/current-system
+  readlink -f /run/booted-system
+  nix-env -p /nix/var/nix/profiles/system --list-generations | tail -5
+  bootctl status 2>&1 || true
+
+# started: 2026-10-31T17:32:37+07:00
+/nix/store/04q282abf92ypcwxqarbwzvrym4fvbcv-nixos-system-nixos-26.05.13164.6f06d204d8f2
+/nix/store/04q282abf92ypcwxqarbwzvrym4fvbcv-nixos-system-nixos-26.05.13164.6f06d204d8f2
+error: opening lock file "/nix/var/nix/profiles/system.lock": Permission denied
+Failed to read "/boot/EFI/systemd": Permission denied
+Failed to open '/boot/loader/loader.conf': Permission denied
+System:
+      Firmware: UEFI 2.70 (Lenovo 0.5136)
+ Firmware Arch: x64
+   Secure Boot: disabled (setup)
+  TPM2 Support: yes
+  Measured UKI: no
+  Boot into FW: supported
+
+Current Boot Loader:
+       Product: systemd-boot 260.5
+     Features: ✓ Boot counting
+               ✓ Menu timeout control
+               ✓ One-shot menu timeout control
+               ✓ Default entry control
+               ✓ One-shot entry control
+               ✓ Support for XBOOTLDR partition
+               ✓ Support for passing random seed to OS
+               ✓ Load drop-in drivers
+               ✓ Support Type #1 sort-key field
+               ✓ Support @saved pseudo-entry
+               ✓ Support Type #1 devicetree field
+               ✓ Enroll SecureBoot keys
+               ✓ Retain SHIM protocols
+               ✓ Menu can be disabled
+               ✓ Multi-Profile UKIs are supported
+               ✓ Loader reports network boot URL
+               ✓ Support Type #1 uki field
+               ✓ Support Type #1 uki-url field
+               ✓ Loader reports active TPM2 PCR banks
+     Partition: /dev/disk/by-partuuid/f61d565f-b7a7-4196-9dac-646514405fd4
+        Loader: └─/boot//EFI/systemd/systemd-bootx64.efi
+ Current Entry: nixos-generation-1.conf
+
+Random Seed:
+ System Token: set
+       Exists: Can't access /boot/loader/random-seed (Permission denied)
+
+Available Boot Loaders on ESP:
+          ESP: /boot (/dev/disk/by-partuuid/f61d565f-b7a7-4196-9dac-646514405fd4)
+         File: (can't access /boot: Permission denied)
+
+Boot Loaders Listed in EFI Variables:
+        Title: Linux Boot Manager
+           ID: 0x0005
+       Status: active, boot-order
+    Partition: /dev/disk/by-partuuid/f61d565f-b7a7-4196-9dac-646514405fd4
+         File: └─/boot//EFI/systemd/systemd-bootx64.efi
+
+        Title: Fedora
+           ID: 0x0004
+       Status: active, boot-order
+    Partition: /dev/disk/by-partuuid/ca415321-7f07-4076-b22e-5bbe3b979551
+         File: └─/boot//EFI/fedora/shimx64.efi
+
+        Title: Fedora
+
+           ID: 0x0003
+       Status: active, boot-order
+    Partition: /dev/disk/by-partuuid/ca415321-7f07-4076-b22e-5bbe3b979551
+         File: └─/boot//EFI/fedora/shimx64.efi
+
+        Title: Fedora
+
+           ID: 0x0002
+       Status: active, boot-order
+    Partition: /dev/disk/by-partuuid/ab9df05c-985a-40a1-8a18-ddcdc0d222c2
+         File: └─/boot//EFI/fedora/shimx64.efi
+
+        Title: Fedora
+
+           ID: 0x0001
+       Status: active, boot-order
+    Partition: /dev/disk/by-partuuid/e4c0a0f5-0ca9-4260-aad9-315a88f1a593
+         File: └─/boot//EFI/fedora/shimx64.efi
+
+        Title: Windows Boot Manager
+           ID: 0x0000
+       Status: active, boot-order
+    Partition: /dev/disk/by-partuuid/e4c0a0f5-0ca9-4260-aad9-315a88f1a593
+         File: └─/boot//EFI/Microsoft/Boot/bootmgfw.efi
+
+# exit: 0
+# finished: 2026-10-31T17:32:37+07:00

@@ -1,0 +1,227 @@
+timestamp=2026-10-31T13:52:57+07:00
+dmi:
+sys_vendor=LENOVO
+product_name=20W1S0F500
+product_version=ThinkPad T14 Gen 2i
+product_serial=<redacted>
+board_name=20W1S0F500
+bios_version=N34ET41W (1.41 )
+bios_date=07/08/2021
+cpu:
+Architecture:                            x86_64
+CPU op-mode(s):                          32-bit, 64-bit
+Address sizes:                           39 bits physical, 48 bits virtual
+Byte Order:                              Little Endian
+CPU(s):                                  8
+On-line CPU(s) list:                     0-7
+Vendor ID:                               GenuineIntel
+Model name:                              11th Gen Intel(R) Core(TM) i7-1185G7 @ 3.00GHz
+CPU family:                              6
+Model:                                   140
+Thread(s) per core:                      2
+Core(s) per socket:                      4
+Socket(s):                               1
+Stepping:                                1
+Microcode version:                       0xbe
+CPU(s) scaling MHz:                      73%
+CPU max MHz:                             4800.0000
+CPU min MHz:                             400.0000
+BogoMIPS:                                5990.40
+Flags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf tsc_known_freq pni pclmulqdq dtes64 monitor ds_cpl smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l2 cdp_l2 ssbd ibrs ibpb stibp ibrs_enhanced fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdt_a avx512f avx512dq rdseed adx smap avx512ifma clflushopt clwb intel_pt avx512cd sha_ni avx512bw avx512vl xsaveopt xsavec xgetbv1 xsaves split_lock_detect user_shstk dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp hwp_pkg_req avx512vbmi umip pku ospke avx512_vbmi2 gfni vaes vpclmulqdq avx512_vnni avx512_bitalg avx512_vpopcntdq rdpid movdiri movdir64b fsrm avx512_vp2intersect md_clear ibt flush_l1d arch_capabilities
+L1d cache:                               192 KiB (4 instances)
+L1i cache:                               128 KiB (4 instances)
+L2 cache:                                5 MiB (4 instances)
+L3 cache:                                12 MiB (1 instance)
+NUMA node(s):                            1
+NUMA node0 CPU(s):                       0-7
+Vulnerability Gather data sampling:      Mitigation; Microcode
+Vulnerability Ghostwrite:                Not affected
+Vulnerability Indirect target selection: Mitigation; Aligned branch/return thunks
+Vulnerability Itlb multihit:             Not affected
+Vulnerability L1tf:                      Not affected
+Vulnerability Mds:                       Not affected
+Vulnerability Meltdown:                  Not affected
+Vulnerability Mmio stale data:           Not affected
+Vulnerability Old microcode:             Not affected
+Vulnerability Reg file data sampling:    Not affected
+Vulnerability Retbleed:                  Not affected
+Vulnerability Spec rstack overflow:      Not affected
+Vulnerability Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:                Mitigation; Enhanced / Automatic IBRS; IBPB conditional; PBRSB-eIBRS SW sequence; BHI SW loop, KVM SW loop
+Vulnerability Srbds:                     Not affected
+Vulnerability Tsa:                       Not affected
+Vulnerability Tsx async abort:           Not affected
+Vulnerability Vmscape:                   Not affected
+pci:
+/nix/store/13czpvp88x852739v5xi04s871pn35b5-bash-interactive-5.3p9/bin/bash: line 11: lspci: command not found
+usb:
+/nix/store/13czpvp88x852739v5xi04s871pn35b5-bash-interactive-5.3p9/bin/bash: line 13: lsusb: command not found
+battery:
+  native-path:          BAT0
+  vendor:               Celxpert
+  model:                5B10W51830
+  serial: <redacted>
+  power supply:         yes
+  updated:              Sat 31 Oct 2026 01:52:46 PM WIB (11 seconds ago)
+  has history:          yes
+  has statistics:       yes
+  battery
+    present:             yes
+    rechargeable:        yes
+    state:               discharging
+    warning-level:       none
+    energy:              9.58 Wh
+    energy-empty:        0 Wh
+    energy-full:         41.34 Wh
+    energy-full-design:  51 Wh
+    voltage-min-design:  11.52 V
+    capacity-level:      Normal
+    energy-rate:         21.942 W
+    voltage:             10.414 V
+    charge-cycles:       811
+    time to empty:       26.2 minutes
+    percentage:          23%
+    capacity:            81.0588%
+    technology:          lithium-polymer
+    charge-start-threshold:        75%
+    charge-end-threshold:          80%
+    charge-threshold-supported:    yes
+    icon-name:          'battery-low-symbolic'
+  History (charge):
+    1793429566	23.000	discharging
+    1793429506	24.000	discharging
+  History (rate):
+    1793429566	21.942	discharging
+    1793429536	17.002	discharging
+    1793429506	21.911	discharging
+    1793429476	15.802	discharging
+  History (voltage):
+    1793429566	10.414	discharging
+    1793429536	10.673	discharging
+    1793429506	10.474	discharging
+    1793429476	10.861	discharging
+
+sensors:
+/nix/store/13czpvp88x852739v5xi04s871pn35b5-bash-interactive-5.3p9/bin/bash: line 17: sensors: command not found
+fwupd:
+Idle…
+[31m[1mWARNING[0m: UEFI capsule updates not available or enabled in firmware setup
+See https://github.com/fwupd/fwupd/wiki/PluginFlag:capsules-unsupported for more information.
+LENOVO 20W1S0F500
+│
+├─AMT (unprovisioned):
+│     Device ID:          8d5470e73fd9a31eaa460b2b6aea95483fe3f14c
+│     Summary:            Hardware and firmware technology for remote out-of-band management
+│     Current version:    15.0.23.1706
+│     Bootloader Version: 15.0.23.1706
+│     Vendor:             Intel (PCI:0x8086)
+│     Device Flags:       • Internal device
+│                         • Can tag for emulation
+│   
+├─B140HAN04.E:
+│     Device ID:          aec1a869eb0df71b7cea6b3ac71d39b830faf164
+│     Vendor:             PNP:AUO
+│     GUID:               c15741da-aede-5cdf-abe4-5fc827e7d0b4 ← DRM\VEN_AUO&DEV_408D
+│   
+├─Expansion:
+│     Device ID:          0431bdae1b42f990c24339691dee251c8e65f3d3
+│     Summary:            SCSI device
+│     Current version:    9300
+│     Vendor:             Seagate (USB:0x0BC2, SCSI:Seagate)
+│     GUIDs:              0942b2dd-fbfc-5155-aa1c-18732244b50e ← BLOCK\VEN_0BC2&DEV_2322
+│                         68f6a393-e4b2-559b-9352-80e12ec489f8 ← SCSI\VEN_Seagate&DEV_Expansion
+│                         0f496f2a-03ff-5a1d-8321-c4150eb743cf ← SCSI\VEN_Seagate&DEV_Expansion&REV_9300
+│     Device Flags:       • Internal device
+│                         • Can tag for emulation
+│   
+├─Internal SPI Controller:
+│ │   Device ID:          b04e387fb80d2b91f37a4d0c7b21461c451775e1
+│ │   Summary:            Memory Technology Device
+│ │   Vendor:             Intel (PCI:0x8086)
+│ │   Problems:           [31m[1m• Device firmware has been locked[0m
+│ │   GUIDs:              af783c5c-0390-55a5-ac35-7a6c43c6dbec ← MTD\NAME_BIOS
+│ │                       09b09204-8d23-5cc5-b92f-76d1d28fd781 ← MTD\VEN_8086&DEV_A0A4
+│ │                       a61b2499-d125-5ec3-ad9b-0930e186e2d2 ← MTD\VEN_8086&DEV_A0A4&NAME_BIOS
+│ │   Device Flags:       • Internal device
+│ │                       • Needs a reboot after installation
+│ │                       • Cryptographic hash verification is available
+│ │                       • Can tag for emulation
+│ │ 
+│ └─Internal SPI Controller (BIOS):
+│       Device ID:        52ff2a08045055357f07ae0fa9bf4a9be948c18a
+│       Current version:  1.41
+│       Vendor:           Intel (PCI:0x8086)
+│       Problems:         [31m[1m• System power is too low[0m
+│                         [31m[1m• Device firmware has been locked[0m
+│       GUID:             75af99a7-8ae0-5c84-8091-cfe7b595f03a ← IFD\REGION_bios
+│       Device Flags:     • Internal device
+│                         • Needs a reboot after installation
+│                         • Cryptographic hash verification is available
+│                         • Updatable
+│                         • Signed Payload
+│     
+├─ME:
+│     Device ID:          5fed1486be004d67ea79838d2e83aaa11bb72645
+│     Current version:    15.0.23.1706
+│     Vendor:             Intel
+│     Device Flags:       • Internal device
+│                         • Can tag for emulation
+│   
+├─SSD 512GB:
+│     Device ID:          04e17fcf7d3de91da49a163ffe4907855c3648be
+│     Summary:            NVM Express solid state drive
+│     Current version:    X0328A0 
+│     Vendor:             Silicon Motion, Inc. (PCI:0x126F)
+│     Serial Number: <redacted>
+│     Problems:           [31m[1m• System power is too low[0m
+│                         [31m[1m• Device requires AC power to be connected[0m
+│     GUIDs:              eb4c6074-9dc2-57ae-bd43-1119ad6080f5 ← NVME\VEN_126F&DEV_2263
+│                         165a89d1-acc2-51c7-92b9-300207a5409c ← NVME\VEN_126F&DEV_2263&SUBSYS_126F2263
+│                         b8bf8e51-0758-58d1-ae26-574863e0ecbc ← SSD 512GB
+│     Device Flags:       • Internal device
+│                         • System requires external power source
+│                         • Needs a reboot after installation
+│                         • Device is usable for the duration of the update
+│                         • Updatable
+│                         • Can tag for emulation
+│   
+└─TPM:
+      Device ID:          1d8d50a4dbc65618f5c399c2ae827b632b3ccc11
+      Current version:    1.258.0.0
+      Vendor:             ST Microelectronics (TPM:STM)
+      GUIDs:              84df3581-f896-54d2-bd1a-372602f04c32 ← TPM\VEN_STM&DEV_0001
+                          bfaed10a-bbc1-525b-a329-35da2f63e918 ← TPM\VEN_STM&MOD_
+                          70b7b833-7e1a-550a-a291-b94a12d0f319 ← TPM\VEN_STM&DEV_0001&VER_2.0
+                          06f005e9-cb62-5d1a-82d9-13c534c53c48 ← TPM\VEN_STM&MOD_&VER_2.0
+      Device Flags:       • Internal device
+                          • System requires external power source
+                          • Needs a reboot after installation
+                          • Device can recover flash failures
+                          • Signed Payload
+                          • Can tag for emulation
+    
+thermal:
+/sys/class/thermal/thermal_zone0/temp=69000
+/sys/class/thermal/thermal_zone1/temp=20000
+/sys/class/thermal/thermal_zone2/temp=69050
+/sys/class/thermal/thermal_zone3/temp=38050
+/sys/class/thermal/thermal_zone4/temp=47050
+/sys/class/thermal/thermal_zone5/temp=69050
+/sys/class/thermal/thermal_zone6/temp=cat: /sys/class/thermal/thermal_zone6/temp: Input/output error
+/sys/class/thermal/thermal_zone7/temp=84000
+/sys/class/thermal/thermal_zone8/temp=55000
+bluetooth:
+0: tpacpi_bluetooth_sw: Bluetooth
+	Soft blocked: no
+	Hard blocked: no
+1: hci0: Bluetooth
+	Soft blocked: no
+	Hard blocked: no
+2: phy0: Wireless LAN
+	Soft blocked: no
+	Hard blocked: no
+audio:
+/nix/store/13czpvp88x852739v5xi04s871pn35b5-bash-interactive-5.3p9/bin/bash: line 25: pactl: command not found
+dmesg_tail:
+dmesg: read kernel buffer failed: Operation not permitted

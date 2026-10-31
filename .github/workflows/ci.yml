@@ -1,0 +1,75 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+      - feat/cross-platform-nixos
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: cachix/install-nix-action@08dcb3a5e62fa31e2da3d490afc4176ef55ecd72
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            accept-flake-config = true
+      - name: Evaluate both systems
+        run: nix flake check --no-build --no-write-lock-file --no-update-lock-file --all-systems
+      - name: Static checks
+        run: nix build --no-link .#checks.x86_64-linux.nixfmt .#checks.x86_64-linux.deadnix .#checks.x86_64-linux.statix
+      - name: Proxy tests and migration fixture
+        run: nix build --no-link .#checks.x86_64-linux.amp-deepseek .#checks.x86_64-linux.migration-fixture
+      - name: Build NixOS toplevel
+        run: nix build --no-link .#nixosConfigurations.t14.config.system.build.toplevel
+      - name: NixOS VM proof
+        run: nix build --no-link .#checks.x86_64-linux.t14-vm
+      - name: Shell and workflow lint
+        run: |
+          nix shell github:NixOS/nixpkgs/6f06d204d8f2d8761d9da78778745974a3216381#shellcheck github:NixOS/nixpkgs/6f06d204d8f2d8761d9da78778745974a3216381#actionlint -c sh -c '
+            shellcheck tests/migration-fixture.sh tests/phase0-evidence.sh tests/root-verify.sh tests/scope-audit.sh tests/db-audit.sh
+            actionlint .github/workflows/ci.yml
+          '
+      - name: Secret scan
+        run: nix shell github:NixOS/nixpkgs/6f06d204d8f2d8761d9da78778745974a3216381#gitleaks -c gitleaks detect --no-git --source . --config .gitleaks.toml --redact
+      - name: Lockfile unchanged
+        run: git diff --exit-code -- flake.lock
+
+  darwin:
+    runs-on: macos-14
+    timeout-minutes: 75
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: cachix/install-nix-action@08dcb3a5e62fa31e2da3d490afc4176ef55ecd72
+        with:
+          extra_nix_config: |
+            experimental-features = nix-command flakes
+            accept-flake-config = true
+      - name: Evaluate both systems
+        run: nix flake check --no-build --no-write-lock-file --no-update-lock-file --all-systems
+      - name: Static checks
+        run: nix build --no-link .#checks.aarch64-darwin.nixfmt .#checks.aarch64-darwin.deadnix .#checks.aarch64-darwin.statix
+      - name: Proxy tests
+        run: nix build --no-link .#checks.aarch64-darwin.amp-deepseek
+      - name: Build Darwin host
+        run: nix build --no-link .#darwinConfigurations.adri.system
+      - name: Home Manager activation
+        run: nix build --no-link .#checks.aarch64-darwin.home-manager-activation
+      - name: Darwin non-regression values
+        run: |
+          test "$(nix eval --raw .#darwinConfigurations.adri.config.system.primaryUser)" = "adrifadilah"
+          test "$(nix eval --raw .#darwinConfigurations.adri.config.nixpkgs.hostPlatform.system)" = "aarch64-darwin"
+          test "$(nix eval --json .#darwinConfigurations.adri.config.system.stateVersion)" = "6"
+      - name: Lockfile unchanged
+        run: git diff --exit-code -- flake.lock

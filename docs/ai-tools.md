@@ -17,11 +17,13 @@ The AI toolchain is installed system-wide. Amp is pinned separately because its 
 | `llm-agents.claude-code` | Claude Code |
 | `herdr` | terminal agent/herd tooling |
 
-`pkgs/amp-cli.nix` is pinned to the latest upstream release at packaging time:
+`pkgs/amp-cli.nix` is pinned to the latest upstream release at packaging time
+and supports both `aarch64-darwin` and `x86_64-linux`:
 
 ```text
-0.0.1793332853-ge7c6c6
-sha256-9HLoroHiXsDQOMENpciBLrSPLGwc/GTipmeJthGnwhs=
+0.0.1793462430-g2650be
+linux-x64:    sha256-vi8KehFrc1Xoexbgdk1wjs4VKpPeVb+m2oyIQU1F2YY=
+darwin-arm64: sha256-oqACkG+PJeBI4DVldP9AbrvZEWFzMnxkqR1MYhr5DJE=
 ```
 
 It is unfree and allowlisted in `modules/den.nix`.

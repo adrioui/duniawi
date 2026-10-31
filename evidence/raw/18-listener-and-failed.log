@@ -1,0 +1,9 @@
+# shell: ss -ltnp; systemctl --failed; systemctl --user --failed
+# started: 2026-10-31T18:08:52+07:00
+State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess
+LISTEN 0      4096       127.0.0.1:631        0.0.0.0:*
+LISTEN 0      512        127.0.0.1:49374      0.0.0.0:*    users:((".opencode-wrapp",pid=5327,fd=10))
+LISTEN 0      4096           [::1]:631           [::]:*
+● drkonqi-coredump-pickup.service loaded failed failed Consume pending crashes using DrKonqi
+# exit 0
+# finished: 2026-10-31T18:08:53+07:00

@@ -1,6 +1,11 @@
 _: {
   den.aspects.ampDeepseek.homeManager =
-    { config, lib, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     let
       proxy = pkgs.callPackage ../pkgs/amp-deepseek { };
 

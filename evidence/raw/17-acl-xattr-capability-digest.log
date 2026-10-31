@@ -1,0 +1,32 @@
+# shell:
+  cd /run/media/adrioui/backup/home || exit 1
+  set +e
+  acl=/tmp/duniawi-acl-$(date +%Y%m%dT%H%M%S).txt
+  xattr=/tmp/duniawi-xattr-$(date +%Y%m%dT%H%M%S).txt
+  cap=/tmp/duniawi-cap-$(date +%Y%m%dT%H%M%S).txt
+  getfacl -R -p . > "$acl" 2>/tmp/duniawi-acl.err
+  sha256sum "$acl"
+  echo "acl_lines=$(wc -l < "$acl")"
+  getfattr -R -d -m - . > "$xattr" 2>/tmp/duniawi-xattr.err
+  sha256sum "$xattr"
+  echo "xattr_lines=$(wc -l < "$xattr")"
+  getcap -r . 2>/tmp/duniawi-cap.err | LC_ALL=C sort > "$cap"
+  sha256sum "$cap"
+  echo "cap_lines=$(wc -l < "$cap")"
+  echo "--- stderr sizes ---"
+  wc -l /tmp/duniawi-acl.err /tmp/duniawi-xattr.err /tmp/duniawi-cap.err 2>/dev/null || true
+
+# started: 2026-10-31T17:34:02+07:00
+f83bab6f6fb623d4733ea5421b16f0113db613599c8f587e3637a0a6ec387268  /tmp/duniawi-acl-20261031T173402.txt
+acl_lines=38698014
+29dc1712188f97284eddfcfce29c537075d8e59c02885978159fa3d31076bac6  /tmp/duniawi-xattr-20261031T173402.txt
+xattr_lines=16807162
+ca94d0278f2e15cebe04a6db5211cfd9b48f4d3e0a963dd461f3956be5071a2d  /tmp/duniawi-cap-20261031T173402.txt
+cap_lines=9
+--- stderr sizes ---
+    163 /tmp/duniawi-acl.err
+  14764 /tmp/duniawi-xattr.err
+      0 /tmp/duniawi-cap.err
+  14927 total
+# exit: 0
+# finished: 2026-10-31T18:05:23+07:00

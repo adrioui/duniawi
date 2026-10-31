@@ -1,0 +1,152 @@
+timestamp=2026-10-31T13:53:04+07:00
+system_enabled_units:
+UNIT FILE                                STATE   PRESET
+dev-hugepages.mount                      enabled ignored
+dev-mqueue.mount                         enabled ignored
+sys-fs-fuse-connections.mount            enabled ignored
+sys-kernel-config.mount                  enabled ignored
+sys-kernel-debug.mount                   enabled ignored
+sys-kernel-tracing.mount                 enabled ignored
+systemd-ask-password-console.path        enabled ignored
+systemd-ask-password-wall.path           enabled ignored
+accounts-daemon.service                  enabled ignored
+dbus-broker.service                      enabled ignored
+drkonqi-coredump-processor@.service      enabled ignored
+firewall.service                         enabled ignored
+generate-shutdown-ramfs.service          enabled ignored
+getty@.service                           enabled ignored
+kmod-static-nodes.service                enabled ignored
+lastlog2-import.service                  enabled ignored
+linger-users.service                     enabled ignored
+logrotate-checkconf.service              enabled ignored
+ModemManager.service                     enabled ignored
+network-local-commands.service           enabled ignored
+NetworkManager-dispatcher.service        enabled ignored
+NetworkManager-wait-online.service       enabled ignored
+NetworkManager.service                   enabled ignored
+nscd.service                             enabled ignored
+post-boot.service                        enabled ignored
+prepare-kexec.service                    enabled ignored
+reload-systemd-vconsole-setup.service    enabled ignored
+resolvconf.service                       enabled ignored
+sleep-actions.service                    enabled ignored
+suid-sgid-wrappers.service               enabled ignored
+systemd-boot-random-seed.service         enabled ignored
+systemd-factory-reset-request.service    enabled ignored
+systemd-hibernate-clear.service          enabled ignored
+systemd-journal-catalog-update.service   enabled ignored
+systemd-journal-flush.service            enabled ignored
+systemd-journald.service                 enabled ignored
+systemd-logind.service                   enabled ignored
+systemd-machine-id-commit.service        enabled ignored
+systemd-modules-load.service             enabled ignored
+systemd-oomd.service                     enabled ignored
+systemd-pstore.service                   enabled ignored
+systemd-random-seed.service              enabled ignored
+systemd-sysctl.service                   enabled ignored
+systemd-timesyncd.service                enabled ignored
+systemd-tmpfiles-resetup.service         enabled ignored
+systemd-tmpfiles-setup-dev-early.service enabled ignored
+systemd-tmpfiles-setup-dev.service       enabled ignored
+systemd-tmpfiles-setup.service           enabled ignored
+systemd-tpm2-setup-early.service         enabled ignored
+systemd-tpm2-setup.service               enabled ignored
+systemd-udev-trigger.service             enabled ignored
+systemd-udevd.service                    enabled ignored
+systemd-update-done.service              enabled ignored
+systemd-update-utmp.service              enabled ignored
+systemd-user-sessions.service            enabled ignored
+wpa_supplicant.service                   enabled ignored
+cups.socket                              enabled ignored
+nix-daemon.socket                        enabled ignored
+polkit-agent-helper.socket               enabled ignored
+systemd-bootctl.socket                   enabled ignored
+systemd-coredump.socket                  enabled ignored
+systemd-creds.socket                     enabled ignored
+systemd-hostnamed.socket                 enabled ignored
+systemd-journalctl.socket                enabled ignored
+systemd-journald-audit.socket            enabled ignored
+systemd-journald-dev-log.socket          enabled ignored
+systemd-journald.socket                  enabled ignored
+systemd-pcrlock.socket                   enabled ignored
+systemd-udevd-control.socket             enabled ignored
+systemd-udevd-kernel.socket              enabled ignored
+cryptsetup.target                        enabled ignored
+getty.target                             enabled ignored
+network.target                           enabled ignored
+reboot.target                            enabled ignored
+remote-fs.target                         enabled ignored
+fstrim.timer                             enabled ignored
+fwupd-refresh.timer                      enabled ignored
+logrotate.timer                          enabled ignored
+systemd-tmpfiles-clean.timer             enabled ignored
+
+79 unit files listed.
+user_enabled_units:
+UNIT FILE                      STATE   PRESET
+dbus-broker.service            enabled ignored
+geoclue-agent.service          enabled ignored
+nixos-activation.service       enabled ignored
+nixos-rebuild-sycoca.service   enabled ignored
+systemd-tmpfiles-setup.service enabled ignored
+wireplumber.service            enabled ignored
+dbus.socket                    enabled ignored
+pipewire-pulse.socket          enabled ignored
+pipewire.socket                enabled ignored
+speech-dispatcher.socket       enabled ignored
+systemd-tmpfiles-clean.timer   enabled ignored
+
+11 unit files listed.
+system_timers:
+NEXT                             LEFT LAST                              PASSED UNIT                         ACTIVATES
+Sat 2026-10-31 14:00:00 WIB      6min Sat 2026-10-31 13:00:01 WIB    53min ago logrotate.timer              logrotate.service
+Sat 2026-10-31 14:41:58 WIB     48min Sat 2026-10-31 13:07:57 WIB    45min ago fwupd-refresh.timer          fwupd-refresh.service
+Sun 2026-11-01 11:05:44 WIB       21h Sat 2026-10-31 11:05:44 WIB 2h 47min ago systemd-tmpfiles-clean.timer systemd-tmpfiles-clean.service
+Mon 2026-11-02 01:26:56 WIB 1 day 11h -                                      - fstrim.timer                 fstrim.service
+
+4 timers listed.
+user_timers:
+NEXT                        LEFT LAST                              PASSED UNIT                           ACTIVATES
+Sun 2026-11-01 10:56:26 WIB  21h Sat 2026-10-31 10:56:26 WIB 2h 56min ago systemd-tmpfiles-clean.timer   systemd-tmpfiles-clean.service
+-                              - -                                      - drkonqi-coredump-cleanup.timer drkonqi-coredump-cleanup.service
+-                              - -                                      - drkonqi-sentry-postman.timer   drkonqi-sentry-postman.service
+
+3 timers listed.
+failed_system:
+  UNIT LOAD ACTIVE SUB DESCRIPTION
+
+0 loaded units listed.
+failed_user:
+  UNIT                            LOAD   ACTIVE SUB    DESCRIPTION
+● drkonqi-coredump-pickup.service loaded failed failed Consume pending crashes using DrKonqi
+
+Legend: LOAD   → Reflects whether the unit definition was properly loaded.
+        ACTIVE → The high-level unit activation state, i.e. generalization of SUB.
+        SUB    → The low-level unit activation state, values depend on unit type.
+
+1 loaded units listed.
+podman:
+/nix/store/13czpvp88x852739v5xi04s871pn35b5-bash-interactive-5.3p9/bin/bash: line 18: podman: command not found
+listening_units:
+LISTEN                                 UNIT                            ACTIVATES
+127.0.0.1:631                          cups.socket                     cups.service
+audit 1                                systemd-journald-audit.socket   systemd-journald.service
+kobject-uevent 1                       systemd-udevd-kernel.socket     systemd-udevd.service
+/dev/rfkill                            systemd-rfkill.socket           systemd-rfkill.service
+/nix/var/nix/daemon-socket/socket      nix-daemon.socket               nix-daemon.service
+/run/cups/cups.sock                    cups.socket                     cups.service
+/run/dbus/system_bus_socket            dbus.socket                     dbus-broker.service
+/run/polkit/agent-helper.socket        polkit-agent-helper.socket      -
+/run/systemd/coredump                  systemd-coredump.socket         -
+/run/systemd/io.systemd.BootControl    systemd-bootctl.socket          -
+/run/systemd/io.systemd.Credentials    systemd-creds.socket            -
+/run/systemd/io.systemd.Hostname       systemd-hostnamed.socket        systemd-hostnamed.service
+/run/systemd/io.systemd.JournalAccess  systemd-journalctl.socket       -
+/run/systemd/journal/dev-log           systemd-journald-dev-log.socket systemd-journald.service
+/run/systemd/journal/socket            systemd-journald.socket         systemd-journald.service
+/run/systemd/journal/stdout            systemd-journald.socket         systemd-journald.service
+/run/systemd/oom/io.systemd.ManagedOOM systemd-oomd.socket             systemd-oomd.service
+/run/udev/control                      systemd-udevd-control.socket    systemd-udevd.service
+
+18 sockets listed.
+Pass --all to see loaded but inactive sockets, too.

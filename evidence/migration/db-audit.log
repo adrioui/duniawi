@@ -1,0 +1,2 @@
+db-audit: ok=1228 bad=0 skip=0
+DB_AUDIT_EXIT=0

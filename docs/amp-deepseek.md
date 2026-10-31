@@ -4,7 +4,10 @@
 
 Amp connects to DeepSeek through a Cloudflare Tunnel and a minimal local proxy. The proxy forwards the Anthropic Messages body unchanged, validates an inbound bearer key, injects the DeepSeek key from Keychain, and streams the response back. There are no schema repairs, no Bifrost, and no Bifrost virtual-key proxy.
 
-The Amp CLI is installed by `modules/ai.nix` through `pkgs/amp-cli.nix`, pinned to the latest upstream version `0.0.1793332853-ge7c6c6`. It is unfree, so `modules/den.nix` includes `amp-cli` in the unfree allowlist.
+The Amp CLI is installed through `pkgs/amp-cli.nix`, pinned to the latest
+upstream version `0.0.1793462430-g2650be` for both `aarch64-darwin` and
+`x86_64-linux`. It is unfree, so `modules/den.nix` includes `amp-cli` in the
+unfree allowlist.
 
 ## Topology
 

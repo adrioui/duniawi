@@ -1,0 +1,157 @@
+# shell:
+  cd /run/media/adrioui/backup/home || exit 1
+  printf "root_entries="; find . -xdev -uid 0 -print 2>/dev/null | wc -l
+  printf "root_files="; find . -xdev -uid 0 -type f -print 2>/dev/null | wc -l
+  printf "root_dirs="; find . -xdev -uid 0 -type d -print 2>/dev/null | wc -l
+  printf "sqlite="; find . -xdev -type f \( -name "*.sqlite" -o -name "*.sqlite3" -o -name "*.db" \) -print 2>/dev/null | wc -l
+  printf "secret_paths="; find . -xdev -type f \( -name "*.env" -o -name "*.key" -o -name "*.pem" -o -name "id_*" -o -name "keys.txt" \) -print 2>/dev/null | wc -l
+
+  # Avoid one NSS lookup per file: collect the distinct uid:gid pairs first.
+  find . -xdev -printf "%U:%G\n" 2>/dev/null | LC_ALL=C sort -u > /tmp/duniawi-uid-gid.txt
+  echo "--- distinct uid:gid ---"
+  cat /tmp/duniawi-uid-gid.txt
+  echo "--- unmapped users ---"
+  cut -d: -f1 /tmp/duniawi-uid-gid.txt | while read -r uid; do
+    getent passwd "$uid" >/dev/null || echo "$uid"
+  done
+  echo "--- unmapped groups ---"
+  cut -d: -f2 /tmp/duniawi-uid-gid.txt | while read -r gid; do
+    getent group "$gid" >/dev/null || echo "$gid"
+  done
+
+  # Dangling symlinks: 88k entries, not 5M paths.
+  printf "dangling="
+  find . -xdev -type l -print0 2>/dev/null \
+    | while IFS= read -r -d "" p; do [ -e "$p" ] || printf "%s\n" "$p"; done \
+    | wc -l
+
+# started: 2026-10-31T17:32:57+07:00
+root_entries=192782
+root_files=170171
+root_dirs=22413
+sqlite=3670
+secret_paths=2773
+--- distinct uid:gid ---
+0:0
+1000:0
+1000:1000
+1000:524291
+1000:524292
+1000:524295
+1000:524299
+1000:524309
+1000:524322
+1000:524329
+1000:524330
+1000:524337
+1000:524388
+1000:524391
+1000:524399
+1000:524401
+1000:524477
+1000:525286
+1001:122
+5000:0
+524288:524288
+524290:524291
+524291:524294
+524293:524299
+524295:524299
+524296:524300
+524297:524301
+524300:524302
+524308:524308
+524329:1000
+524357:524357
+524387:1000
+524388:524388
+524388:524389
+524393:524291
+525285:525285
+525286:1000
+525286:524291
+525286:525286
+525286:525287
+525287:1000
+525287:524299
+525287:525287
+525288:525288
+589819:589819
+65532:65532
+999:999
+--- unmapped users ---
+1001
+5000
+524288
+524290
+524291
+524293
+524295
+524296
+524297
+524300
+524308
+524329
+524357
+524387
+524388
+524388
+524393
+525285
+525286
+525286
+525286
+525286
+525287
+525287
+525287
+525288
+589819
+65532
+--- unmapped groups ---
+1000
+524291
+524292
+524295
+524299
+524309
+524322
+524329
+524330
+524337
+524388
+524391
+524399
+524401
+524477
+525286
+122
+524288
+524291
+524294
+524299
+524299
+524300
+524301
+524302
+524308
+1000
+524357
+1000
+524388
+524389
+524291
+525285
+1000
+524291
+525286
+525287
+1000
+524299
+525287
+525288
+589819
+65532
+dangling=14601
+# exit: 0
+# finished: 2026-10-31T17:34:02+07:00

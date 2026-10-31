@@ -1,0 +1,11 @@
+# shell:
+  stat -c "backup mount: %A %U:%G %n" /run/media/adrioui/backup
+  stat -c "home: %A %U:%G %s %n" /run/media/adrioui/backup/home
+  findmnt -no SOURCE,UUID,FSTYPE,OPTIONS /run/media/adrioui/backup
+
+# started: 2026-10-31T17:32:37+07:00
+backup mount: drwxr-xr-x root:root /run/media/adrioui/backup
+home: drwx------ adrioui:UNKNOWN 12288 /run/media/adrioui/backup/home
+/dev/sda1 cdb0183d-7f36-4415-802c-0a36e8f7df10 ext4 ro,nosuid,nodev,relatime,errors=remount-ro
+# exit: 0
+# finished: 2026-10-31T17:32:37+07:00

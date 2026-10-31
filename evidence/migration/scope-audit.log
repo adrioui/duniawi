@@ -1,0 +1,10 @@
+# date 2026-10-31T20:46:04+07:00
+include_files=1770800
+secret_paths=1779
+root_owned_entries=154433
+required_root_owned_entries=32945
+non_1000_entries=110
+db_entries=1228
+backup_options=ro,nosuid,nodev,relatime,errors=remount-ro
+scope-audit: reports in /tmp/duniawi-scope-audit2
+SCOPE_AUDIT_EXIT=0

@@ -1,0 +1,11 @@
+# Root-owned inventory for the final scope
+# total, required, excluded
+154433
+32945
+# by top path
+ 121464 Personal/financial
+  27718 .herdr/worktrees
+   5227 Works/Bangunindo
+     14 Learns/open-notebook
+      7 Learns/deepwiki-open
+      3 Learns/vibing

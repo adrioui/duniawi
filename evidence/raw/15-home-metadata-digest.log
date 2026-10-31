@@ -1,0 +1,138 @@
+# shell:
+  cd /run/media/adrioui/backup/home || exit 1
+  stream=/tmp/duniawi-home-metadata-$(date +%Y%m%dT%H%M%S).txt
+  find . -xdev -printf "%y %m %U:%G %s %i %n %p -> %l\n" 2>/tmp/duniawi-home-metadata.err \
+    | LC_ALL=C sort > "$stream"
+  echo "stream=$stream"
+  wc -l < "$stream"
+  sha256sum "$stream"
+  echo "--- find stderr ---"
+  sed -n "1,120p" /tmp/duniawi-home-metadata.err
+
+# started: 2026-10-31T17:32:37+07:00
+stream=/tmp/duniawi-home-metadata-20261031T173237.txt
+5616971
+33fc8b7d7bd554c497715fa0e5e01e376db965b91b39dc6dfea0070f67924416  /tmp/duniawi-home-metadata-20261031T173237.txt
+--- find stderr ---
+find: ‘./.clawdbot/agents’: Permission denied
+find: ‘./.clawdbot/telegram’: Permission denied
+find: ‘./clickhouse-local/data/store’: Permission denied
+find: ‘./clickhouse-local/data/preprocessed_configs’: Permission denied
+find: ‘./clickhouse-local/data/metadata_dropped’: Permission denied
+find: ‘./clickhouse-local/data/coordination’: Permission denied
+find: ‘./clickhouse-local/data/flags’: Permission denied
+find: ‘./clickhouse-local/data/metadata’: Permission denied
+find: ‘./clickhouse-local/data/access’: Permission denied
+find: ‘./clickhouse-local/data/data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/b0e901ae4dea5a26efc275886858619ff352b0b8d73d62650f63ed818339d441/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/e351516dff849ec5d8a444b0c459e73b9be9458830b537992cb18dd0336787d8/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/13c7895f1e7eb6e2de0e4df2a346b9f89b8aef897aeb23fb56d5bda3344d4c73/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/f62127a4f2a60fb81d5e0516e969c38153f2c3d5efded53a746c02abd11e03fe’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/f78f7d51ebb16dada37a65877385df9cf51447700f4ff78558867fe85b9d3381/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/6b209df626925917fdf9cb848859516b9d1621077e24afb5a2ea12840720de95’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/d1ecf7e57f9b0c4fbfdaa4de01adb829452b488d4bd54ace986639a3a8546e9d/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/de9e3b4674c96dbda75f3814b978da9c9a4521450a9a81d0abbad0ff4be93c6d/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/bliv5802-redisdata’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/f17985639a7584b4b262ba89f185506eee5bd9a12f9e843d270efa533a1d7131’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/18538eb7fddbaf636fd3cca98b02c96425d7885d61f1e23b0b373dda249c7642/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/c95324e7b654f197534e1f7deecde9884e06b375d887eb4d14dc4ce8875411b8/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/eefc5cf883f3c542ef1720e2de54b5cbb7838a4fc833987e3cbb149a035c6d93/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/c255c95442a7d75fa353ded1f12a539843585b60cb6302e015aa6e6bf7d17284/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/e63a1e4934d9778147524a155f3e37bf367804cd79d3485f3e53cdbde1845b29’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/385ce94e956f3b4cacbf13b67dba3c54e1132336b5c62753b8acc5bb0c6f36d9/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/proof-a_pgdata/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/c10c5f3f7844a7f46c9d1c2dfeb81571a6575b758b6ab64ddfbc6e056fc21873/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/f3154034f6f379a997c5216431326d04dc835ccf2300d8d67eb49894ad496e36’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/db04553d5d5c41d104c5082f37596d3fac261ea6065a102afed7d27cea47b720’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/302a7de4494f79f6be4fe5edb2b2f5e76281e90bf569eb03e1a8dfddfbb37a76/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/d37b066d3253918995d580ac93919bad4203d5ff4f39f6c9329d1b0e22c9d221/_data/performance_schema’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/d37b066d3253918995d580ac93919bad4203d5ff4f39f6c9329d1b0e22c9d221/_data/mysql’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/d37b066d3253918995d580ac93919bad4203d5ff4f39f6c9329d1b0e22c9d221/_data/sys’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/d37b066d3253918995d580ac93919bad4203d5ff4f39f6c9329d1b0e22c9d221/_data/cdcdb’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/09711ce0c64b40a063bb28aa47f149f0d5b40ef00763e0e88f2890df4b6757ef’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/9fab839d1b75371ccb7dc7379c91bbd4fbd449e2018027c0ddbf264f32be6d4e/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/082d73e78e03be6df4a1739ab7ee1fd54c7f6aa40183ec71d6626a0082bff109/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/5b536a67afb51de5fcb3f0aa84a44c318ba7ca9b614d24b6fd1deb2bd79d53d6/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/efb84fb5dd93dd704802b58405de5438004af31c08599c550a9053776a0997c4’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/20cce0287340bde51c316a54722f069f85d38cf9010651cdb0cfeb2e78d9cfb5/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/5ac69a8f89121a1ef1dccdb0a39182d6506fb44ba0480bffe9ffdf9a27dea4f5/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/df8c12dcebb9fbf4b4532fb2a21de8735cb62e57e5a6bdf209ae1a71d3f6708e/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/bliv5802-pgdata/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/bliv-keycloak-pg-data/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/421eb2bb0cae6aaf6b56610a3ac0cb62db46fb8d5b6af72fa1add549e1e681b3/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/a4f34269017ca7238bdd6d8b1a7d9e1cddb9b51c2deb595ddf7d24858f64458e/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/3801638149be498622c6500b13946b556095ac8c322f02bef5cdb75652ceb0d2/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/caf407884ea59960d2ad90493b2ce7a5052bdeaf15439ff6279f6197c03c3a13’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/28a21e9bb2f3d883109a24222d5cfc6c66fcad7904e375becbbfdeb7f9468eb2/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/d81e024eb8e507c3fbeaf0d75354bc12c351bb26e1a35923accce938d7595d7f/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/20d757f1e48b7914e5740be6f7b591da7ef5a0e027e9aaab32cbf6a60ff31fb4/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/8f49311fc0d9ea55641590fac4b993845183a062064093e5aa4cb467f57a3c68/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/e6a28545f33181ec8b1db52a4c688a972d30fc2d254178b83793ea5c1da2f291/_data/performance_schema’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/e6a28545f33181ec8b1db52a4c688a972d30fc2d254178b83793ea5c1da2f291/_data/mysql’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/e6a28545f33181ec8b1db52a4c688a972d30fc2d254178b83793ea5c1da2f291/_data/sys’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/e6a28545f33181ec8b1db52a4c688a972d30fc2d254178b83793ea5c1da2f291/_data/cdcdb’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/d2614b348fd27f21710f48c2fd9cf93afc7a0ce82896e7ecae74cf8c019a9136/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/5b018b2ca2c1bee4e226f05ca80e7eed237e253de01e1e801cbdb54563a8d4af/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/9ff7ed0a4c5c01d89ca44b0985a92274b3c7fe630a2f07e715d8283194574881/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/ec884289c2a2ffbde73ab38dc9e724e71f46a6aecd38a0b42a936dec1696f542/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/dbe4cd1afa0f5a975e1cf585c7fc00b8a9d1603665da4a707fd818ee8edd232c/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/9e679629e101525cfdf7411847dd28d91bae28aa0109852a3f5be6301037776e/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/2870225bea7fefd4888d46fb0ef5f3fdfbe737ec977c6bb98874b169f1cdc0a0/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/proof-b_pgdata/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/7048ac804f38d31fb6e2c30f0393bfc1744f3e34ae0d4ce7f46f2afc216d1bdf/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/ec3b8853368da394316786ab344218c23a485d68ff2a37b7a16938570f5ea020/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/07da47e1f924ca918d8b810c2a170fc9cc325a6e37406eaa4cfbe6771efb4906/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/2422d396746cba2f6ec1a9370c714e6b3e325b07c82357ef73e044d27287e46c/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/a274034eeb98843e9aa88895c1260f3007786a975e113fa0c74941f9e1a81dc4/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/4274f62e70bf2dbf0b40468ec107e548fd937747312a16874427507132c6930f’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/54ef8aa55948a70a01ba02b09760a0c56d4f2bfbd2894a8631a4d09a36f08b5f/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/aaacc2e71644021cca8786dd9f536cee9cd3e721aff229b476e99ce2eed88d09/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/e519370e5584652f50f7ef6e241ff9e884d5353ceb30ec76de27f4bcfca7b661/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/332b9ddd452d8422de7125c2e1f73bed366833daa40e4578ef7f58d773cb272f’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/bliv-infra-keycloak-pg/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/135f8ed0a63aa5966d5497eef4bf94336d7e9399f0190f517c08db4bb4d27556/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/dc41b1063361859b5353d2b2697f13089fd8b1c110d5f376ad1b47e511e428fb/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/545a7f8ec6254e68295bd709a5a232daf3789e9aaf756805218a66ae0fc48071/_data’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/bdfd9eb7b4a7f5b48a68011ae27c9eab741bcc1747a7b57b8273a4dce7a8ad72’: Permission denied
+find: ‘./.local/share/containers/storage/volumes/de46e475f5222b9fd46dcab711876f52031093010b488704270cfc9452beb99f/_data’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/2de2f9842a4b9716cb6dc5f8c97f1a21b69b561ac79895744c129604a4068233/diff/var/cache/apt/archives/partial’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/62547cb2172cb3f9b93d6d785746c0b382bfbc5e79b9f0e84e50512b21415762’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/db7de82f824f4d894f47127c5bc5820aeb10a8b5f9a922750ad3cc53f0cee428/diff/var/lib/clickhouse’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/db7de82f824f4d894f47127c5bc5820aeb10a8b5f9a922750ad3cc53f0cee428/diff/var/log/clickhouse-keeper’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/db7de82f824f4d894f47127c5bc5820aeb10a8b5f9a922750ad3cc53f0cee428/diff/var/log/clickhouse-server’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/e09fac6e10e73218d361426a15dbeacceb50760ddd71f84ea907bd1ff0437d8f’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/23bc5c97074328537161d9c3f65afcfc73fb2893d3ccada17496590f79dc433a/diff/var/lib/news’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/23bc5c97074328537161d9c3f65afcfc73fb2893d3ccada17496590f79dc433a/diff/var/lib/ftp’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/23bc5c97074328537161d9c3f65afcfc73fb2893d3ccada17496590f79dc433a/diff/var/adm’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/23bc5c97074328537161d9c3f65afcfc73fb2893d3ccada17496590f79dc433a/diff/var/spool/uucppublic’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/23bc5c97074328537161d9c3f65afcfc73fb2893d3ccada17496590f79dc433a/diff/var/spool/lpd’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/23bc5c97074328537161d9c3f65afcfc73fb2893d3ccada17496590f79dc433a/diff/var/mail’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/23bc5c97074328537161d9c3f65afcfc73fb2893d3ccada17496590f79dc433a/diff/usr/man’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/23bc5c97074328537161d9c3f65afcfc73fb2893d3ccada17496590f79dc433a/diff/home/nonroot’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/a1fe667a2884add8516cee07a4a63c34227ce533f30f562be5d549a3d2cd6d25’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/eab6b2f9b29cbc8a052c9785577c1de10f3ff3cb228ef99c8916b5db4a3751ba/diff/var/spool/rsyslog’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/eab6b2f9b29cbc8a052c9785577c1de10f3ff3cb228ef99c8916b5db4a3751ba/diff/var/cache/apt/archives/partial’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/29729fd343e22931b2fc852ea8fb7c2fb4079a3cf2f48264102e6fd79dd425b2’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/b538468ecd6b8e1d69d0c1b0ceadbf1ef6082baee4536c3064ea44468484c258/work/work’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/b538468ecd6b8e1d69d0c1b0ceadbf1ef6082baee4536c3064ea44468484c258/diff/home/nonroot’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/aec10ac3fd275c8a55faa435f7b32d0313d95a64632719e8ce2e29c2f1830262’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/c26facd81b40481e2a4d15206a2ee6ce385db3b3bce48e3db9807ce850efe5c9’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/5b0866410a1c19f5faff4b59d420fd888a7d55c434d104f8666f23df1e1117c5/diff/var/cache/apt/archives/partial’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/a2c6e9694eeb2111ca11d2dd288fccb02f40d05729f4da40d17c420f70b416f0/diff/var/cache/apt/archives/partial’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/629ca62fb7c791374ce57626d6b8b62c76378be091a0daf1a60d32700b49add7/diff/var/cache/apt/archives/partial’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/df001ae70ace7e69fabf27aaf28108da289f20c9fe896d407043bfb601155043/work/work’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/df001ae70ace7e69fabf27aaf28108da289f20c9fe896d407043bfb601155043/diff/tmp/trino-data’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/df001ae70ace7e69fabf27aaf28108da289f20c9fe896d407043bfb601155043/diff/home/trino’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/e82857f496741c01b8f42931ae5ed94328a37db423437d1489a2339c0c512f72/work/work’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/8d15191865126cd35e274e7d2d7ebe8bc4586ed271a179b6ba99d0254a950faf/work/work’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/4a81bdd870b25ed3be22b7c0d0d9e93d0c7bd462f2007f8c7327c3ed2e51814d/diff/home/trino’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/78db95f8aecad2a7f29c33aab79620108e5fb39391b51f456ceb8456e4418741/diff/var/cache/apt/archives/partial’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/c30374f501937fda97d023c77e1b10f16aeb33b655a6e4c30c6f6640d932bb63’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/a65f706a975a3d6cfbe72c29165d9d0d961dfafbf9b1544b128b860fa82315cc/work/work’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/a16a3ee6a6340d3ad1639d4ec35c384d4f2e36ee392b34ba3be5c0590cbab45e/diff/var/cache/apt/archives/partial’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/b9c25a55a0354a351371553e1eaed152654445b58be7175c99ee53af9e73c443/work/work’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/59c5abcc73b6bd1260f2af721811e40f162ecf5b34d310f64a5d375af43b8616’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/fffe76c64ef2dee2d80a8bb3ad13d65d596d04a45510b1956a976a69215dae92/diff/var/cache/apt/archives/partial’: Permission denied
+find: ‘./.local/share/containers/storage/overlay/ad15c324faeebd187332a29be3ecf85fb45d5188c69c81476093f0314f3d1fc8/work/work’: Permission denied
+# exit: 0
+# finished: 2026-10-31T17:32:57+07:00

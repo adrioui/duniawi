@@ -1,0 +1,33 @@
+timestamp=2026-10-31T13:53:04+07:00
+uptime= 13:53:04  up   3:02,  1 user,  load average: 0.68, 0.54, 0.99
+root_mount:
+/ /dev/nvme0n1p2 ext4 rw,relatime
+boot_mount:
+/boot /dev/nvme0n1p1 vfat rw,relatime,fmask=0077,dmask=0077,codepage=437,iocharset=iso8859-1,shortname=mixed,errors=remount-ro
+backup_mount:
+/run/media/adrioui/backup /dev/sda1 ext4 ro,nosuid,nodev,relatime,errors=remount-ro
+interfaces:
+lo               UNKNOWN        127.0.0.1/8 ::1/128 
+enp0s31f6        DOWN           
+wlp9s0           UP             <lan-ip>/24 fe80::a0c6:abe1:6db2:2d52/64 
+routes:
+default via <gateway> dev wlp9s0 proto dhcp src <lan-ip> metric 600 
+<lan> dev wlp9s0 proto kernel scope link src <lan-ip> metric 600 
+dns:
+Failed to connect to service /run/systemd/resolve/io.systemd.Resolve: No such file or directory
+nmcli:
+wlp9s0:wifi:connected:<ssid>
+lo:loopback:connected (externally):lo
+p2p-dev-wlp9s0:wifi-p2p:disconnected:
+enp0s31f6:ethernet:unavailable:
+listeners:
+State  Recv-Q Send-Q Local Address:Port  Peer Address:PortProcess
+LISTEN 0      4096       127.0.0.1:631        0.0.0.0:*   
+LISTEN 0      512        127.0.0.1:49374      0.0.0.0:*    users:((".opencode-wrapp",pid=5327,fd=10))
+LISTEN 0      4096           [::1]:631           [::]:*   
+tailscale:
+/nix/store/13czpvp88x852739v5xi04s871pn35b5-bash-interactive-5.3p9/bin/bash: line 23: tailscale: command not found
+netbird:
+/nix/store/13czpvp88x852739v5xi04s871pn35b5-bash-interactive-5.3p9/bin/bash: line 25: netbird: command not found
+firewall:
+/nix/store/13czpvp88x852739v5xi04s871pn35b5-bash-interactive-5.3p9/bin/bash: line 27: nft: command not found

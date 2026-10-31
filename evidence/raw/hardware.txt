@@ -1,0 +1,132 @@
+these 5 paths will be fetched (498.1 KiB download, 1.7 MiB unpacked):
+  /nix/store/r8g4hnwcjj2p5szr7lhc78sn2crc1gpd-lm-sensors-3.6.2-man
+  /nix/store/2nsgqxyn6mnkzqn6c8g9pyh4sqz0sgkp-powertop-2.15
+  /nix/store/dz33ikhxsr2lipghn4d5pz3sg5sxiwqf-powertop-2.15-man
+  /nix/store/rdygwhhcfkb47rig3pr192a7z2a3k9zn-smartmontools-7.5-man
+  /nix/store/nrcvfd0lhl4akwppazihgdli24w55xrd-tlp-1.9.1
+copying path '/nix/store/r8g4hnwcjj2p5szr7lhc78sn2crc1gpd-lm-sensors-3.6.2-man' from 'https://cache.nixos.org'...
+copying path '/nix/store/dz33ikhxsr2lipghn4d5pz3sg5sxiwqf-powertop-2.15-man' from 'https://cache.nixos.org'...
+copying path '/nix/store/rdygwhhcfkb47rig3pr192a7z2a3k9zn-smartmontools-7.5-man' from 'https://cache.nixos.org'...
+copying path '/nix/store/2nsgqxyn6mnkzqn6c8g9pyh4sqz0sgkp-powertop-2.15' from 'https://cache.nixos.org'...
+copying path '/nix/store/nrcvfd0lhl4akwppazihgdli24w55xrd-tlp-1.9.1' from 'https://cache.nixos.org'...
+=== lspci ===
+00:00.0 Host bridge [0600]: Intel Corporation Tiger Lake-UP3/H35 4 cores Host Bridge/DRAM Registers [8086:9a14] (rev 01)
+00:02.0 VGA compatible controller [0300]: Intel Corporation TigerLake-LP GT2 [Iris Xe Graphics] [8086:9a49] (rev 01)
+00:04.0 Signal processing controller [1180]: Intel Corporation TigerLake-LP Dynamic Tuning Processor Participant [8086:9a03] (rev 01)
+00:06.0 PCI bridge [0604]: Intel Corporation 11th Gen Core Processor PCIe Controller [8086:9a09] (rev 01)
+00:07.0 PCI bridge [0604]: Intel Corporation Tiger Lake-LP Thunderbolt 4 PCI Express Root Port #1 [8086:9a25] (rev 01)
+00:07.2 PCI bridge [0604]: Intel Corporation Tiger Lake-LP Thunderbolt 4 PCI Express Root Port #2 [8086:9a27] (rev 01)
+00:0d.0 USB controller [0c03]: Intel Corporation Tiger Lake-LP Thunderbolt 4 USB Controller [8086:9a13] (rev 01)
+00:0d.2 USB controller [0c03]: Intel Corporation Tiger Lake-LP Thunderbolt 4 NHI #0 [8086:9a1b] (rev 01)
+00:0d.3 USB controller [0c03]: Intel Corporation Tiger Lake-LP Thunderbolt 4 NHI #1 [8086:9a1d] (rev 01)
+00:14.0 USB controller [0c03]: Intel Corporation 500 Series Chipset Family On-Package USB 3.2 Gen 2x1 (10 Gbs) xHCI Host Controller [8086:a0ed] (rev 20)
+00:14.2 RAM memory [0500]: Intel Corporation 500 Series Chipset Family On-Package Shared SRAM [8086:a0ef] (rev 20)
+00:16.0 Communication controller [0780]: Intel Corporation 500 Series Chipset Family On-Package CSME HECI #1 [8086:a0e0] (rev 20)
+00:16.3 Serial controller [0700]: Intel Corporation 500 Series Chipset Family On-Package CSME Keyboard and Text (KT) Redirection [8086:a0e3] (rev 20)
+00:1c.0 PCI bridge [0604]: Intel Corporation 500 Series Chipset Family On-Package PCI Express Root Port #1 [8086:a0b8] (rev 20)
+00:1c.4 PCI bridge [0604]: Intel Corporation 500 Series Chipset Family On-Package PCI Express Root Port #5 [8086:a0bc] (rev 20)
+00:1c.7 PCI bridge [0604]: Intel Corporation 500 Series Chipset Family On-Package PCI Express Root Port #8 [8086:a0bf] (rev 20)
+00:1f.0 ISA bridge [0601]: Intel Corporation 500 Series Chipset Family On-Package eSPI Controller [8086:a082] (rev 20)
+00:1f.3 Audio device [0403]: Intel Corporation 500 Series Chipset Family On-Package High Definition Audio (HD Audio) [8086:a0c8] (rev 20)
+00:1f.4 SMBus [0c05]: Intel Corporation 500 Series Chipset Family On-Package System Management Bus (SMBus) [8086:a0a3] (rev 20)
+00:1f.5 Serial bus controller [0c80]: Intel Corporation 500 Series Chipset Family On-Package SPI (flash) Controller [8086:a0a4] (rev 20)
+00:1f.6 Ethernet controller [0200]: Intel Corporation Ethernet Connection (13) I219-LM [8086:15fb] (rev 20)
+04:00.0 Non-Volatile memory controller [0108]: Silicon Motion, Inc. SM2263EN/SM2263XT (DRAM-less) NVMe SSD Controllers [126f:2263] (rev 03)
+09:00.0 Network controller [0280]: Intel Corporation Wi-Fi 6E(802.11ax) AX210/AX1675* 2x2 [Typhoon Peak] [8086:2725] (rev 1a)
+0a:00.0 SD Host controller [0805]: Genesys Logic, Inc GL9750 SD Host Controller [17a0:9750] (rev 01)
+=== lsusb ===
+Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
+Bus 003 Device 003: ID 06cb:00bd Synaptics, Inc. Prometheus MIS Touch Fingerprint Reader
+Bus 003 Device 004: ID 13d3:5415 IMC Networks Integrated Camera
+Bus 003 Device 005: ID 046d:c542 Logitech, Inc. M185 compact wireless mouse
+Bus 003 Device 006: ID 058f:9540 Alcor Micro Corp. AU9540 Smartcard Reader
+Bus 003 Device 007: ID 8087:0032 Intel Corp. AX210 Bluetooth
+Bus 004 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
+Bus 004 Device 002: ID 0bc2:2322 Seagate RSS LLC SRD0NF1 Expansion Portable (STEA)
+=== sensors ===
+iwlwifi_1-virtual-0
+Adapter: Virtual device
+temp1:        +61.0°C
+
+coretemp-isa-0000
+Adapter: ISA adapter
+Package id 0:  +77.0°C  (high = +100.0°C, crit = +100.0°C)
+Core 0:        +73.0°C  (high = +100.0°C, crit = +100.0°C)
+Core 1:        +71.0°C  (high = +100.0°C, crit = +100.0°C)
+Core 2:        +77.0°C  (high = +100.0°C, crit = +100.0°C)
+Core 3:        +66.0°C  (high = +100.0°C, crit = +100.0°C)
+
+ucsi_source_psy_USBC000:001-isa-0000
+Adapter: ISA adapter
+in0:           5.00 V  (min =  +5.00 V, max = +20.00 V)
+curr1:         3.00 A  (max =  +3.25 A)
+
+nvme-pci-0400
+Adapter: PCI adapter
+Composite:    +53.9°C  (low  = -273.1°C, high = +82.8°C)
+                       (crit = +84.8°C)
+
+thinkpad-isa-0000
+Adapter: ISA adapter
+fan1:        3683 RPM
+CPU:          +71.0°C
+GPU:              N/A
+temp3:        +40.0°C
+temp4:         +0.0°C
+temp5:        +49.0°C
+temp6:        +71.0°C
+temp7:        +71.0°C
+temp8:            N/A
+pwm1:            128%
+
+ucsi_source_psy_USBC000:002-isa-0000
+Adapter: ISA adapter
+in0:           0.00 V  (min =  +0.00 V, max =  +0.00 V)
+curr1:         0.00 A  (max =  +0.00 A)
+
+BAT0-acpi-0
+Adapter: ACPI interface
+in0:          12.30 V
+power1:        0.00 W
+
+acpitz-acpi-0
+Adapter: ACPI interface
+temp1:        +71.0°C
+
+=== tlp-stat -s ===
+Error: cannot read user configuration from /etc/tlp.conf or /nix/store/nrcvfd0lhl4akwppazihgdli24w55xrd-tlp-1.9.1/etc/default/tlp.
+--- TLP 1.9.1 --------------------------------------------
+
++++ System Info
+System         = LENOVO ThinkPad T14 Gen 2i 20W1S0F500
+BIOS           = N34ET41W (1.41 ) LENOVO
+EC Firmware    = 1.35
+OS Release     = NixOS 26.05 (Yarara)
+Kernel         = 6.18.59 #1-NixOS SMP PREEMPT_DYNAMIC Mon Oct 26 15:09:28 UTC 2026 x86_64
+/proc/cmdline  = initrd=\EFI\nixos\zvqa2rw2idhzqxy6blxf3lxxa0p1sdd4-initrd-linux-6.18.59-initrd.efi init=/nix/store/04q282abf92ypcwxqarbwzvrym4fvbcv-nixos-system-nixos-26.05.13164.6f06d204d8f2/init root=fstab loglevel=4 lsm=landlock,yama,bpf
+Init system    = systemd 260
+Boot mode      = UEFI
+Suspend mode   = [s2idle]
+
++++ TLP Status
+tlp            = disabled
+tlp-rdw        = not installed
+tlp-pd         = not installed
+Power profile  = unknown
+Power source   = AC
+
+Warning: TLP's power saving will not apply on boot because the conflicting power-profiles-daemon.service is active.
+
++++ Recommendations
+* Uninstall power-profiles-daemon or invoke 'systemctl mask power-profiles-daemon.service' to ensure the full functionality of TLP
+
+=== powertop --version ===
+PowerTOP version 2.15
+=== smartctl -H /dev/sda ===
+smartctl 7.5 (build date Jan  1 1980) [x86_64-linux-6.18.59] (local build)
+Copyright (C) 2002-25, Bruce Allen, Christian Franke, www.smartmontools.org
+
+Smartctl open device: /dev/sda [SAT] failed: Permission denied
+=== smartctl -A ===

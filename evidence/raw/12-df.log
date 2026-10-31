@@ -1,0 +1,15 @@
+# shell:
+  df -h / /boot /run/media/adrioui/backup
+  df -i / /boot /run/media/adrioui/backup
+
+# started: 2026-10-31T17:32:37+07:00
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme0n1p2  468G   31G  414G   7% /
+/dev/nvme0n1p1 1022M   55M  968M   6% /boot
+/dev/sda1       916G  355G  552G  40% /run/media/adrioui/backup
+Filesystem       Inodes   IUsed    IFree IUse% Mounted on
+/dev/nvme0n1p2 31195136 1740192 29454944    6% /
+/dev/nvme0n1p1        0       0        0     - /boot
+/dev/sda1      61054976 5740728 55314248   10% /run/media/adrioui/backup
+# exit: 0
+# finished: 2026-10-31T17:32:37+07:00

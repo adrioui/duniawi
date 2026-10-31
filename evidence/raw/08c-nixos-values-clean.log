@@ -1,0 +1,3 @@
+# clean worktree commit 04d9c73
+nixos=/nix/store/a4hdxq98rspl6csm9lrdsij28ra4xg07-nixos-system-nixos-26.05.20261029.6f06d20.drv
+darwin=/nix/store/v3bagga947v0vmqh5b0y41vbaawcr530-darwin-system-26.11.4cff07d.drv

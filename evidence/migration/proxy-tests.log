@@ -1,0 +1,28 @@
+warning: Git tree '/tmp/nix-shell-4085-2004343516/opencode/duniawi' is dirty
+got build log for 'git+file:///tmp/nix-shell-4085-2004343516/opencode/duniawi#checks.x86_64-linux.amp-deepseek' from 'daemon'
+[32m✔ health is 200 when the upstream key is configured [90m(21.427919ms)[39m[39m
+[32m✔ health is 503 when the upstream key is missing [90m(5.220635ms)[39m[39m
+[32m✔ health is 503 when the inbound key is missing [90m(2.134047ms)[39m[39m
+[32m✔ rejects a request with the wrong inbound key [90m(4.554928ms)[39m[39m
+{"ts":"2026-10-31T13:54:50.793Z","event":"response","status":200,"request_bytes":86,"duration_ms":3}
+[32m✔ forwards the body and injects only the upstream credential [90m(7.447267ms)[39m[39m
+{"ts":"2026-10-31T13:54:50.797Z","event":"response","status":200,"request_bytes":2,"duration_ms":1}
+[32m✔ passes through an SSE response [90m(3.971721ms)[39m[39m
+[32m✔ rejects an oversized body [90m(2.238706ms)[39m[39m
+{"ts":"2026-10-31T13:54:50.803Z","event":"response","status":200,"request_bytes":8,"duration_ms":1}
+[32m✔ passes a non-JSON body through unchanged [90m(2.864877ms)[39m[39m
+[32m✔ returns 404 for an unknown route [90m(2.444323ms)[39m[39m
+{"ts":"2026-10-31T13:54:50.809Z","event":"upstream_error","status":502,"error":"connect ECONNREFUSED 127.0.0.1:1","duration_ms":1}
+[32m✔ returns 502 when the upstream is unavailable [90m(3.241324ms)[39m[39m
+{"ts":"2026-10-31T13:54:50.912Z","event":"upstream_error","status":504,"error":"upstream timeout","duration_ms":101}
+[32m✔ returns 504 when the upstream times out [90m(103.409694ms)[39m[39m
+{"ts":"2026-10-31T13:54:50.915Z","event":"response","status":200,"request_bytes":2,"duration_ms":0}
+[32m✔ drops upstream set-cookie headers [90m(2.753053ms)[39m[39m
+[34mℹ tests 12[39m
+[34mℹ suites 0[39m
+[34mℹ pass 12[39m
+[34mℹ fail 0[39m
+[34mℹ cancelled 0[39m
+[34mℹ skipped 0[39m
+[34mℹ todo 0[39m
+[34mℹ duration_ms 222.798047[39m

@@ -1,0 +1,11 @@
+# command: lsblk -o NAME\,SIZE\,TYPE\,FSTYPE\,LABEL\,UUID\,MOUNTPOINTS
+# started: 2026-10-31T17:32:37+07:00
+NAME          SIZE TYPE FSTYPE LABEL  UUID                                 MOUNTPOINTS
+sda         931.5G disk
+└─sda1      931.5G part ext4   backup cdb0183d-7f36-4415-802c-0a36e8f7df10 /run/media/adrioui/backup
+nvme0n1     476.9G disk
+├─nvme0n1p1     1G part vfat          44D0-3F20                            /boot
+└─nvme0n1p2 475.9G part ext4   root   768a42bb-a1ff-4fae-8020-8e6bffd89a4e /nix/store
+                                                                           /
+# exit: 0
+# finished: 2026-10-31T17:32:37+07:00

@@ -9,6 +9,7 @@
     den.aspects.ai
     den.aspects.ampDeepseek
     den.aspects.shell
+    den.aspects.shellDarwin
     den.aspects.editor
     den.aspects.dev
     den.aspects.media
@@ -22,6 +23,7 @@
     den.aspects.ai
     den.aspects.ampDeepseek
     den.aspects.shell
+    den.aspects.shellDarwin
     den.aspects.media
     den.aspects.max
   ];

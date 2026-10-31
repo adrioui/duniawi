@@ -1,0 +1,17 @@
+# shell:
+  nix shell github:NixOS/nixpkgs/6f06d204d8f2d8761d9da78778745974a3216381#smartmontools -c sh -c "
+    smartctl -H /dev/sda 2>&1 || true
+    smartctl -A /dev/sda 2>&1 || true
+  "
+
+# started: 2026-10-31T17:32:37+07:00
+smartctl 7.5 (build date Jan  1 1980) [x86_64-linux-6.18.59] (local build)
+Copyright (C) 2002-25, Bruce Allen, Christian Franke, www.smartmontools.org
+
+Smartctl open device: /dev/sda [SAT] failed: Permission denied
+smartctl 7.5 (build date Jan  1 1980) [x86_64-linux-6.18.59] (local build)
+Copyright (C) 2002-25, Bruce Allen, Christian Franke, www.smartmontools.org
+
+Smartctl open device: /dev/sda [SAT] failed: Permission denied
+# exit: 0
+# finished: 2026-10-31T17:32:37+07:00

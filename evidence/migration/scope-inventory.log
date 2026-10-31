@@ -1,0 +1,34 @@
+# date 2026-10-31T20:45:42+07:00
+# backup /dev/sda1 /run/media/adrioui/backup ext4 ro,nosuid,nodev,relatime,errors=remount-ro
+# include paths
+Works/Bangunindo/BLIV
+.herdr/worktrees
+Personal
+Learns
+sessions
+.codex/sessions
+.codex/history.jsonl
+.codex/session_index.jsonl
+.claude/projects
+.claude/history.jsonl
+.pi/agent/sessions
+.pi/agent/runtime-events
+.cursor/chats
+.cline/tasks
+.cline/data/sessions
+# counts and sizes
+Works/Bangunindo/BLIV                files=544105    size=27G
+.herdr/worktrees                     files=963523    size=33G
+Personal                             files=106202    size=2.3G
+Learns                               files=125238    size=11G
+sessions                             files=166       size=177M
+.codex/sessions                      files=2         size=76K
+.codex/history.jsonl                 files=1         size=4.0K
+.codex/session_index.jsonl           files=1         size=4.0K
+.claude/projects                     files=14650     size=5.0G
+.claude/history.jsonl                files=1         size=568K
+.pi/agent/sessions                   files=13851     size=2.4G
+.pi/agent/runtime-events             files=51        size=1.1M
+.cursor/chats                        files=3003      size=1.7G
+.cline/tasks                         files=0         size=4.0K
+.cline/data/sessions                 files=6         size=68K

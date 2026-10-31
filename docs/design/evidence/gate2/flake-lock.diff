@@ -1,0 +1,119 @@
+--- /tmp/flake.lock.head	2026-10-31 15:02:41.156662840 +0700
++++ flake.lock	2026-10-31 13:19:20.443053757 +0700
+@@ -151,6 +151,27 @@
+         "type": "github"
+       }
+     },
++    "home-manager-stable": {
++      "inputs": {
++        "nixpkgs": [
++          "nixpkgs-stable"
++        ]
++      },
++      "locked": {
++        "lastModified": 1792818383,
++        "narHash": "sha256-199i7ubVSXTMl+0AAlL7cVCXSjcI+jWByMcimYjeMX0=",
++        "owner": "nix-community",
++        "repo": "home-manager",
++        "rev": "24f2190587513b9c2f73db112a17844ae912d965",
++        "type": "github"
++      },
++      "original": {
++        "owner": "nix-community",
++        "repo": "home-manager",
++        "rev": "24f2190587513b9c2f73db112a17844ae912d965",
++        "type": "github"
++      }
++    },
+     "import-tree": {
+       "locked": {
+         "lastModified": 1788467110,
+@@ -188,6 +209,27 @@
+         "type": "github"
+       }
+     },
++    "nixos-hardware": {
++      "inputs": {
++        "nixpkgs": [
++          "nixpkgs-stable"
++        ]
++      },
++      "locked": {
++        "lastModified": 1793355509,
++        "narHash": "sha256-/Zs18x+IW4LuVH0rKxra0WPRgsk0DQsi0Bwkf8sOC5c=",
++        "owner": "NixOS",
++        "repo": "nixos-hardware",
++        "rev": "04c6b94fa104bc23650983a4513aea196794d321",
++        "type": "github"
++      },
++      "original": {
++        "owner": "NixOS",
++        "repo": "nixos-hardware",
++        "rev": "04c6b94fa104bc23650983a4513aea196794d321",
++        "type": "github"
++      }
++    },
+     "nixpkgs": {
+       "locked": {
+         "lastModified": 1790055231,
+@@ -235,6 +277,22 @@
+         "type": "github"
+       }
+     },
++    "nixpkgs-stable": {
++      "locked": {
++        "lastModified": 1793294725,
++        "narHash": "sha256-loLMnbbS4KhmG2ln9EY6f0YMNCA273Yx02oWYQ9IMeE=",
++        "owner": "NixOS",
++        "repo": "nixpkgs",
++        "rev": "6f06d204d8f2d8761d9da78778745974a3216381",
++        "type": "github"
++      },
++      "original": {
++        "owner": "NixOS",
++        "repo": "nixpkgs",
++        "rev": "6f06d204d8f2d8761d9da78778745974a3216381",
++        "type": "github"
++      }
++    },
+     "nixpkgs_2": {
+       "locked": {
+         "lastModified": 1790149054,
+@@ -258,12 +316,37 @@
+         "flake-parts": "flake-parts",
+         "helium": "helium",
+         "home-manager": "home-manager",
++        "home-manager-stable": "home-manager-stable",
+         "import-tree": "import-tree",
+         "llm-agents": "llm-agents",
++        "nixos-hardware": "nixos-hardware",
+         "nixpkgs": "nixpkgs_2",
++        "nixpkgs-stable": "nixpkgs-stable",
++        "sops-nix": "sops-nix",
+         "xcodebuildmcp": "xcodebuildmcp"
+       }
+     },
++    "sops-nix": {
++      "inputs": {
++        "nixpkgs": [
++          "nixpkgs-stable"
++        ]
++      },
++      "locked": {
++        "lastModified": 1793052255,
++        "narHash": "sha256-Y/JIHTnMlOabDfyaSBubWGLDIVGihLEUuoMhFvQKaDo=",
++        "owner": "Mic92",
++        "repo": "sops-nix",
++        "rev": "60182817ee048ac94b4c68ea76d5ef2e8aac730d",
++        "type": "github"
++      },
++      "original": {
++        "owner": "Mic92",
++        "repo": "sops-nix",
++        "rev": "60182817ee048ac94b4c68ea76d5ef2e8aac730d",
++        "type": "github"
++      }
++    },
+     "systems": {
+       "locked": {
+         "lastModified": 1681028828,

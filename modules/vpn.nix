@@ -34,9 +34,30 @@
         ];
       };
 
+    nixos =
+      { config, ... }:
+      {
+        
+        
+        
+        services.tailscale = {
+          enable = true;
+          useRoutingFeatures = "client";
+        };
+
+        assertions = [
+          {
+            assertion = config.services.tailscale.enable;
+            message = "t14 uses the native Tailscale module, not a copied unit.";
+          }
+        ];
+      };
+
     homeManager =
       { pkgs, ... }:
       {
+        
+        
         home.packages = [ pkgs.cloudflared ];
       };
   };

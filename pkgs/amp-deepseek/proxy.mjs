@@ -129,6 +129,32 @@ function createServer(cfg) {
     }
 
     if (
+      req.method === "GET" &&
+      (req.url === "/v1/models" || req.url === "/anthropic/v1/models")
+    ) {
+      if (!cfg.upstreamAuthKey || !cfg.inboundAuthKey) {
+        sendJson(res, 503, { ok: false, error: "missing credentials" });
+        return;
+      }
+      if (!authorized(req, cfg.inboundAuthKey)) {
+        sendJson(res, 401, { error: "unauthorized" });
+        return;
+      }
+      sendJson(res, 200, {
+        object: "list",
+        data: [
+          {
+            id: "deepseek-flash",
+            object: "model",
+            created: 0,
+            owned_by: "deepseek",
+          },
+        ],
+      });
+      return;
+    }
+
+    if (
       req.method !== "POST" ||
       (req.url !== "/v1/messages" && req.url !== "/anthropic/v1/messages")
     ) {
@@ -160,6 +186,7 @@ function createServer(cfg) {
 
     const started = Date.now();
     const transport = cfg.upstreamProtocol === "http" ? http : https;
+    let timedOut = false;
     const suffix = req.url.startsWith("/anthropic")
       ? req.url.slice("/anthropic".length)
       : req.url;
@@ -186,16 +213,23 @@ function createServer(cfg) {
     );
 
     upstream.setTimeout(cfg.upstreamTimeoutMs, () => {
+      timedOut = true;
       upstream.destroy(new Error("upstream timeout"));
       if (!res.headersSent) sendJson(res, 504, { error: "upstream timeout" });
     });
 
     upstream.on("error", (error) => {
-      if (!res.headersSent) sendJson(res, 502, { error: "upstream unavailable" });
-      else res.destroy();
+      const status = timedOut ? 504 : 502;
+      if (!res.headersSent) {
+        sendJson(res, status, {
+          error: timedOut ? "upstream timeout" : "upstream unavailable",
+        });
+      } else if (!res.writableEnded) {
+        res.destroy();
+      }
       log({
         event: "upstream_error",
-        status: 502,
+        status,
         error: error.message,
         duration_ms: Date.now() - started,
       });

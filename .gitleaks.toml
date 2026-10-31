@@ -1,0 +1,7 @@
+[allowlist]
+description = "Test-only names and sanitized evidence; no production secret."
+paths = [
+  '''docs/design/evidence/gate3/vm-test.log''',
+  '''evidence/raw/vm-test.log''',
+  '''evidence/migration/fixture.log''',
+]

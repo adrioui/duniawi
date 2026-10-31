@@ -5,30 +5,41 @@
   gzip,
   makeWrapper,
   ripgrep,
-  cctools,
-  darwin,
-  rcodesign,
+  autoPatchelfHook ? null,
+  glibc ? null,
+  cctools ? null,
+  darwin ? null,
+  rcodesign ? null,
 }:
 
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "amp-cli";
-  version = "0.0.1793332853-ge7c6c6";
+  version = "0.0.1793462430-g2650be";
 
   src = fetchurl {
-    url = "https://static.ampcode.com/cli/${finalAttrs.version}/amp-darwin-arm64.gz";
-    hash = "sha256-9HLoroHiXsDQOMENpciBLrSPLGwc/GTipmeJthGnwhs=";
+    url = "https://static.ampcode.com/cli/${finalAttrs.version}/${
+      if stdenvNoCC.hostPlatform.isDarwin then "amp-darwin-arm64.gz" else "amp-linux-x64.gz"
+    }";
+    hash =
+      if stdenvNoCC.hostPlatform.isDarwin then
+        "sha256-oqACkG+PJeBI4DVldP9AbrvZEWFzMnxkqR1MYhr5DJE="
+      else
+        "sha256-vi8KehFrc1Xoexbgdk1wjs4VKpPeVb+m2oyIQU1F2YY=";
   };
 
   nativeBuildInputs = [
     gzip
     makeWrapper
-  ];
+  ]
+  ++ lib.optional stdenvNoCC.hostPlatform.isLinux autoPatchelfHook;
+
+  buildInputs = lib.optional stdenvNoCC.hostPlatform.isLinux glibc;
 
   strictDeps = true;
 
   dontUnpack = true;
   dontStrip = true;
-  dontFixup = true;
+  dontFixup = stdenvNoCC.hostPlatform.isDarwin;
 
   installPhase = ''
     runHook preInstall
@@ -44,7 +55,7 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     runHook postInstall
   '';
 
-  postInstall = ''
+  postInstall = lib.optionalString stdenvNoCC.hostPlatform.isDarwin ''
     '${lib.getExe' cctools "${cctools.targetPrefix}install_name_tool"}' $out/libexec/amp-cli/amp \
       -change /usr/lib/libicucore.A.dylib '${lib.getLib darwin.ICU}/lib/libicucore.A.dylib'
     '${lib.getExe rcodesign}' sign --code-signature-flags linker-signed $out/libexec/amp-cli/amp
@@ -56,7 +67,10 @@ stdenvNoCC.mkDerivation (finalAttrs: {
     downloadPage = "https://ampcode.com/install";
     license = lib.licenses.unfree;
     mainProgram = "amp";
-    platforms = [ "aarch64-darwin" ];
+    platforms = [
+      "aarch64-darwin"
+      "x86_64-linux"
+    ];
     sourceProvenance = with lib.sourceTypes; [ binaryNativeCode ];
   };
 })

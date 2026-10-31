@@ -1,0 +1,48 @@
+timestamp=2026-10-31T13:52:57+07:00
+pwd=/tmp/nix-shell-4085-2004343516/opencode/duniawi
+branch=feat/cross-platform-nixos
+head=030e37696587a7dc4bf73ae953225e4719c4d188
+status_porcelain:
+A  docs/design/README.md
+A  docs/design/adr/0001-one-flake-two-hosts.md
+A  docs/design/adr/0002-den-aspects-and-host-qualified-user.md
+A  docs/design/adr/0003-uid-gid-mapping.md
+A  docs/design/adr/0004-sops-age-secrets.md
+A  docs/design/adr/0005-service-disposition-and-proxy.md
+A  docs/design/adr/0006-staged-migration-and-rollback.md
+A  docs/design/adr/0007-two-system-ci.md
+A  docs/design/approvals.md
+A  docs/design/baseline.md
+A  docs/design/compatibility.md
+A  docs/design/domain.md
+A  docs/design/exclusions.md
+A  docs/design/graph.md
+A  docs/design/migration.md
+A  docs/design/packages.md
+A  docs/design/research.md
+A  docs/design/rollback.md
+A  docs/design/secrets.md
+A  docs/design/services.md
+A  docs/design/test-plan.md
+M  flake.lock
+M  flake.nix
+A  hosts/t14/hardware-configuration.nix
+A  modules/amp-deepseek-nixos.nix
+M  modules/amp-deepseek.nix
+M  modules/base.nix
+M  modules/browser.nix
+M  modules/den.nix
+M  modules/dev.nix
+M  modules/flake-parts.nix
+M  modules/host.nix
+A  modules/nixos-desktop.nix
+A  modules/nixos-hardware.nix
+A  modules/nixos-user.nix
+M  modules/per-system.nix
+M  modules/shell.nix
+A  modules/t14.nix
+M  modules/vpn.nix
+flake_lock_sha256=5b495d350f985613c13b2b80b6fa4fe54b8c5db96d85145d39ad97d65346ee9f
+flake_lock_lines=439
+github_workflows:
+none

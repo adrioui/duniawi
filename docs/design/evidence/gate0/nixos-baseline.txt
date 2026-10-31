@@ -1,0 +1,102 @@
+timestamp=2026-10-31T13:52:57+07:00
+nixos_version=26.05.13164.6f06d204d8f2 (Yarara)
+current_system=/nix/store/04q282abf92ypcwxqarbwzvrym4fvbcv-nixos-system-nixos-26.05.13164.6f06d204d8f2
+kernel=Linux nixos 6.18.59 #1-NixOS SMP PREEMPT_DYNAMIC Mon Oct 26 15:09:28 UTC 2026 x86_64 GNU/Linux
+hostname=nixos
+etc_nixos_hashes:
+61f57fc8e288101578b0677f47f0065a56db69cfa581bd8d2084bf1fa7bd2732  /etc/nixos/configuration.nix
+714d9c114f718a978931fe3cb5da3f15563274cd6f0b697deaa44f5810140251  /etc/nixos/hardware-configuration.nix
+generations:
+error: opening lock file "/nix/var/nix/profiles/system.lock": Permission denied
+bootctl:
+Failed to read "/boot/EFI/systemd": Permission denied
+Failed to open '/boot/loader/loader.conf': Permission denied
+System:
+      Firmware: UEFI 2.70 (Lenovo 0.5136)
+ Firmware Arch: x64
+   Secure Boot: disabled (setup)
+  TPM2 Support: yes
+  Measured UKI: no
+  Boot into FW: supported
+
+Current Boot Loader:
+       Product: systemd-boot 260.5
+     Features: ✓ Boot counting
+               ✓ Menu timeout control
+               ✓ One-shot menu timeout control
+               ✓ Default entry control
+               ✓ One-shot entry control
+               ✓ Support for XBOOTLDR partition
+               ✓ Support for passing random seed to OS
+               ✓ Load drop-in drivers
+               ✓ Support Type #1 sort-key field
+               ✓ Support @saved pseudo-entry
+               ✓ Support Type #1 devicetree field
+               ✓ Enroll SecureBoot keys
+               ✓ Retain SHIM protocols
+               ✓ Menu can be disabled
+               ✓ Multi-Profile UKIs are supported
+               ✓ Loader reports network boot URL
+               ✓ Support Type #1 uki field
+               ✓ Support Type #1 uki-url field
+               ✓ Loader reports active TPM2 PCR banks
+     Partition: /dev/disk/by-partuuid/f61d565f-b7a7-4196-9dac-646514405fd4
+        Loader: └─/boot//EFI/systemd/systemd-bootx64.efi
+ Current Entry: nixos-generation-1.conf
+
+Random Seed:
+ System Token: set
+       Exists: Can't access /boot/loader/random-seed (Permission denied)
+
+Available Boot Loaders on ESP:
+          ESP: /boot (/dev/disk/by-partuuid/f61d565f-b7a7-4196-9dac-646514405fd4)
+         File: (can't access /boot: Permission denied)
+
+Boot Loaders Listed in EFI Variables:
+        Title: Linux Boot Manager
+           ID: 0x0005
+       Status: active, boot-order
+    Partition: /dev/disk/by-partuuid/f61d565f-b7a7-4196-9dac-646514405fd4
+         File: └─/boot//EFI/systemd/systemd-bootx64.efi
+
+        Title: Fedora
+           ID: 0x0004
+       Status: active, boot-order
+    Partition: /dev/disk/by-partuuid/ca415321-7f07-4076-b22e-5bbe3b979551
+         File: └─/boot//EFI/fedora/shimx64.efi
+
+        Title: Fedora
+
+           ID: 0x0003
+       Status: active, boot-order
+    Partition: /dev/disk/by-partuuid/ca415321-7f07-4076-b22e-5bbe3b979551
+         File: └─/boot//EFI/fedora/shimx64.efi
+
+        Title: Fedora
+
+           ID: 0x0002
+       Status: active, boot-order
+    Partition: /dev/disk/by-partuuid/ab9df05c-985a-40a1-8a18-ddcdc0d222c2
+         File: └─/boot//EFI/fedora/shimx64.efi
+
+        Title: Fedora
+
+           ID: 0x0001
+       Status: active, boot-order
+    Partition: /dev/disk/by-partuuid/e4c0a0f5-0ca9-4260-aad9-315a88f1a593
+         File: └─/boot//EFI/fedora/shimx64.efi
+
+        Title: Windows Boot Manager
+           ID: 0x0000
+       Status: active, boot-order
+df:
+Filesystem     Type  Size  Used Avail Use% Mounted on
+/dev/nvme0n1p2 ext4  468G   28G  417G   7% /
+/dev/nvme0n1p1 vfat 1022M   55M  968M   6% /boot
+df_inodes:
+Filesystem       Inodes   IUsed    IFree IUse% Mounted on
+/dev/nvme0n1p2 31195136 1442556 29752580    5% /
+/dev/nvme0n1p1        0       0        0     - /boot
+mounts:
+uptime=uptime: invalid option -- 'p'
+Try 'uptime --help' for more information.

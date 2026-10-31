@@ -1,0 +1,5 @@
+# command: findmnt -no SOURCE\,TARGET\,FSTYPE\,OPTIONS /run/media/adrioui/backup
+# started: 2026-10-31T17:32:37+07:00
+/dev/sda1 /run/media/adrioui/backup ext4 ro,nosuid,nodev,relatime,errors=remount-ro
+# exit: 0
+# finished: 2026-10-31T17:32:37+07:00

@@ -1,0 +1,37 @@
+timestamp=2026-10-31T13:53:04+07:00
+backup_mount:
+/run/media/adrioui/backup /dev/sda1 ext4 ro,nosuid,nodev,relatime,errors=remount-ro
+blkid:
+smart_health:
+/nix/store/13czpvp88x852739v5xi04s871pn35b5-bash-interactive-5.3p9/bin/bash: line 10: smartctl: command not found
+smart_attrs:
+df:
+Filesystem     Type  Size  Used Avail Use% Mounted on
+/dev/sda1      ext4  916G  355G  552G  40% /run/media/adrioui/backup
+df_inodes:
+Filesystem       Inodes   IUsed    IFree IUse% Mounted on
+/dev/sda1      61054976 5740728 55314248   10% /run/media/adrioui/backup
+manifest_hashes:
+7bdf05b3ae049c8b1dd7a5e4e5f3052ffca7004fb3caccb1f28b0e89a222c06d  /run/media/adrioui/backup/evidence-20261030/gate3/source.sha256
+7bdf05b3ae049c8b1dd7a5e4e5f3052ffca7004fb3caccb1f28b0e89a222c06d  /run/media/adrioui/backup/evidence-20261030/gate3/destination.sha256
+manifest_lines:
+   5082466 /run/media/adrioui/backup/evidence-20261030/gate3/source.sha256
+   5082466 /run/media/adrioui/backup/evidence-20261030/gate3/destination.sha256
+  10164932 total
+bundle_hashes:
+sha256sum: /run/media/adrioui/backup/BUNDLE.sha256: No such file or directory
+sha256sum: /run/media/adrioui/backup/BUNDLE.sha256.sha256: No such file or directory
+backup_top:
+evidence-20261030
+evidence-20261030.tar.gz
+evidence-20261030.tar.gz.sha256
+FINAL-ACCEPTANCE.md
+home
+lost+found
+manifest
+manifest-gate0
+nixos-graphical-26.05.iso
+nixos-graphical-26.05.iso.sha256
+NIXOS-USB.md
+.speedtest
+.speedtest_big

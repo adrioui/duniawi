@@ -1,0 +1,23 @@
+# shell:
+  printf "hostPlatform="; nix eval --raw .#nixosConfigurations.t14.config.nixpkgs.hostPlatform.system; echo
+  printf "stateVersion="; nix eval --json .#nixosConfigurations.t14.config.system.stateVersion
+  printf "hostName="; nix eval --raw .#nixosConfigurations.t14.config.networking.hostName; echo
+  printf "toplevel="; nix eval --raw .#nixosConfigurations.t14.config.system.build.toplevel.drvPath; echo
+  printf "darwinPlatform="; nix eval --raw .#darwinConfigurations.adri.config.nixpkgs.hostPlatform.system; echo
+  printf "darwinStateVersion="; nix eval --json .#darwinConfigurations.adri.config.system.stateVersion
+
+# started: 2026-10-31T17:32:22+07:00
+hostPlatform=warning: Git tree '/tmp/nix-shell-4085-2004343516/opencode/duniawi' is dirty
+x86_64-linux
+stateVersion=warning: Git tree '/tmp/nix-shell-4085-2004343516/opencode/duniawi' is dirty
+"26.05"
+hostName=warning: Git tree '/tmp/nix-shell-4085-2004343516/opencode/duniawi' is dirty
+nixos
+toplevel=warning: Git tree '/tmp/nix-shell-4085-2004343516/opencode/duniawi' is dirty
+/nix/store/c7kwj58qfhq21mh8wjayxm3xgrvrkz2x-nixos-system-nixos-26.05.20261029.6f06d20.drv
+darwinPlatform=warning: Git tree '/tmp/nix-shell-4085-2004343516/opencode/duniawi' is dirty
+aarch64-darwin
+darwinStateVersion=warning: Git tree '/tmp/nix-shell-4085-2004343516/opencode/duniawi' is dirty
+6
+# exit: 0
+# finished: 2026-10-31T17:32:37+07:00

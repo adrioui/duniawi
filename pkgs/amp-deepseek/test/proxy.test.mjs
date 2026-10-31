@@ -69,6 +69,29 @@ test("health is 503 when the inbound key is missing", async () => {
   await stop(server);
 });
 
+test("lists the DeepSeek model for provider checks", async () => {
+  const server = createServer(config(1));
+  const port = await start(server);
+  const response = await fetch(`http://127.0.0.1:${port}/v1/models`, {
+    headers: { authorization: "Bearer inbound-secret" },
+  });
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.object, "list");
+  assert.equal(body.data[0].id, "deepseek-flash");
+  await stop(server);
+});
+
+test("rejects a model-list request with the wrong inbound key", async () => {
+  const server = createServer(config(1));
+  const port = await start(server);
+  const response = await fetch(`http://127.0.0.1:${port}/v1/models`, {
+    headers: { authorization: "Bearer wrong" },
+  });
+  assert.equal(response.status, 401);
+  await stop(server);
+});
+
 test("rejects a request with the wrong inbound key", async () => {
   const upstream = await fakeUpstream((req, res) => {
     res.writeHead(200, { "content-type": "application/json" });
@@ -214,6 +237,81 @@ test("passes a non-JSON body through unchanged", async () => {
 
   assert.equal(response.status, 200);
   assert.equal(upstream.state.body, "not-json");
+
+  await stop(server);
+  await stop(upstream.server);
+});
+
+test("returns 404 for an unknown route", async () => {
+  const server = createServer(config(1));
+  const port = await start(server);
+  const response = await fetch(`http://127.0.0.1:${port}/not-a-route`);
+  assert.equal(response.status, 404);
+  await stop(server);
+});
+
+test("returns 502 when the upstream is unavailable", async () => {
+  const server = createServer(config(1, { upstreamPort: 1, upstreamTimeoutMs: 500 }));
+  const port = await start(server);
+  const response = await fetch(`http://127.0.0.1:${port}/v1/messages`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      authorization: "Bearer inbound-secret",
+    },
+    body: "{}",
+  });
+  assert.equal(response.status, 502);
+  await stop(server);
+});
+
+test("returns 504 when the upstream times out", async () => {
+  const upstream = await fakeUpstream(() => {
+
+  });
+  const upstreamPort = await start(upstream.server);
+  const server = createServer(
+    config(upstreamPort, { upstreamTimeoutMs: 100 }),
+  );
+  const port = await start(server);
+
+  const response = await fetch(`http://127.0.0.1:${port}/v1/messages`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      authorization: "Bearer inbound-secret",
+    },
+    body: "{}",
+  });
+  assert.equal(response.status, 504);
+
+  await stop(server);
+  upstream.server.closeAllConnections?.();
+  await stop(upstream.server);
+});
+
+test("drops upstream set-cookie headers", async () => {
+  const upstream = await fakeUpstream((req, res) => {
+    res.writeHead(200, {
+      "content-type": "application/json",
+      "set-cookie": "session=upstream-secret",
+    });
+    res.end("{}");
+  });
+  const upstreamPort = await start(upstream.server);
+  const server = createServer(config(upstreamPort));
+  const port = await start(server);
+
+  const response = await fetch(`http://127.0.0.1:${port}/v1/messages`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      authorization: "Bearer inbound-secret",
+    },
+    body: "{}",
+  });
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("set-cookie"), null);
 
   await stop(server);
   await stop(upstream.server);
