@@ -37,6 +37,7 @@ evidence-first: every status names a command, artifact, or approval.
 | Migration | stage at `/home/adrioui.restore`, verify, cut over, roll back | 0006 |
 | CI | Linux + macOS arm64 matrix | 0007 |
 | NixOS release | pin `t14` to the running 26.05 revision; Darwin stays on unstable | 0008 |
+| Old paths | declarative compatibility link; restore is byte-identical, never rewritten | 0009 |
 
 ## Current gate status
 

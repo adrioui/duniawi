@@ -110,7 +110,7 @@ flowchart LR
   R --> X[metadata + exclusion inventory]
   X --> S[rsync -aHAX --numeric-ids to /home/adrioui.restore]
   S --> V[staged tree verification]
-  V --> P[path rewrite adrifadilah -> adrioui]
+  V --> P[compatibility link ADR-0009]
   P --> A[home-manager activation]
   A --> L[login + application proof]
   L --> C[approved cutover from root TTY]
@@ -127,8 +127,8 @@ read-only backup (/run/media/adrioui/backup)
   -> sha256sum --check --quiet --strict (as root)
   -> metadata inventory (stat, getfacl, getfattr, hardlinks, symlinks)
   -> exclusion manifest approval
-  -> rsync -aHAX --numeric-ids --exclude-from=<approved> \
-       /run/media/adrioui/backup/home/ /home/adrioui.restore/
+  -> rsync -aHASX --numeric-ids --filter=merge scripts/rsync-filter.rules \
+       <include set> /home/adrioui.restore/
   -> staged verification:
        - manifest diff (source vs stage)
        - ownership/gid map
@@ -136,7 +136,7 @@ read-only backup (/run/media/adrioui/backup)
        - SQLite integrity (OpenCode, other DBs)
        - secret mode/owner checks (no content read)
        - broken symlink quarantine
-  -> path rewrite in text configs/scripts only
+  -> no rewrite: install /var/home/adrifadilah -> /home/adrioui (ADR-0009)
   -> home-manager switch (twice, backupFileExtension = "hm-backup")
   -> login as adrioui, shell/git/ssh/gpg/editor/service proof
   -> approved cutover:
@@ -162,7 +162,7 @@ read-only backup (/run/media/adrioui/backup)
 | 6 | Backup identity | mount + manifests | compare digests and line counts | verified manifest pair | operator | `sha256sum`, `wc -l` | `gate3/*.sha256` | one-shot |
 | 7 | Root hash verification | backup tree + manifest | `sha256sum -c` as root | hash result | operator | runbook | `sha256sum` log | one-shot |
 | 8 | Metadata inventory | backup tree | `stat`, ACL, xattr, hardlink, symlink map | metadata manifest | operator | runbook | metadata diff | one-shot |
-| 9 | Exclusion policy | inventory + policy | approved patterns | `exclude-from` file | operator + approver | runbook | approval A3 | one-shot |
+| 9 | Exclusion policy | inventory + policy | reviewed rules | `scripts/rsync-filter.rules` | operator + approver | runbook | approval A3 | one-shot |
 | 10 | Stage copy | backup + exclusions | `rsync -aHAX --numeric-ids` | `/home/adrioui.restore` | operator | runbook | rsync log, `df` | one-shot |
 | 11 | Stage verification | stage tree + manifests | hash/metadata/DB/secret checks | verified stage | operator | runbook | check log | one-shot |
 | 12 | Path rewrite | stage text files | replace old home paths | stage with new paths | operator | runbook | rewrite manifest | one-shot |

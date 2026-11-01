@@ -1,6 +1,7 @@
 # ADR-0006: Stage, verify, cut over, roll back
 
-- Status: Proposed — requires Approvals 1–5
+- Status: Proposed — requires Approvals 1–5; **superseded in part by ADR-0009**
+  (step 6, the path rewrite, is removed)
 - Date: 2026-10-31
 - Deciders: repository owner
 - Related: `docs/design/migration.md`, `docs/design/rollback.md`,
@@ -60,7 +61,7 @@ recorded.
 
 ## Verification
 
-- Stage manifest diff empty (except approved path rewrites).
+- Stage drift empty (`rsync -n -c`), unexplained exclusions empty (ADR-0009).
 - No unmapped UID/GID; no dangling symlinks; no secret hits.
 - VM boot/login/HM/proxy/reboot/rollback pass.
 - Cutover login and data spot-checks pass.

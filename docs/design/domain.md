@@ -130,7 +130,7 @@ These are facts, not approvals.
 | Old home is ~282.73 GiB by top-level inventory | `home-top-level-sizes.txt` | target has 429 GiB free; staging fits |
 | 5,082,466 manifest entries | `wc -l` | target has ~30.3M free inodes; fits |
 | Old home is `1000:1000` | `stat` shows `adrioui:UNKNOWN` (gid 1000 unmapped) | Approval 2 required |
-| Old user is `adrifadilah`; new user is `adrioui` | unit paths and current NixOS account | path rewrite / compatibility plan required |
+| Old user is `adrifadilah`; new user is `adrioui` | unit paths and current NixOS account | compatibility link required (ADR-0009); no rewriting |
 | Old home has a plaintext GPG passphrase in a legacy unit | `gpg-preset-passphrase.service` contains an inline `--passphrase` | **SecretLeak**: do not restore; rotate GPG passphrase/key |
 | Old home has a SOPS age private key at `$HOME/.config/sops/age/keys.txt` | mode 0600, 189 bytes, on an unencrypted backup drive | treat as exposed; generate a new host key; do not reuse |
 | Old home has SSH, GPG, AWS, GitHub, Docker, Kubernetes, keyring, and AI-provider credentials | targeted path inventory | rotate or re-authenticate; never copy values into the repo |

@@ -38,8 +38,8 @@ used. The existing system group with gid 100 is left alone.
 - New files created by `adrioui` are `1000:1000`, matching the old home.
 - Any old file with a gid other than 1000 is a mapping decision, not an
   automatic chown. Stop and ask.
-- The old user name `adrifadilah` is not recreated; path rewrites change
-  `/var/home/adrifadilah` to `/home/adrioui`.
+- The old user name `adrifadilah` is not recreated; a compatibility link
+  resolves `/var/home/adrifadilah` to `/home/adrioui` (ADR-0009).
 - The NixOS user must not be a `systemd` `DynamicUser`; the home is persistent.
 
 ## Alternatives considered

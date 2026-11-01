@@ -55,7 +55,7 @@ desktop session.
 | 1 | Design review | domain, graph, compatibility, packages, services, secrets, exclusions, migration, rollback, test plan, ADRs approved |
 | 2 | Implementation | NixOS host evaluates/builds; Darwin unchanged; static checks pass |
 | 3 | VM proof | VM boots, login works, HM activates, proxy health passes, no old units |
-| 4 | Migration integration | Stage copy, hash/metadata/DB checks, path rewrite, login proof |
+| 4 | Migration integration | Stage copy, drift/exclusion/DB/pointer checks, link installed, login proof |
 | 5 | Cutover | Approved rename/switch/reboot, rollback rehearsal |
 | 6 | Release / handoff | PR, docs, evidence, old home retention, closeout |
 
@@ -138,65 +138,60 @@ Do not read secret file contents. Metadata is enough for the copy check.
 
 ## 6. Exclusion manifest
 
-Apply the approved policy from `docs/design/exclusions.md`. Create an exclude
-file under `$EV`, review it, and dry-run before copying.
+Apply the approved policy from `docs/design/exclusions.md`. The rules are one
+reviewed file, `scripts/rsync-filter.rules`, which `scripts/restore-home.sh`
+copies into `$EV`, hashes, and passes to rsync. Review it before staging:
 
 ```bash
-$EDITOR "$EV/exclude-from"
-rsync -aHAX --numeric-ids --dry-run --itemize-changes \
-  --exclude-from="$EV/exclude-from" \
-  /run/media/adrioui/backup/home/ /home/adrioui.restore/ \
-  > "$EV/rsync-dry-run.log"
+$EDITOR scripts/rsync-filter.rules
 ```
 
-Review `rsync-dry-run.log` for:
-- no `.ssh`, `.gnupg`, `.aws`, `.kube`, `.docker`, `.config/sops`,
-  `.config/litellm`, `.config/cline-shim`, `.config/systemd/user`,
-  `gpg-preset-passphrase.service`, old proxy directories, or secret files;
-- no `/home/adrioui` path in the destination;
-- only approved data paths.
-
-A dry-run is not proof. The stage copy still needs the checks in section 8.
+Every rule must be an anchored path or an exact basename. A prefix glob
+(`credentials*`, `*.pem`, `id_*`) is a copy defect: on this backup
+`**/credentials*` alone removed 563 files, including 302 `.py` modules
+(ADR-0009). Section 8 turns over-exclusion into a failing check rather than a
+silent property.
 
 ## 7. Stage copy
 
-Preconditions: Approval 3 recorded; stage path does not exist or is empty;
-target free space ≥ 350 GiB and ≥ 6M inodes.
+Preconditions: Approval 3 recorded; stage path does not exist; target free
+space ≥ 80 GiB.
 
 ```bash
-test ! -e /home/adrioui.restore || { echo "stage exists"; exit 1; }
-install -d -m 0700 -o adrioui -g adrioui /home/adrioui.restore
-rsync -aHAX --numeric-ids --info=progress2 \
-  --exclude-from="$EV/exclude-from" \
-  /run/media/adrioui/backup/home/ /home/adrioui.restore/ \
-  2>&1 | tee "$EV/rsync.log"
+SRC=/run/media/adrioui/backup/home \
+STAGE=/home/adrioui.restore \
+EVID="$EV" \
+  bash scripts/restore-home.sh
 ```
+
+The script refuses when the stage exists, checks free space, copies with
+`rsync -aHASX --numeric-ids --relative` and the reviewed filter file,
+re-applies `1000:1000` and mode `0700` to the stage root, and applies the
+approved root-owned mapping only after counting setuid and capability files in
+the mapped trees (it refuses rather than destroying them silently).
 
 The copy must not write to the backup. Verify with `findmnt` after the copy.
 Do not run `--delete` against the backup or the live home.
 
 ## 8. Stage verification
 
-### 8.1 Expected manifest
-
-Build the expected manifest from the source manifest, filtered by the approved
-exclusions, then compare it with a manifest generated from the stage.
+### 8.1 Two independent oracles
 
 ```bash
-cd /run/media/adrioui/backup/home
-# Example filter; the exact approved patterns must match exclude-from.
-grep -avE '  \./(\.ssh/|\.gnupg/|\.config/sops/|\.config/systemd/user/|\.cache/|\.bun/|\.rustup/|\.local/share/containers/)' \
-  /run/media/adrioui/backup/evidence-20261030/gate3/source.sha256 \
-  > "$EV/expected-stage.sha256"
-
-cd /home/adrioui.restore
-find . -xdev -type f -print0 | sort -z | xargs -0 sha256sum \
-  > "$EV/stage.sha256"
-diff -u "$EV/expected-stage.sha256" "$EV/stage.sha256" > "$EV/stage-diff.txt" || true
+SRC=/run/media/adrioui/backup/home STAGE=/home/adrioui.restore EVID="$EV" \
+  bash scripts/verify-home.sh --checksum --deep
 ```
 
-The diff must be empty except for documented path-rewrite effects. Any
-unexplained line is `HashMismatch` or `MissingFile`; stop.
+- **Oracle 1 — per-file drift.** `rsync -n -c` with the same filter. Any line
+  is drift; the gate is `drift-lines 0`. Without `-c` this is blind to an edit
+  that preserves size and mtime, which is exactly the shape of the old rewrite.
+- **Oracle 2 — exclusion reconciliation.** An ERE restatement of the exclusion
+  policy, implemented independently of the rsync filter file. Any file present
+  in the source and absent from the stage that the policy cannot explain is a
+  copy defect: `unexplained-exclusions 0`.
+
+A source-versus-stage checksum manifest is not required: with no rewrite the
+oracles compare the stage against the immutable backup directly.
 
 ### 8.2 Metadata and ownership
 
@@ -231,7 +226,7 @@ grep -E '^\./(\.herdr/|Works/Bangunindo/BLIV/)' "$EV/root-owned-files.txt" > "$E
 grep -vE '^\./(\.herdr/|Works/Bangunindo/BLIV/)' "$EV/root-owned-files.txt" > "$EV/root-owned-exclude.txt"
 ```
 
-Review both lists. Then copy with `--exclude-from` containing the approved
+Review both lists. Then copy with `scripts/rsync-filter.rules` containing the approved
 `root-owned-exclude.txt` entries. After the copy, map only the approved files
 and their parent directories:
 
@@ -295,25 +290,32 @@ This is a backstop, not a substitute for the exclusion policy. Any hit is a
 `SecretLeak`; stop, identify the file, revoke/rotate, and remove it from the
 stage.
 
-## 9. Path rewrite
+## 9. No path rewrite
 
-Rewrite only text files, after a dry run. Do not rewrite binaries, Git
-objects, SQLite files, archives, or media.
+There is no rewrite step. Restored files stay byte-identical to the backup, and
+old absolute paths are resolved by a declarative link installed with the system
+generation (ADR-0009, `modules/home-migration.nix`):
 
-```bash
-grep -RIl --exclude-dir=.git --exclude='*.sqlite' --exclude='*.db' \
-  -e '/var/home/adrifadilah' -e '/home/adrifadilah' \
-  /home/adrioui.restore > "$EV/rewrite-files.txt"
-
-# Review the list, then rewrite in place.
-xargs -r sed -i \
-  -e 's#/var/home/adrifadilah#/home/adrioui#g' \
-  -e 's#/home/adrifadilah#/home/adrioui#g' \
-  < "$EV/rewrite-files.txt"
+```nix
+systemd.tmpfiles.rules = [
+  "d /var/home 0755 root root -"
+  "L /var/home/adrifadilah - - - - /home/adrioui"
+];
 ```
 
-Re-run the metadata and secret checks after the rewrite. Record the rewritten
-file list.
+`sed -i` over the tree replaces every inode it touches: hardlinks break and
+ACLs, xattrs and file capabilities are dropped. It also cannot reach SQLite or
+other binary payloads, so the result is a mixed tree that no single rule
+describes and that can no longer be verified against the backup.
+
+Live configuration is repaired explicitly instead:
+
+| Target | Action |
+|---|---|
+| `~/.bashrc`, `~/.profile`, `~/.config/fish/config.fish` | Home Manager owns them; the restored copies become `*.hm-backup` on first activation |
+| `~/.config/herdr/session.json` (`identity_cwd`, `worktree_space.key`) | edit by hand |
+| 53 linked worktrees under `.herdr/worktrees` | phase 2: `git worktree repair <path>` per worktree, then remove the link |
+| transcripts, databases, archives | leave as history |
 
 ## 10. New secrets and keys
 

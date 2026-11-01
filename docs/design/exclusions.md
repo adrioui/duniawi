@@ -5,7 +5,8 @@ transcripts, Personal, and Learns. No live copy has started.**
 
 This policy controls what is **not** copied from the read-only backup into
 `/home/adrioui.restore`. It never modifies the backup. Exclusions are applied
-with `rsync --exclude-from`; every skipped path is logged and reviewed.
+with a reviewed rsync filter file; every skipped path is reconciled against
+an independent policy check (ADR-0009).
 
 The default is **exclude** for secrets, credentials, old service state,
 regenerable caches, and anything whose content cannot be verified. User
@@ -42,7 +43,18 @@ home.
 | `.local/share/Trash/` | deleted data, unpredictable secrets | do not restore |
 | `**/*.log` under `.config/`, `.local/share/`, `.cache/` | logs may contain headers/tokens | archive only; no restore |
 | `**/.env`, `**/env` under `.config/` | provider secrets | exclude; recreate via sops |
-| `**/credentials*`, `**/*.pem`, `**/*.key`, `**/*.p12`, `**/*.pfx`, `**/*.env`, `**/auth.json`, `**/keys.txt`, `**/id_*` under any included path | keys/certs/env files | exclude globally; recreate via sops or the provider |
+| Secrets by **exact path or exact basename, never by prefix**: `.ssh/`, `.gnupg/`, `.aws/credentials`, `.netrc`, `.git-credentials`, `.config/gh/hosts.yml`, `.config/sops/age/keys.txt`, `.docker/config.json`, `.kube/config`, `id_rsa`, `id_ed25519`, `id_ecdsa`, `*.kdbx`, `Works/Bangunindo/BLIV/license_key.txt`, `**/.aws/credentials` | keys/certs | exclude; recreate via sops or the provider |
+
+Name-only prefix globs are forbidden. Measured on this backup, the previous
+rule `**/credentials*` removed 563 in-scope files whose basename merely starts
+with `credentials`: 302 `.py` modules (`botocore/credentials.py`,
+`google/auth/oauth2/credentials.py`, `google/auth/compute_engine/credentials.py`,
+`redis/credentials.py`), 144 `.pyc`, 16 `.ts`, 10 `.js`. The sibling rules were
+no better: 106 of 446 `*.pem` matches are `cacert.pem` public CA bundles, and
+152 of 351 `*.env` matches are `example.env` templates. A rule that removes
+library code is a copy defect, not an exclusion. Every rule needs a ledger row
+with its matched count and a `code removed?` flag, and the stage must be
+reconciled against the source inventory (ADR-0009).
 
 `gpg-preset-passphrase.service` is a special case: it contains an inline
 passphrase and is excluded even though it lives under the systemd unit path.
@@ -228,31 +240,53 @@ contain auth files, caches, binaries, sockets, and plugin state.
 
 Anything not in this list is excluded by default.
 
-## 6. Path rewrite policy
+## 6. Path resolution policy
 
-After the copy, text files may still contain the old home path
-`/var/home/adrifadilah` or `/home/adrifadilah`. Rewrite only text
-configuration and scripts, never binary files, and only after a dry-run diff:
+The copy is not rewritten. Every restored byte stays identical to the backup,
+so the stage can be re-verified against the read-only source at any moment
+(ADR-0009).
 
-| Old path | New path |
+Old absolute paths — `/var/home/adrifadilah` in git worktree pointers, agent
+transcripts, application databases and package manifests — are made to resolve
+by one declarative link in `den.aspects.homeMigration`
+(`modules/home-migration.nix`):
+
+```nix
+systemd.tmpfiles.rules = [
+  "d /var/home 0755 root root -"
+  "L /var/home/adrifadilah - - - - /home/adrioui"
+];
+```
+
+A symlink is resolved per lookup, so it follows the home across the cutover
+rename. A bind mount does not: it pins the inode, and would still point at the
+pre-migration tree after the swap.
+
+Rules:
+
+| Rule | Reason |
 |---|---|
-| `/var/home/adrifadilah` | `/home/adrioui` |
-| `/home/adrifadilah` | `/home/adrioui` |
-| `adrifadilah` in unit `User=`/`WorkingDirectory=` | `adrioui` |
+| Never edit restored files | `sed -i` replaces the inode; hardlinks break and ACLs, xattrs and file capabilities are dropped (measured) |
+| Never map ownership after the copy | `chown`/`chgrp` clear setuid and `security.capability`; ownership is already correct via ADR-0003 |
+| Repair live configuration, not archives | shell rc files, `~/.config/herdr/session.json` are rewritten by hand or by Home Manager; transcripts and databases are history |
+| Defer `git worktree repair` | the link makes the existing pointers resolve; repair and link removal are one phase-2 change |
+| Gate link removal | Approval 6, on a ledger of remaining references per directory |
 
-Do not rewrite:
-- Git object databases, packfiles, or repository history.
-- Binary files, SQLite databases, archives, images, or media.
-- Logs (they are excluded anyway).
-- Secrets (they are excluded and recreated).
+Known limitation: `find /var/home/adrifadilah` without a trailing slash returns
+the link itself rather than the tree. Documented and accepted for the migration
+window.
 
 ## 7. Verification
 
 | Check | Pass condition |
 |---|---|
 | Exclusion manifest reviewed | every pattern has a reason and owner |
+| Exclusions explained | every file present in the source but absent from the stage matches a documented rule (`verify-home.sh`: `unexplained-exclusions 0`) |
+| Content drift | `rsync -n -c` with the same filter reports no differences (`drift-lines 0`) |
 | Dry run | `rsync --dry-run --itemize-changes` shows only approved paths |
 | No secret path copied | `find` on stage for excluded patterns returns nothing |
+| Database WAL | every staged `-wal` sibling is present and sampled `integrity_check` is `ok` |
+| Worktree pointers | every `.git` pointer resolves to a staged path after the move |
 | No dangling symlink | `find -xtype l` on stage returns nothing |
 | Root-owned mapping list | every `.herdr` or `Works/Bangunindo/BLIV` root-owned path is listed and mapped |
 | No unexpected root-owned file | `find . -uid 0` under included paths is empty after mapping |
@@ -272,7 +306,8 @@ Approval 3 asks the operator to approve:
    transcripts, `Personal/`, and `Learns/`.
 5. The root-owned policy in section 4.1: map `.herdr` and `Works/Bangunindo/BLIV`, exclude other
    root-owned files, and perform only selective `chown`.
-6. The path rewrite policy in section 6.
+6. The path resolution policy in section 6: a declarative compatibility link,
+   and no rewriting of restored data.
 
 No restore copy may start until this approval is recorded in
 `docs/design/approvals.md`.
