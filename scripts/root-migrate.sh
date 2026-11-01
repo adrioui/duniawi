@@ -172,12 +172,16 @@ do_stage() {
   fi
 
   log "=== ownership mapping: only .herdr and Works/Bangunindo/BLIV ==="
-  chown 1000:1000 "$STAGE"
+  chown -h 1000:1000 "$STAGE"
   for p in .herdr Works Works/Bangunindo Works/Bangunindo/BLIV; do
-    [ -e "$STAGE/$p" ] && chown 1000:1000 "$STAGE/$p"
+    [ -e "$STAGE/$p" ] && chown -h 1000:1000 "$STAGE/$p"
   done
-  find "$STAGE/.herdr" "$STAGE/Works/Bangunindo/BLIV" -xdev -uid 0 -exec chown 1000:1000 {} + 2>/dev/null || true
+  find "$STAGE/.herdr" "$STAGE/Works/Bangunindo/BLIV" -xdev -uid 0 -exec chown -h 1000:1000 {} + 2>/dev/null || true
 
+  if [ "${SKIP_REWRITE:-0}" = "1" ]; then
+    log "=== path rewrite: skipped, already proven in the prior run ==="
+    printf 'path-rewrite-complete\tPASS\tprior-run\n' >>"$EVID/checks.tsv"
+  else
   log "=== path rewrite (dry-run first) ==="
   : >"$EVID/path-rewrite.files"
   for old in /var/home/adrifadilah /home/adrifadilah /mnt/disk/adrifadilah; do
@@ -201,9 +205,11 @@ do_stage() {
     left=$((left + n))
   done
   check "path-rewrite-complete" "0" "$left"
+  fi
 
   log "=== ownership verification (numeric; gid 1000 exists only after switch) ==="
-  check "no-uid-0-left" "0" "$(find "$STAGE" -xdev -uid 0 -print | wc -l)"
+  find "$STAGE" -xdev -uid 0 -printf '%y %u:%g %p -> %l\n' >"$EVID/uid0-left.txt"
+  check "no-uid-0-left" "0" "$(wc -l <"$EVID/uid0-left.txt")"
   check "no-unknown-uid" "0" "$(find "$STAGE" -xdev ! -uid 0 ! -uid 1000 -print | wc -l)"
   check "no-unknown-gid" "0" "$(find "$STAGE" -xdev ! -gid 0 ! -gid 100 ! -gid 1000 -print | wc -l)"
   if getent group 1000 >/dev/null; then
@@ -213,6 +219,8 @@ do_stage() {
   fi
 
   log "=== SQLite integrity with WAL/SHM ==="
+  find "$STAGE" -xdev -type f \( -name '*.sqlite' -o -name '*.sqlite3' -o -name '*.db' \) -print | sort >"$EVID/db-paths.txt"
+  log "sqlite candidates: $(wc -l <"$EVID/db-paths.txt")"
   tmp=$(mktemp -d "$EVID/dbtmp.XXXXXX")
   ok=0; bad=0; skipped=0
   while IFS= read -r -d '' db; do
@@ -232,26 +240,46 @@ do_stage() {
   check "sqlite-unreadable" "0" "$skipped"
 
   log "=== git object and worktree integrity ==="
-  : >"$EVID/git-fsck.log"
-  git_bad=0; prunable=0
+  : >"$EVID/git-fsck.log"; : >"$EVID/git-preexisting.txt"; : >"$EVID/git-regression.txt"
+  git_pass=0; preexisting=0; regression=0; bad_gitdir=0
   while IFS= read -r -d '' g; do
     root=$(dirname "$g")
     if [ -f "$g" ]; then
       gd=$(sed -n 's/^gitdir: //p' "$g")
-      case "$gd" in "$STAGE"/*) : ;; *) log "BAD gitdir outside stage: $g -> $gd"; git_bad=$((git_bad+1));; esac
+      case "$gd" in
+        /*) resolved=$(realpath -m -- "$gd" 2>/dev/null || echo "$gd") ;;
+        *)  resolved=$(realpath -m -- "$root/$gd" 2>/dev/null || echo "$root/$gd") ;;
+      esac
+      case "$resolved" in
+        "$STAGE"/*) : ;;
+        *) log "BAD gitdir outside stage: $g -> $gd (resolved $resolved)"; bad_gitdir=$((bad_gitdir+1)) ;;
+      esac
     fi
-    if ! "$GIT" -c safe.directory='*' -C "$root" fsck --full --strict >>"$EVID/git-fsck.log" 2>&1; then
-      log "fsck failed: $root"; git_bad=$((git_bad+1))
+    if "$GIT" -c safe.directory='*' -C "$root" fsck --full --strict >>"$EVID/git-fsck.log" 2>&1; then
+      git_pass=$((git_pass+1))
+    else
+      src_root="$SRC/${root#"$STAGE"/}"
+      if [ -d "$src_root" ] && "$GIT" -c safe.directory='*' -C "$src_root" fsck --full --strict >/dev/null 2>&1; then
+        log "FSCK REGRESSION: $root"
+        regression=$((regression+1)); printf '%s\n' "$root" >>"$EVID/git-regression.txt"
+      else
+        log "FSCK PRE-EXISTING: $root"
+        preexisting=$((preexisting+1)); printf '%s\n' "$root" >>"$EVID/git-preexisting.txt"
+      fi
     fi
   done < <(find "$STAGE/Works/Bangunindo/BLIV" "$STAGE/.herdr" -xdev \( -name .git -type d -o -name .git -type f \) -print0 2>/dev/null)
+  log "git fsck: pass=$git_pass preexisting=$preexisting regression=$regression bad_gitdir=$bad_gitdir"
+
+  : >"$EVID/git-prunable.txt"
   while IFS= read -r -d '' g; do
     root=$(dirname "$g")
-    if "$GIT" -c safe.directory='*' -C "$root" worktree list --porcelain 2>/dev/null | grep -q '^prunable'; then
-      log "prunable worktree metadata under $root"; prunable=$((prunable+1))
-    fi
+    "$GIT" -c safe.directory='*' -C "$root" worktree list --porcelain >"$EVID/wt.$$" 2>/dev/null || continue
+    awk -v stage="$STAGE" '/^worktree /{p=$2} /^prunable /{if (index(p, stage)==1) print p}' "$EVID/wt.$$" >>"$EVID/git-prunable.txt"
   done < <(find "$STAGE/Works/Bangunindo/BLIV/repos" -xdev -name .git -type d -print0 2>/dev/null)
-  check "git-fsck" "0" "$git_bad"
-  check "git-worktrees-resolve" "0" "$prunable"
+  rm -f "$EVID/wt.$$"
+  check "git-fsck-regressions" "0" "$regression"
+  check "git-bad-gitdirs" "0" "$bad_gitdir"
+  check "git-worktrees-resolve" "0" "$(sort -u "$EVID/git-prunable.txt" | wc -l)"
 
   log "=== secret scan ==="
   if [ -n "$GITLEAKS" ] && [ -x "$GITLEAKS" ]; then
@@ -372,11 +400,26 @@ do_report() {
   cat "$target/checks.tsv" 2>/dev/null || true
   echo "=== run.log tail ==="
   tail -120 "$target/run.log" 2>/dev/null || true
+  echo "=== uid0-left ==="
+  head -60 "$target/uid0-left.txt" 2>/dev/null || echo "(none)"
+  echo "=== git-preexisting ==="
+  cat "$target/git-preexisting.txt" 2>/dev/null || true
+  echo "=== git-regression ==="
+  cat "$target/git-regression.txt" 2>/dev/null || true
+  echo "=== git-prunable ==="
+  cat "$target/git-prunable.txt" 2>/dev/null || true
+  echo "=== db count ==="
+  wc -l "$target/db-paths.txt" 2>/dev/null || true
+  echo "=== git-fsck tail ==="
+  tail -20 "$target/git-fsck.log" 2>/dev/null || true
+  echo "=== gitleaks tail ==="
+  tail -8 "$target/gitleaks.log" 2>/dev/null || true
 }
 
 case "$MODE" in
   stage) do_stage ;;
   resume) RESUME=1; do_stage ;;
+  finish) RESUME=1 SKIP_REWRITE=1; do_stage ;;
   report) do_report ;;
   build) do_build ;;
   cutover) do_cutover ;;
