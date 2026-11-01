@@ -197,7 +197,7 @@ do_stage() {
   check "path-rewrite-errors" "0" "$rewrite_fail"
   left=0
   for old in /var/home/adrifadilah /home/adrifadilah /mnt/disk/adrifadilah; do
-    n=$("$RG" -l --hidden --no-ignore --no-messages -F "$old" "$STAGE" 2>/dev/null | wc -l)
+    n=$("$RG" -l --hidden --no-ignore --no-messages -F "$old" "$STAGE" 2>/dev/null | wc -l) || n=0
     left=$((left + n))
   done
   check "path-rewrite-complete" "0" "$left"
@@ -331,7 +331,8 @@ do_cutover() {
     fi
   done <"$EVID/cutover.list"
   check "cutover-rewrite-errors" "0" "$cut_fail"
-  check "cutover-rewrite-complete" "0" "$("$RG" -l --hidden --no-ignore --no-messages -F "$STAGE" "$STAGE" 2>/dev/null | wc -l)"
+  left_cut=$("$RG" -l --hidden --no-ignore --no-messages -F "$STAGE" "$STAGE" 2>/dev/null | wc -l) || left_cut=0
+  check "cutover-rewrite-complete" "0" "$left_cut"
 
   log "=== swap homes ==="
   mv /home/adrioui "/home/adrioui.pre-migration.$STAMP"
