@@ -1,0 +1,43 @@
+
+
+
+
+
+
+
+
+
+
+
+
+- /.ssh/
+- /.gnupg/
+- /.password-store/
+- /.aws/credentials
+- /.netrc
+- /.git-credentials
+- /.config/gh/hosts.yml
+- /.config/sops/age/keys.txt
+- /.docker/config.json
+- /.kube/config
+- /Works/Bangunindo/BLIV/license_key.txt
+- .ssh/
+- .gnupg/
+- /id_rsa
+- /id_ed25519
+- /id_ecdsa
+- **/.aws/credentials
+- **/*.kdbx
+
+- Personal/**/node_modules/
+- Personal/**/.yarn/cache/
+- Personal/**/.swc/
+- Personal/**/lib-dist/
+- Personal/**/dist/
+- Personal/**/target/
+- Learns/**/airflow/logs/
+- Learns/**/.dlt/
+- Learns/**/surrealdb-data/
+
+- **/*.sock
+- **/*.pid
