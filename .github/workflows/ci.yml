@@ -29,8 +29,8 @@ jobs:
         run: nix flake check --no-build --no-write-lock-file --no-update-lock-file --all-systems
       - name: Static checks
         run: nix build --no-link .#checks.x86_64-linux.nixfmt .#checks.x86_64-linux.deadnix .#checks.x86_64-linux.statix
-      - name: Proxy tests and migration fixture
-        run: nix build --no-link .#checks.x86_64-linux.amp-deepseek .#checks.x86_64-linux.migration-fixture
+      - name: Proxy tests, migration fixture, migration rehearsal
+        run: nix build --no-link .#checks.x86_64-linux.amp-deepseek .#checks.x86_64-linux.migration-fixture .#checks.x86_64-linux.migration-rehearsal
       - name: Build NixOS toplevel
         run: nix build --no-link .#nixosConfigurations.t14.config.system.build.toplevel
       - name: NixOS VM proof
@@ -39,6 +39,7 @@ jobs:
         run: |
           nix shell github:NixOS/nixpkgs/6f06d204d8f2d8761d9da78778745974a3216381#shellcheck github:NixOS/nixpkgs/6f06d204d8f2d8761d9da78778745974a3216381#actionlint -c sh -c '
             shellcheck tests/migration-fixture.sh tests/phase0-evidence.sh tests/root-verify.sh tests/scope-audit.sh tests/db-audit.sh
+            shellcheck scripts/restore-home.sh scripts/verify-home.sh
             actionlint .github/workflows/ci.yml
           '
       - name: Secret scan
