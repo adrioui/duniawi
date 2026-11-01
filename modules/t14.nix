@@ -10,6 +10,7 @@
         den.aspects.base
         den.aspects.nixosHardware
         den.aspects.nixosDesktop
+        den.aspects.homeMigration
         den.aspects.vpn
         den.aspects.browser
         den.aspects.dev
