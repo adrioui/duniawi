@@ -96,6 +96,16 @@
         nixos-home-manager-activation =
           inputs.self.nixosConfigurations.t14.config.home-manager.users.adrioui.home.activationPackage;
 
+        
+        
+        
+        migration-rehearsal =
+          (import inputs.nixpkgs-stable {
+            system = "x86_64-linux";
+            config.allowUnfree = true;
+          }).testers.nixosTest
+            ../tests/migration-rehearsal.nix;
+
         migration-fixture =
           pkgs.runCommand "migration-fixture"
             {
