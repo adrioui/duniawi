@@ -242,19 +242,23 @@ do_stage() {
   log "=== git object and worktree integrity ==="
   : >"$EVID/git-fsck.log"; : >"$EVID/git-preexisting.txt"; : >"$EVID/git-regression.txt"
   git_pass=0; preexisting=0; regression=0; bad_gitdir=0
+
+  while IFS= read -r -d '' g; do
+    gd=$(sed -n 's/^gitdir: //p' "$g")
+    [ -n "$gd" ] || continue
+    case "$gd" in
+      /*) resolved=$(realpath -m -- "$gd" 2>/dev/null || echo "$gd") ;;
+      *)  resolved=$(realpath -m -- "$(dirname "$g")/$gd" 2>/dev/null || echo "$(dirname "$g")/$gd") ;;
+    esac
+    case "$resolved" in
+      "$STAGE"/*) : ;;
+      *) log "BAD gitdir outside stage: $g -> $gd (resolved $resolved)"; bad_gitdir=$((bad_gitdir+1)) ;;
+    esac
+  done < <(find "$STAGE/Works/Bangunindo/BLIV" "$STAGE/.herdr" -xdev -name .git -type f -print0 2>/dev/null)
+
+
   while IFS= read -r -d '' g; do
     root=$(dirname "$g")
-    if [ -f "$g" ]; then
-      gd=$(sed -n 's/^gitdir: //p' "$g")
-      case "$gd" in
-        /*) resolved=$(realpath -m -- "$gd" 2>/dev/null || echo "$gd") ;;
-        *)  resolved=$(realpath -m -- "$root/$gd" 2>/dev/null || echo "$root/$gd") ;;
-      esac
-      case "$resolved" in
-        "$STAGE"/*) : ;;
-        *) log "BAD gitdir outside stage: $g -> $gd (resolved $resolved)"; bad_gitdir=$((bad_gitdir+1)) ;;
-      esac
-    fi
     if "$GIT" -c safe.directory='*' -C "$root" fsck --full --strict >>"$EVID/git-fsck.log" 2>&1; then
       git_pass=$((git_pass+1))
     else
@@ -267,7 +271,10 @@ do_stage() {
         preexisting=$((preexisting+1)); printf '%s\n' "$root" >>"$EVID/git-preexisting.txt"
       fi
     fi
-  done < <(find "$STAGE/Works/Bangunindo/BLIV" "$STAGE/.herdr" -xdev \( -name .git -type d -o -name .git -type f \) -print0 2>/dev/null)
+  done < <(
+    find "$STAGE/Works/Bangunindo/BLIV/repos" -maxdepth 4 -name .git -print0 2>/dev/null
+    find "$STAGE/.herdr/worktrees" -maxdepth 3 -name .git -print0 2>/dev/null
+  )
   log "git fsck: pass=$git_pass preexisting=$preexisting regression=$regression bad_gitdir=$bad_gitdir"
 
   : >"$EVID/git-prunable.txt"
