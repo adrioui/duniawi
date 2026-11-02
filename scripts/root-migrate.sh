@@ -25,10 +25,10 @@ ROOT_EVID=/var/log/duniawi-migration
 EVID=$ROOT_EVID/$STAMP
 REPO=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 DURABLE_REPO=/var/lib/duniawi-src
-SQLITE=$(ls -d /nix/store/*sqlite-3*-bin/bin/sqlite3 2>/dev/null | head -1)
-GITLEAKS=$(ls -d /nix/store/*gitleaks-*/bin/gitleaks 2>/dev/null | head -1)
-GIT=$(command -v git 2>/dev/null || ls -d /nix/store/*git-2.5*/bin/git 2>/dev/null | head -1)
-RG=$(command -v rg 2>/dev/null || ls -d /nix/store/*ripgrep-*/bin/rg 2>/dev/null | head -1)
+SQLITE=$(find /nix/store -maxdepth 3 -path '*sqlite-3*-bin/bin/sqlite3' -print -quit 2>/dev/null)
+GITLEAKS=$(find /nix/store -maxdepth 3 -path '*gitleaks-*/bin/gitleaks' -print -quit 2>/dev/null)
+GIT=$(command -v git 2>/dev/null || find /nix/store -maxdepth 3 -path '*git-2.5*/bin/git' -print -quit 2>/dev/null)
+RG=$(command -v rg 2>/dev/null || find /nix/store -maxdepth 3 -path '*ripgrep-*/bin/rg' -print -quit 2>/dev/null)
 FAIL=0
 
 [ "$(id -u)" -eq 0 ] || { echo "FATAL: run as root from a local TTY" >&2; exit 1; }
