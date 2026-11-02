@@ -44,6 +44,7 @@ the row says otherwise. No secret value is recorded.
 | 31 | In-scope SQLite databases are intact | `tests/db-audit.sh` over 1,228 DBs | 0 | `evidence/migration/db-audit.log` | 2026-10-31T20:40+07:00 | SQLite `integrity_check` | Pass: 1,228 ok, 0 bad |
 | 32 | Proxy handles upstream failure paths | `nix build .#checks.x86_64-linux.amp-deepseek` | 0 | proxy test log | 2026-10-31T20:45+07:00 | Node test harness | Pass: 404, 502, 504, set-cookie drop, existing 200/401/413/503 |
 | 33 | Final scope inventory is captured | `tests/scope-audit.sh` | 0 | `evidence/migration/scope-audit.log`; `secret-path-inventory.txt` | 2026-10-31T20:46+07:00 | Fresh filesystem walk | Pass: 1,770,800 candidate files before excludes; 1,228 DBs; 1,779 secret-pattern paths (excluded) |
+| 34 | The rehearsal proves the data path against the shipped scripts | `nix build --no-link .#checks.x86_64-linux.migration-rehearsal` | 0 | `/var/log/duniawi-migration/20261102T085259/03b-migration-rehearsal-fresh-test.log`; `03b-migration-rehearsal-fresh.log` | 2026-11-02T08:57:45+07:00 | NixOS test harness (fresh local VM run) | Pass (gate green, 61.91 s) / NotRun (verify-home.sh oracle 2 aborts on `comm` locale mismatch; exclusion reconciliation unproven; oracle 1 and direct assertions pass) |
 
 ## Current decision
 
