@@ -5,8 +5,7 @@
       boot = {
         loader.systemd-boot = {
           enable = true;
-          
-          
+
           configurationLimit = 10;
         };
         loader.efi.canTouchEfiVariables = true;
@@ -65,8 +64,6 @@
 
       security.rtkit.enable = true;
 
-      
-      
       zramSwap.enable = true;
 
       programs.zsh.enable = true;
@@ -83,7 +80,6 @@
           BROWSER = "helium";
         };
 
-        
         systemPackages = with pkgs; [
           curl
           file
@@ -101,8 +97,6 @@
         ];
       };
 
-      
-      
       services.openssh.enable = false;
       system.autoUpgrade.enable = false;
 

@@ -199,9 +199,7 @@ copy_transcript() {
 }
 
 run_as_user() {
-
-
-    local cd_home='cd "$HOME" && exec "$@"'
+    local cd_home="cd \"\$HOME\" && exec \"\$@\""
     if [ "$(id -u)" -eq 0 ]; then
 
 
@@ -486,9 +484,7 @@ l4_home() {
             if [ -z "$declared" ] || [ "$(printf '%s' "$declared" | jq 'length')" -eq 0 ]; then
                 record L4 session-vars "declared keys match zsh" "no declared keys" Fail "$SRC"
             else
-
-
-                vars=$(run_as_user zsh -lic 'printf "%s|%s|%s|%s|%s|%s" "${EDITOR-}" "${VISUAL-}" "${PAGER-}" "${BROWSER-}" "${MOZ_ENABLE_WAYLAND-}" "${NIXOS_OZONE_WL-}"' 2>/dev/null | tail -n 1 || true)
+                vars=$(run_as_user zsh -lic "printf \"%s|%s|%s|%s|%s|%s\" \"\${EDITOR-}\" \"\${VISUAL-}\" \"\${PAGER-}\" \"\${BROWSER-}\" \"\${MOZ_ENABLE_WAYLAND-}\" \"\${NIXOS_OZONE_WL-}\"" 2>/dev/null | tail -n 1 || true)
                 [ -n "$vars" ] || vars='|||||'
                 for key in EDITOR VISUAL PAGER BROWSER MOZ_ENABLE_WAYLAND NIXOS_OZONE_WL; do
                     want=$(printf '%s' "$declared" | jq -r --arg k "$key" '.[$k] // empty')

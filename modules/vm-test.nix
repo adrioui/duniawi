@@ -26,10 +26,6 @@ in
           etc."migration-fixture.sh".source = ../tests/migration-fixture.sh;
         };
 
-        
-        
-        
-        
         nixpkgs.pkgs = lib.mkForce (
           import inputs.nixpkgs-stable {
             system = "x86_64-linux";
@@ -39,14 +35,9 @@ in
         nixpkgs.config = lib.mkForce { };
         assertions = lib.mkForce [ ];
 
-        
-        
         boot.loader.systemd-boot.enable = lib.mkForce false;
         boot.loader.efi.canTouchEfiVariables = lib.mkForce false;
 
-        
-        
-        
         services = {
           xserver.enable = lib.mkForce false;
           displayManager.sddm.enable = lib.mkForce false;
@@ -74,15 +65,11 @@ in
 
         zramSwap.enable = lib.mkForce false;
 
-        
         users.users.adrioui = {
           initialPassword = lib.mkForce "test";
           linger = lib.mkForce true;
         };
 
-        
-        
-        
         home-manager.users.adrioui.systemd.user.services.amp-deepseek-proxy.Service.Environment =
           lib.mkForce
             [

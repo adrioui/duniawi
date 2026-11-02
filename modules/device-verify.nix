@@ -30,17 +30,11 @@ _: {
       };
 
       config = lib.mkIf cfg.enable {
-        
+
         environment.systemPackages = [ cfg.package ];
 
-        
-        
-        
         environment.etc."duniawi/device-verify.sh".source = lib.getExe cfg.package;
 
-        
-        
-        
         systemd.tmpfiles.rules = [
           "d /var/lib/duniawi 0750 root root -"
           "d /var/lib/duniawi/evidence 0750 root root -"

@@ -4,9 +4,6 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
 
-    
-    
-    
     nixpkgs-stable.url = "github:NixOS/nixpkgs/6f06d204d8f2d8761d9da78778745974a3216381";
 
     darwin.url = "github:nix-darwin/nix-darwin/master";

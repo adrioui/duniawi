@@ -25,8 +25,7 @@
           home-manager = {
             useGlobalPkgs = true;
             useUserPackages = true;
-            
-            
+
             backupFileExtension = "hm-backup";
             sharedModules = [ inputs.sops-nix.homeManagerModules.sops ];
           };
@@ -73,9 +72,6 @@
         den.aspects.nixosUser
       ];
 
-      
-      
-      
       nixos =
         { pkgs, ... }:
         {

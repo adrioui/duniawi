@@ -13,10 +13,6 @@
 writeShellApplication {
   name = "device-verify";
 
-  
-  
-  
-  
   runtimeInputs = [
     coreutils
     findutils

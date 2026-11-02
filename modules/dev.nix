@@ -23,25 +23,22 @@
         pkgs.lazydocker
         pkgs.eslint
         pkgs.curl
-        pkgs.nixfmt-tree 
-        pkgs.statix 
-        pkgs.deadnix 
-        pkgs.nix-tree 
+        pkgs.nixfmt-tree
+        pkgs.statix
+        pkgs.deadnix
+        pkgs.nix-tree
       ];
     };
 
   den.aspects.dev.nixos =
     { config, ... }:
     {
-      
-      
+
       virtualisation.podman = {
         enable = true;
         dockerCompat = true;
       };
 
-      
-      
       programs.nix-ld.enable = true;
 
       assertions = [

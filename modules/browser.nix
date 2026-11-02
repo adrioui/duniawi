@@ -2,8 +2,7 @@
   den.aspects.browser.nixos =
     { config, ... }:
     {
-      
-      
+
       assertions = [
         {
           assertion = !config.programs.firefox.enable;

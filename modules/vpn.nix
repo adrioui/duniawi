@@ -37,9 +37,7 @@
     nixos =
       { config, ... }:
       {
-        
-        
-        
+
         services.tailscale = {
           enable = true;
           useRoutingFeatures = "client";
@@ -56,8 +54,7 @@
     homeManager =
       { pkgs, ... }:
       {
-        
-        
+
         home.packages = [ pkgs.cloudflared ];
       };
   };

@@ -39,8 +39,6 @@
       config = lib.mkIf cfg.enable {
         home.packages = [ proxy ];
 
-        
-        
         sops = lib.mkIf (cfg.sopsFile != null) {
           secrets = {
             "amp-deepseek/upstream-key" = {
@@ -65,9 +63,7 @@
         systemd.user.services.amp-deepseek-proxy = {
           Unit = {
             Description = "Amp to DeepSeek Anthropic proxy";
-            
-            
-            
+
             After = lib.optional (cfg.sopsFile != null) "sops-nix.service";
             Wants = lib.optional (cfg.sopsFile != null) "sops-nix.service";
           };
@@ -82,9 +78,6 @@
               "UPSTREAM_PATH=/anthropic"
             ];
 
-            
-            
-            
             EnvironmentFile =
               lib.optional (cfg.sopsFile != null)
                 "-${config.sops.templates."amp-deepseek.env".path}";

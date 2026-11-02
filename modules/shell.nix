@@ -30,9 +30,6 @@
       };
   };
 
-  
-  
-  
   den.aspects.shellDarwin.homeManager = _: {
     home.sessionVariables = {
       MAGNITUDE_USE_LOCAL = "1";

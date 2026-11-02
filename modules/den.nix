@@ -14,8 +14,6 @@
         aspect = den.aspects.t14;
         users.adrioui.aspect = den.aspects.adrioui;
 
-        
-        
         instantiate = inputs.nixpkgs-stable.lib.nixosSystem;
         home-manager.module = inputs.home-manager-stable.nixosModules.home-manager;
       };

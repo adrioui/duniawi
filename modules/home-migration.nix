@@ -1,22 +1,5 @@
 {
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+
   den.aspects.homeMigration.nixos =
     { config, ... }:
     {
