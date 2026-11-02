@@ -1,0 +1,9 @@
+order	gate	command	exit	seconds	log
+01	flake-check	nix flake check --no-build --all-systems	0	24	/var/log/duniawi-migration/20261102T103246/gates/01-flake-check.log
+02	nixfmt	nix build --no-link .#checks.x86_64-linux.nixfmt	0	2	/var/log/duniawi-migration/20261102T103246/gates/02-nixfmt.log
+03	deadnix	nix build --no-link .#checks.x86_64-linux.deadnix	0	1	/var/log/duniawi-migration/20261102T103246/gates/03-deadnix.log
+04	statix	nix build --no-link .#checks.x86_64-linux.statix	0	1	/var/log/duniawi-migration/20261102T103246/gates/04-statix.log
+05	shellcheck	shellcheck -S style scripts/*.sh	0	1	/var/log/duniawi-migration/20261102T103246/gates/05-shellcheck.log
+06	actionlint	actionlint .github/workflows/ci.yml	0	0	/var/log/duniawi-migration/20261102T103246/gates/06-actionlint.log
+07	gitleaks	gitleaks detect --no-git --source . --config .gitleaks.toml --redact	0	0	/var/log/duniawi-migration/20261102T103246/gates/07-gitleaks.log
+08	rehearsal	nix build -L --rebuild .#checks.x86_64-linux.migration-rehearsal	0	83	/var/log/duniawi-migration/20261102T103246/gates/08-rehearsal.log

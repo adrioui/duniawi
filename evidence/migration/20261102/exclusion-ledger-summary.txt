@@ -1,0 +1,27 @@
+Exclusion ledger summary (2026-11-02)
+Stamp: 20261102T103246
+Source: /run/media/adrioui/backup/home
+Stage: /home/adrioui.restore
+
+unique source files: 1,770,800
+stage files:         1,667,037
+not copied:            103,763
+unexplained:                 0
+
+Ledger rules: 27
+Raw rule matches: 118,556 (overlaps; first-match rsync rules can match one path)
+Rules with first-party code removed: 0
+Generated code matches (node_modules/dist/lib-dist, regenerable): 61,403
+Secret-path rules that fired:
+  .ssh/                 2
+  .env (exact basename) 45
+  BLIV/license_key.txt  1
+  id_ed25519            1 (also matched by .ssh/)
+
+The 45 exact-basename .env files are the security fix in commit 676617e.
+No rule removed first-party .py/.ts/.js/.go/.rs/.sh/.nix source. The code
+matches are under generated dependency/build trees and are marked "generated"
+in exclusion-ledger.tsv.
+
+Full ledger: /var/log/duniawi-migration/20261102T103246/exclusion-ledger.tsv
+Not-explained: /var/log/duniawi-migration/20261102T103246/not-explained.txt (empty)

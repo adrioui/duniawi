@@ -1,0 +1,28 @@
+rule	matched	code_matches	code_removed	examples
+(^|/)\.ssh/	2	0	no	Works/Bangunindo/BLIV/.ssh/id_ed25519|Works/Bangunindo/BLIV/.ssh/id_ed25519.pub
+(^|/)\.gnupg/	0	0	no	
+(^|/)\.password-store/	0	0	no	
+(^|/)\.aws/credentials$	0	0	no	
+(^|/)\.netrc$	0	0	no	
+(^|/)\.git-credentials$	0	0	no	
+(^|/)\.env$	45	0	no	.herdr/worktrees/btj--bliv-data-house/bliv-5173-semantic-general-export/src/backend_data_house/.env|.herdr/worktrees/btj--bliv-mlops/bliv-5193-auto-retrain-model/mlflow/server/js/.env|.herdr/worktrees/btj--bliv-mlops/bliv-5689-mcp-server/mlflow/server/js/.env
+^\.config/gh/hosts\.yml$	0	0	no	
+^\.config/sops/age/keys\.txt$	0	0	no	
+^\.docker/config\.json$	0	0	no	
+(^|/)\.kube/config$	0	0	no	
+^Works/Bangunindo/BLIV/license_key\.txt$	1	0	no	Works/Bangunindo/BLIV/license_key.txt
+(^|/)id_rsa$	0	0	no	
+(^|/)id_ed25519$	1	0	no	Works/Bangunindo/BLIV/.ssh/id_ed25519
+(^|/)id_ecdsa$	0	0	no	
+\.kdbx$	0	0	no	
+^Personal/(.*/)?node_modules/	101719	53052	generated	Personal/financial/actual/node_modules/.yarn-state.yml|Personal/financial/actual/node_modules/7zip-bin/7x.sh|Personal/financial/actual/node_modules/7zip-bin/LICENSE.txt
+^Personal/(.*/)?\.yarn/cache/	1937	0	no	Personal/financial/actual/.yarn/cache/.gitignore|Personal/financial/actual/.yarn/cache/7zip-bin-npm-5.2.0-965f95d0fd-5339c7a56f.zip|Personal/financial/actual/.yarn/cache/@aashutoshrathi-word-wrap-npm-1.2.6-5b1d95e487-6eebd12a5c.zip
+^Personal/(.*/)?\.swc/	1	0	no	Personal/financial/actual/packages/desktop-client/.swc/plugins/v7_linux_x86_64_0.107.1/ae4f2be7e4212dbd9fb44ba60e9ddd8ef4d1a634e368652840b8bf0ed9c6a2f5
+^Personal/(.*/)?lib-dist/	3	1	generated	Personal/financial/actual/packages/loot-core/lib-dist/browser/kcab.worker.dev.js|Personal/financial/actual/packages/loot-core/lib-dist/browser/kcab.worker.dev.js.map|Personal/financial/actual/packages/loot-core/lib-dist/browser/stats.json
+^Personal/(.*/)?dist/	14792	8350	generated	Personal/financial/actual/node_modules/@adobe/css-tools/dist/index.cjs|Personal/financial/actual/node_modules/@adobe/css-tools/dist/index.cjs.map|Personal/financial/actual/node_modules/@adobe/css-tools/dist/index.mjs
+^Personal/(.*/)?target/	0	0	no	
+^Learns/(.*/)?airflow/logs/	0	0	no	
+^Learns/(.*/)?\.dlt/	8	0	no	Learns/data-engineering/projects/dlt-cdc/.dlt/.sources|Learns/data-engineering/projects/dlt-cdc/.dlt/config.toml|Learns/data-engineering/projects/dlt-cdc/.dlt/secrets.toml
+^Learns/(.*/)?surrealdb-data/	11	0	no	Learns/vibing/musiqasik/surrealdb-data/musiqasik.db/000016.sst|Learns/vibing/musiqasik/surrealdb-data/musiqasik.db/000017.log|Learns/vibing/musiqasik/surrealdb-data/musiqasik.db/000018.sst
+\.sock$	0	0	no	
+\.pid$	36	0	no	.herdr/worktrees/btj--bliv-data-house/bliv-5430-adjustment-approval-database-instance/.devdata/data-house-manual.pid|.herdr/worktrees/btj--bliv-data-house/bliv-5430-adjustment-approval-database-instance/.devdata/process-compose-dev.pid|.herdr/worktrees/btj--bliv-data-house/bliv-5621-jdbc-driver-improvement/.devdata/postgres/postmaster.pid

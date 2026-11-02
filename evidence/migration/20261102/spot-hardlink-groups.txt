@@ -1,0 +1,5 @@
+source hardlink paths present in stage: 31304
+source multi-link groups with >=2 paths in stage: 11407
+broken hardlink groups: 0
+stage hardlink paths not found in source: 0
+hardlink-group-integrity: PASS

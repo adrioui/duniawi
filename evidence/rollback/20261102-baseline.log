@@ -1,0 +1,71 @@
+== rollback baseline ==
+2026-11-02T10:39:48+07:00
+-- system generations --
+   1   2026-10-31 10:49:19   (current)
+-- boot entries --
+         type: Boot Loader Specification Type #1 (.conf)
+        title: NixOS (default) (selected)
+           id: nixos-generation-1.conf
+       source: /boot//loader/entries/nixos-generation-1.conf (on the EFI System Partition)
+     sort-key: nixos
+      version: Generation 1 NixOS Yarara 26.05.13164.6f06d204d8f2 (Linux 6.18.59), built on 2026-10-31
+        linux: /boot//EFI/nixos/cmpgyrhwmyhc886w5aykkdjwyhd4k9mx-linux-6.18.59-bzImage.efi
+       initrd: /boot//EFI/nixos/zvqa2rw2idhzqxy6blxf3lxxa0p1sdd4-initrd-linux-6.18.59-initrd.efi
+      options: init=/nix/store/04q282abf92ypcwxqarbwzvrym4fvbcv-nixos-system-nixos-26.05.13164.6f06d204d8f2/init root=fstab loglevel=4 lsm=landlock,yama,bpf
+
+         type: Automatic
+        title: Reboot Into Firmware Interface
+           id: auto-reboot-to-firmware-setup
+       source: /sys/firmware/efi/efivars/LoaderEntries-4a67b082-0a4c-41cf-b6c7-440b29bb8c4f (on the EFI System Partition)
+-- profile links --
+lrwxrwxrwx 1 root root 13 Oct 31 10:49 /nix/var/nix/profiles/system -> system-1-link
+lrwxrwxrwx 1 root root 87 Oct 31 10:49 /nix/var/nix/profiles/system-1-link -> /nix/store/04q282abf92ypcwxqarbwzvrym4fvbcv-nixos-system-nixos-26.05.13164.6f06d204d8f2
+-- boot loader --
+System:
+      Firmware: UEFI 2.70 (Lenovo 0.5136)
+ Firmware Arch: x64
+   Secure Boot: disabled (setup)
+  TPM2 Support: yes
+  Measured UKI: no
+  Boot into FW: supported
+
+Current Boot Loader:
+       Product: systemd-boot 260.5
+     Features: ✓ Boot counting
+               ✓ Menu timeout control
+               ✓ One-shot menu timeout control
+               ✓ Default entry control
+               ✓ One-shot entry control
+               ✓ Support for XBOOTLDR partition
+               ✓ Support for passing random seed to OS
+               ✓ Load drop-in drivers
+               ✓ Support Type #1 sort-key field
+               ✓ Support @saved pseudo-entry
+               ✓ Support Type #1 devicetree field
+               ✓ Enroll SecureBoot keys
+               ✓ Retain SHIM protocols
+               ✓ Menu can be disabled
+               ✓ Multi-Profile UKIs are supported
+               ✓ Loader reports network boot URL
+               ✓ Support Type #1 uki field
+               ✓ Support Type #1 uki-url field
+               ✓ Loader reports active TPM2 PCR banks
+     Partition: /dev/disk/by-partuuid/f61d565f-b7a7-4196-9dac-646514405fd4
+        Loader: └─/boot//EFI/systemd/systemd-bootx64.efi
+ Current Entry: nixos-generation-1.conf
+
+Random Seed:
+ System Token: set
+       Exists: yes
+
+Available Boot Loaders on ESP:
+          ESP: /boot (/dev/disk/by-partuuid/f61d565f-b7a7-4196-9dac-646514405fd4)
+         File: ├─/boot//EFI/systemd/systemd-bootx64.efi (systemd-boot 260.5)
+-- compatibility link state --
+ls: cannot access '/var/home': No such file or directory
+ls: cannot access '/var/home/adrifadilah': No such file or directory
+-- live home --
+/home/adrioui directory 1000:100 700 4096 2026-11-02 08:45:31.781837790 +0700
+-- current system --
+/nix/store/04q282abf92ypcwxqarbwzvrym4fvbcv-nixos-system-nixos-26.05.13164.6f06d204d8f2
+26.05.13164.6f06d204d8f2 (Yarara)

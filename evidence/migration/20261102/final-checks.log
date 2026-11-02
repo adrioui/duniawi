@@ -1,0 +1,36 @@
+2026-11-02T13:17:14+07:00
+== verify rc/elapsed ==
+0
+2021
+== git pre-existing ==
+Works/Bangunindo/BLIV/repos/clusters/cluster_2/btj--bliv-mlops
+Works/Bangunindo/BLIV/repos/clusters/cluster_2/btj--bliv-mlops
+Works/Bangunindo/BLIV/repos/clusters/cluster_2/btj--bliv-mlops
+== db failures ==
+(none)
+== not-explained lines ==
+0
+== stage checks ==
+/home/adrioui.restore directory 1000:1000 700 4096 2026-11-02 10:55:22.881945993 +0700
+75
+0
+== backup ro ==
+PASS
+== live home ==
+/home/adrioui directory 1000:100 700 4096 2026-11-02 08:45:31.781837790 +0700
+== generation/bootctl ==
+   1   2026-10-31 10:49:19   (current)
+         type: Boot Loader Specification Type #1 (.conf)
+        title: NixOS (default) (selected)
+           id: nixos-generation-1.conf
+       source: /boot//loader/entries/nixos-generation-1.conf (on the EFI System Partition)
+     sort-key: nixos
+      version: Generation 1 NixOS Yarara 26.05.13164.6f06d204d8f2 (Linux 6.18.59), built on 2026-10-31
+        linux: /boot//EFI/nixos/cmpgyrhwmyhc886w5aykkdjwyhd4k9mx-linux-6.18.59-bzImage.efi
+       initrd: /boot//EFI/nixos/zvqa2rw2idhzqxy6blxf3lxxa0p1sdd4-initrd-linux-6.18.59-initrd.efi
+      options: init=/nix/store/04q282abf92ypcwxqarbwzvrym4fvbcv-nixos-system-nixos-26.05.13164.6f06d204d8f2/init root=fstab loglevel=4 lsm=landlock,yama,bpf
+
+         type: Automatic
+        title: Reboot Into Firmware Interface
+== no /var/home link ==
+ls: cannot access '/var/home': No such file or directory

@@ -1,0 +1,61 @@
+Duniawi home migration — real stage summary
+Stamp: 20261102T103246
+Host: nixos / t14, NixOS 26.05.13164.6f06d204d8f2
+Repo: /usr/local/lib/duniawi, branch feat/home-migration
+Source: /run/media/adrioui/backup/home (/dev/sda1, ext4, ro)
+Stage: /home/adrioui.restore
+
+Restore:
+  start: 2026-11-02T10:47:58+07:00
+  end:   2026-11-02T11:04:39+07:00
+  elapsed: 1001 s
+  transferred: 79,528,076,464 bytes
+  stage apparent: 79,529,741,983 bytes
+  files: 1,667,037
+  dirs:  277,052
+  throughput: 79.45 MB/s (75.77 MiB/s)
+  checks:
+    no-uid-0-in-mapped-trees PASS 0
+    no-foreign-uid PASS 0
+    no-foreign-gid PASS 0
+    home-mode PASS 700
+  root-owned outside mapped trees: 75
+    Personal/financial/actual: 52
+    Learns: 23
+  .env files in stage: 0
+  backup after: /dev/sda1 ... ro,nosuid,nodev,relatime,errors=remount-ro (ERE PASS)
+  live home: mtime unchanged 2026-11-02T08:45:31+07; no command targeted it
+
+Verification integrity:
+  first verify PASS 2026-11-02T11:39:41+07 (verify-before-spotcheck-mutation.tsv)
+  first spot-check opened 5 staged .cursor/chats DBs in place; SQLite removed
+    5 zero-byte -wal and 32 KiB -shm files. DB SHA-256 and mtime unchanged.
+  repair: rsync -aHASX from read-only source for .cursor/chats/
+    stage counts restored: 926 DB / 408 WAL / 408 SHM
+    fast drift for .cursor/chats: 0 lines
+
+Hardlink fidelity:
+  per-path rsync left 3,830 cross-include groups split (3,470 BLIV<->worktree,
+  360 Learns<->BLIV; 4,636 links), with 0 metadata/xattr mismatches.
+  durable fix: 281f791 (one rsync invocation; rehearsal cross-hardlink assertion)
+  current stage relinked in place: 3,830 groups / 4,636 links, 0 errors
+  111 temporary .relink names removed; 0 remain
+  final group check: 0 broken groups, 0 mixed source groups, 0 missing source
+  stage hardlinked files: 31,304 (source present-link population)
+
+Directory-mtime refresh:
+  rsync -aHASX (with -a) reverted 32,945 mapped owners in .herdr/BLIV to root;
+  re-applied chown -h 1000:1000 only in those trees:
+    mapped uid0 after: 0
+    stage uid0 outside mapped: 75
+    setuid/setgid mapped: 0
+    caps mapped: 0
+
+Single-rsync smoke test:
+  real subset with file+dir+mapped-tree sources; 171 files, 185.7 MB,
+  rsync -n -c drift 0, stage checks PASS.
+
+Final full verify: see verify.tsv/verify.log (post-repair, post-hardlink,
+post-remap).
+
+Evidence root: /var/log/duniawi-migration/20261102T103246

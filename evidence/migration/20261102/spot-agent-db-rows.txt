@@ -1,0 +1,7 @@
+DB .cursor/chats/9d2f6ccc2138247a3fd8778f52e68e24/2d014c16-3d46-4c14-8278-abc1f05f8cba/store.db
+  source: tables=2
+    source.blobs rows=3178
+    source.meta rows=1
+  stage: tables=2
+    stage.blobs rows=3178
+    stage.meta rows=1

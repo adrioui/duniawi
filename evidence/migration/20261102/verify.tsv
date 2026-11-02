@@ -1,0 +1,8 @@
+drift-lines	PASS	0
+unexplained-exclusions	PASS	0
+secret-paths-present	PASS	0
+gitleaks	NotRun	no binary
+worktree-pointers	PASS	0
+git-fsck-regression	PASS	0
+sqlite-integrity	PASS	0
+verify-complete	PASS	6
