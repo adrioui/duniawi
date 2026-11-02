@@ -16,6 +16,23 @@ Operator documentation for this nix-darwin repository.
 | [Applications](applications.md) | editors, Helium, media apps, XcodeBuildMCP |
 | [Maintenance](maintenance.md) | clean worktrees, validation gates, device acceptance, rebuilds, updates |
 
+## Device acceptance
+
+The t14 gate is a Nix package and a Den aspect, not a copied script:
+
+- `pkgs/device-verify.nix` packages `scripts/device-verify.sh` with
+  `writeShellApplication` and pinned parsers;
+- `modules/device-verify.nix` exposes `duniawi.deviceVerify.{enable,package,rescueIsoSha256}`,
+  installs `/run/current-system/sw/bin/device-verify`, keeps
+  `/etc/duniawi/device-verify.sh` as a compatibility path, and declares the
+  root-only `/var/lib/duniawi/evidence` tree;
+- `modules/t14.nix` includes `den.aspects.deviceVerify`; `modules/per-system.nix`
+  exposes `packages.x86_64-linux.device-verify`.
+
+Run the strict gate as root; a user run is a preview whose root-only rows are
+`NotRun`. The evidence schema and the `Attested` rules are in
+[Maintenance](maintenance.md#device-acceptance-gate-t14).
+
 ## Reading order
 
 1. `architecture.md` for the repository shape.

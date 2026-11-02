@@ -348,6 +348,16 @@ flowchart LR
 | 7 | Retain | `System` | generations, USB, menu | `N-2`, `Rescue` | `nix-env`, `bootctl` | boot transcript |
 | 8 | Record | results | update dossier and docs | `Verdict` | P5 | evidence dir |
 
+The boot transcript in node 7 is not a free-form note. It is
+`/var/lib/duniawi/boots/<boot_id>/boot.txt`, written by a root oneshot from
+`/proc/sys/kernel/random/boot_id`, `/proc/cmdline`, `bootctl status` and the
+generation revision. The N-1 menu transcript lives in the root evidence tree
+and is `Attested` only when the journal has the same `_BOOT_ID` and its kernel
+command line carries the N-1 `init=`. The N-2 record is the journal's
+`Kernel command line:` line for that generation. Root ownership and the
+journal binding make the record stronger than a file the operator typed; they
+are not a cryptographic quote, and root on the target can still forge it.
+
 ### Device failures
 
 | Node | Failure | Strategy | Evidence required |

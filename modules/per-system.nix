@@ -41,6 +41,9 @@
       }
       // lib.optionalAttrs isLinux {
         default = proxy;
+        device-verify = pkgs.callPackage ../pkgs/device-verify.nix {
+          rescueIsoSha256 = inputs.self.nixosConfigurations.t14.config.duniawi.deviceVerify.rescueIsoSha256;
+        };
       };
 
       devShells.default = pkgs.mkShell {

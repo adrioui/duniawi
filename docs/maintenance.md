@@ -34,38 +34,92 @@ nix build .#checks.aarch64-darwin.home-manager-activation --print-out-paths
 
 ## Device acceptance gate (t14)
 
-`t14` installs its acceptance gate from the flake at
-`/etc/duniawi/device-verify.sh`; the review copy is `scripts/device-verify.sh`.
+`t14` installs the gate from the flake as
+`/run/current-system/sw/bin/device-verify`; `/etc/duniawi/device-verify.sh` is
+kept as the runbook-compatible path. The source is
+`scripts/device-verify.sh`, packaged by `pkgs/device-verify.nix` with pinned
+parsers (`coreutils`, `findutils`, `gawk`, `git`, `gnugrep`, `gnused`, `jq`) and
+enabled by `modules/device-verify.nix`.
 
 ```bash
-bash /etc/duniawi/device-verify.sh --thread "$AMP_THREAD_ID"
-bash /etc/duniawi/device-verify.sh --thread "$AMP_THREAD_ID" --strict
+# Root acceptance: L1 bootctl rows, journal binding and evidence need root.
+sudo /run/current-system/sw/bin/device-verify \
+  --thread "$AMP_THREAD_ID" --strict
+
+# User preview: root-only rows are NotRun; everything user-scoped still runs.
+/run/current-system/sw/bin/device-verify --thread "$AMP_THREAD_ID"
 ```
 
+Evidence defaults to a root-only tree:
+
+```text
+/var/lib/duniawi/evidence/<stamp>/verify.tsv
+/var/lib/duniawi/evidence/<stamp>/context.json
+/var/lib/duniawi/evidence/<stamp>/manifest.sha256
+/var/lib/duniawi/evidence/<stamp>/menu-rehearsal.txt
+/var/lib/duniawi/evidence/<stamp>/rescue-media.txt
+```
+
+Directories are `0750 root:root`; files are `0640 root:root`. A non-root run
+uses `${XDG_STATE_HOME:-$HOME/.local/state}/duniawi/evidence/<stamp>` and its
+required physical rows stay `NotRun`. Root evidence is never chowned to the
+login user.
+
 Rows are TSV: `layer check expected actual result evidence`, followed by one
-`verify-complete` line with the counts. Exit is `0` when every required row
-passes, `1` on any `Fail`, and `2` when `--strict` meets a required `NotRun`.
-A run without the final line aborted; treat it as a failure, not a pass.
+`verify-complete checks=N pass=N fail=N notrun=N attested=N` line. Results are
+`Pass`, `Fail`, `NotRun`, and `Attested`. `Attested` is reserved for the two
+physical transcripts: the menu transcript is Attested only when its `boot_id`
+is in the journal and that boot's kernel command line carries the N-1
+`init=`; the rescue transcript is Attested only when its `iso_sha256` matches
+`duniawi.deviceVerify.rescueIsoSha256` and its `loader.conf` block is present.
+A missing transcript is a required `NotRun`; a wrong binding is `Fail`.
+
+Exit is `0` when every required row passes or is Attested, `1` on any `Fail`,
+and `2` when `--strict` meets a required `NotRun`. A run without the final line
+or without `manifest.sha256` aborted; treat it as a failure, not a pass.
 
 `NotRun` is allowed for physical checks (suspend/resume, audio playback,
 Bluetooth pairing, backlight, touchpad, camera, fingerprint, firmware update,
-hibernation, encryption) and for the migration handoff. It is not allowed for
-L1, L2, L4, L5's model row, L6, or the declared-equals-running row.
-`/boot` is root-only, so run the strict pass from a root TTY; the script then
-drops user-scoped rows to `adrioui`, and the model row keeps using that
-account's Amp provider.
+hibernation, encryption) and for the migration handoff. The required
+`Attested` rows are L6/menu-rehearsal and L6/rescue-media.
+
+L6 proves more than the revision string:
+
+- `revision-format` and `revision-source` compare `nixos-version` with the
+  durable clone's HEAD;
+- `revision-build` evaluates
+  `nixosConfigurations.t14.config.system.build.toplevel.outPath` from
+  `/var/lib/duniawi-src` and requires it to equal `/run/current-system`;
+- `generations` requires exact `system-<N>-link`, `system-<N-1>-link` and
+  `system-<N-2>-link` targets;
+- `n-2-intact` runs `nix store verify --recursive --no-trust` on N-2;
+- `n-2-boot` scans the journal for a boot whose kernel command line has the
+  N-2 `init=`;
+- `menu-rehearsal` and `rescue-media` are the Attested rows above.
 
 The negative gate is part of the proof:
 
 ```bash
-bash /etc/duniawi/device-verify.sh --expect-revision deadbeef --thread "$AMP_THREAD_ID"
+/run/current-system/sw/bin/device-verify --expect-revision deadbeef \
+  --thread "$AMP_THREAD_ID"
 # exit 1, with a FAIL on L6/revision-source
 ```
 
-L6 reads two operator transcripts from the evidence directory:
-`rescue-media.txt` (a booted installer USB) and `menu-rehearsal.txt` (booting
-N-1 and returning). The script cannot prove a physical boot; without the
-transcripts those rows stay `NotRun` and `--strict` exits 2.
+To attach transcripts written outside the evidence directory:
+
+```bash
+sudo /run/current-system/sw/bin/device-verify \
+  --evidence /var/lib/duniawi/evidence/<stamp> \
+  --menu-evidence /path/to/menu-rehearsal.txt \
+  --rescue-evidence /path/to/rescue-media.txt \
+  --thread "$AMP_THREAD_ID" --strict
+```
+
+The menu transcript must contain a `boot_id=` line from the N-1 boot. The
+rescue transcript must contain `iso_sha256=94c9...` and the `loader.conf` block
+printed by `bootctl --esp-path`. A transcript is operator evidence, not a
+cryptographic proof of a physical keypress; `Attested` means the boot or ISO
+binding checks out.
 
 ### Recorded revision
 

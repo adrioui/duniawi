@@ -181,13 +181,13 @@ file set with the live links.
 | Revision | commit SHA | `nixos-version --configuration-revision`, `git rev-parse` | `revision-format`, `revision-source` |
 | Generation | generation number | `/nix/var/nix/profiles` | `generations`, `n-2` |
 | ModelAccess | `provider/model` | `check-access` | `model-access` |
-| Evidence | directory | `$HOME/.local/state/duniawi/evidence/<stamp>` | `verify.tsv` |
+| Evidence | directory | `/var/lib/duniawi/evidence/<stamp>` (root) or `${XDG_STATE_HOME:-$HOME/.local/state}/duniawi/evidence/<stamp>` (user preview) | `verify.tsv`, `context.json`, `manifest.sha256` |
 
 ### 7.2 Variants
 
 | Variant | Values | Used by |
 |---|---|---|
-| LayerResult | `Pass`, `Fail`, `NotRun` | verifier, acceptance |
+| LayerResult | `Pass`, `Fail`, `NotRun`, `Attested` | verifier, acceptance |
 | ManagedPathState | `Absent`, `HomeManagerLink`, `ForeignFile`, `ForeignSymlink`, `BackedUp` | HM audit |
 | UnitDisposition | `Declared`, `Foreign`, `Archived` | unit audit |
 | GenerationRole | `Current`, `N-1`, `N-2`, `ISO` | retention |

@@ -16,6 +16,7 @@
         den.aspects.dev
         den.aspects.shell
         den.aspects.media
+        den.aspects.deviceVerify
       ];
 
       nixos =
@@ -29,6 +30,8 @@
             backupFileExtension = "hm-backup";
             sharedModules = [ inputs.sops-nix.homeManagerModules.sops ];
           };
+
+          duniawi.deviceVerify.enable = true;
 
           assertions = [
             {

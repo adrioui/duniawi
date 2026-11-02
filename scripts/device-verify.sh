@@ -22,17 +22,48 @@
 
 
 
+
+
+
+
+
 set -Eeuo pipefail
 export LC_ALL=C
 
+
+export PATH="$PATH:/run/current-system/sw/bin:/run/current-system/sw/sbin"
+
 PROVIDER_MODEL=${PROVIDER_MODEL:-deepseek/deepseek-v4.1-flash}
-EXPECTED_HM_PATHS=${EXPECTED_HM_PATHS:-14}
 TARGET_USER=${TARGET_USER:-adrioui}
+SRC=${NIX_SRC:-/var/lib/duniawi-src}
 
 EVID=
 EXPECT_REV=
 THREAD=${AMP_THREAD_ID:-}
 STRICT=0
+MENU_SRC=
+RESCUE_SRC=
+N=
+
+usage() {
+    cat <<'EOF'
+Usage: device-verify [options]
+
+  --evidence DIR        evidence directory (default: root
+                        /var/lib/duniawi/evidence/<stamp>; user
+                        ${XDG_STATE_HOME:-$HOME/.local/state}/duniawi/evidence/<stamp>)
+  --expect-revision SHA require the built-in revision to equal SHA
+  --thread THREAD       Amp thread for check-access (default AMP_THREAD_ID)
+  --menu-evidence FILE  copy the N-1 menu transcript into the evidence directory
+  --rescue-evidence FILE copy the USB rescue transcript into the evidence directory
+  --strict              a required NotRun exits 2
+  -h, --help            this help
+
+Evidence rows are Pass/Fail/NotRun/Attested. Attested means the transcript is
+bound to a real boot or to the pinned rescue ISO; it never means "probably fine".
+EOF
+}
+
 while [ $# -gt 0 ]; do
     case $1 in
         --evidence)
@@ -47,17 +78,26 @@ while [ $# -gt 0 ]; do
             THREAD=${2:?--thread needs a thread}
             shift 2
             ;;
+        --menu-evidence)
+            MENU_SRC=${2:?--menu-evidence needs a file}
+            shift 2
+            ;;
+        --rescue-evidence)
+            RESCUE_SRC=${2:?--rescue-evidence needs a file}
+            shift 2
+            ;;
         --strict)
             STRICT=1
             shift
             ;;
         -h | --help)
-            sed -n '2,26p' "$0"
+            usage
             exit 0
             ;;
         *)
             echo "unknown option $1" >&2
-            exit 2
+            usage >&2
+            exit 64
             ;;
     esac
 done
@@ -79,23 +119,31 @@ else
     TARGET_UID=$(id -u)
 fi
 
-STAMP=$(date +%Y%m%dT%H%M%S)
-EVID=${EVID:-$TARGET_HOME/.local/state/duniawi/evidence/$STAMP}
-mkdir -p "$EVID"
-EVID=$(readlink -f "$EVID")
+STAMP=${STAMP:-$(date +%Y%m%dT%H%M%S)}
 if [ "$(id -u)" -eq 0 ]; then
-    chown "$TARGET_USER:$(id -gn "$TARGET_USER")" "$EVID"
+    EVID=${EVID:-/var/lib/duniawi/evidence/$STAMP}
+    install -d -m 0750 -o root -g root "$EVID"
+else
+    EVID=${EVID:-${XDG_STATE_HOME:-$TARGET_HOME/.local/state}/duniawi/evidence/$STAMP}
+    install -d -m 0700 "$EVID"
 fi
+EVID=$(readlink -f "$EVID")
 
 TSV=$EVID/verify.tsv
-LOG=$EVID/verify.log
+LOG=$EVID/gate.log
+[ ! -e "$TSV" ] || {
+    echo "FATAL: evidence already exists: $TSV" >&2
+    exit 64
+}
 : >"$TSV"
+: >"$LOG"
 exec > >(tee -a "$LOG") 2>&1
 
 checks=0
 pass=0
 fail=0
 notrun=0
+attested=0
 required_notrun=0
 
 die() {
@@ -112,6 +160,7 @@ record() {
         Pass) pass=$((pass + 1)) ;;
         Fail) fail=$((fail + 1)) ;;
         NotRun) notrun=$((notrun + 1)) ;;
+        Attested) attested=$((attested + 1)) ;;
         *) die "unknown result: $result" ;;
     esac
     printf '%s\t%s\t%s\t%s\t%s\t%s\n' \
@@ -132,6 +181,20 @@ expect_eq() {
         record "$1" "$2" "$3" "$4" Pass "$5"
     else
         record "$1" "$2" "$3" "$4" Fail "$5"
+    fi
+}
+
+copy_transcript() {
+    local src=$1 dest=$2 src_real dest_real
+    [ -n "$src" ] || return 0
+    [ -f "$src" ] || return 0
+    src_real=$(readlink -f "$src")
+    dest_real=$(readlink -f "$dest" 2>/dev/null || true)
+    [ "$src_real" = "$dest_real" ] && return 0
+    if [ "$(id -u)" -eq 0 ]; then
+        install -m 0640 -o root -g root "$src" "$dest"
+    else
+        install -m 0600 "$src" "$dest"
     fi
 }
 
@@ -169,6 +232,9 @@ if [ -z "$JQ" ] && [ "$(id -u)" -eq 0 ]; then
     JQ=$(run_as_user bash -c 'command -v jq' 2>/dev/null || true)
 fi
 
+copy_transcript "$MENU_SRC" "$EVID/menu-rehearsal.txt"
+copy_transcript "$RESCUE_SRC" "$EVID/rescue-media.txt"
+
 preflight() {
     local gen home_files rel target got foreign=0 foreign_list=""
     log "=== preflight: declared paths and inputs ==="
@@ -176,7 +242,11 @@ preflight() {
     if [ -n "$THREAD" ]; then
         record L5 thread "provided" "$THREAD" Pass "--thread/AMP_THREAD_ID"
     else
-        record L5 thread "provided" "missing" Fail "--thread/AMP_THREAD_ID"
+        skip L5 thread "provided" "missing --thread/AMP_THREAD_ID" "$EVID" 1
+    fi
+
+    if [ "$(id -u)" -ne 0 ]; then
+        log "user preview: root-only L1/journal/evidence checks will be NotRun"
     fi
 
     gen=$(hm_generation)
@@ -203,30 +273,106 @@ preflight() {
     else
         record declared hm-collisions "0 foreign paths" "$foreign:$foreign_list" Fail "$home_files"
     fi
-    if [ -e "$TARGET_HOME/.config/systemd/user-disabled/amp-deepseek-proxy.service" ]; then
-        log "archive: the moved .wants symlink is in user-disabled/"
-    fi
 }
 
 l1_boot() {
-    local failed graphical entries
+    local failed graphical entries esp k id nlink top root linux f fails=0 detail="" sel def
+    local profile_link=/nix/var/nix/profiles/system
+    local gen link_target cur booted
     log "=== L1 boot ==="
+
+    link_target=$(readlink "$profile_link" 2>/dev/null || true)
+    gen=$(printf '%s' "$link_target" | sed -n 's/^system-\([0-9][0-9]*\)-link$/\1/p')
+    cur=$(readlink -f /run/current-system 2>/dev/null || true)
+    booted=$(readlink -f /run/booted-system 2>/dev/null || true)
+    if [ -n "$gen" ] && [ "$(readlink -f "$profile_link" 2>/dev/null || true)" = "$cur" ] && [ "$cur" = "$booted" ]; then
+        record L1 booted-generation "profile = current = booted = N" "N=$gen current=$cur booted=$booted" Pass "$profile_link"
+        N=$gen
+    else
+        record L1 booted-generation "profile = current = booted = N" "profile=$(readlink -f "$profile_link" 2>/dev/null || true) current=$cur booted=$booted" Fail "$profile_link"
+        N=
+    fi
+
     failed=$(systemctl --failed --no-legend --plain 2>/dev/null | wc -l)
     expect_eq L1 failed-units 0 "$failed" "systemctl --failed"
 
     graphical=$(systemctl is-active graphical.target 2>/dev/null || true)
     expect_eq L1 graphical-target active "$graphical" "systemctl is-active graphical.target"
 
-    if [ -r /boot/loader/loader.conf ]; then
-        entries=$(bootctl list 2>/dev/null | grep -c 'nixos-generation' || true)
-        entries=${entries:-0}
-        if [ "$entries" -ge 2 ]; then
-            record L1 loader-entries ">=2 generations" "$entries" Pass "bootctl list"
-        else
-            record L1 loader-entries ">=2 generations" "$entries" Fail "bootctl list"
-        fi
+    if [ "$(id -u)" -ne 0 ]; then
+        skip L1 loader-entries "N, N-1, N-2 entries bound and present" "bootctl list requires root" "$EVID" 1
+        skip L1 loader-selected "nixos-generation-N.conf" "bootctl list requires root" "$EVID" 1
+        skip L1 loader-default "nixos-generation-N.conf" "bootctl list requires root" "$EVID" 1
+        return
+    fi
+
+    entries=$(bootctl list --json=short 2>/dev/null || true)
+    [ -n "$entries" ] || entries='[]'
+    esp=$(bootctl --print-esp-path 2>/dev/null || echo /boot)
+
+    if [ -z "$N" ]; then
+        record L1 loader-entries "N, N-1, N-2 entries bound and present" "no N" Fail "$EVID"
     else
-        skip L1 loader-entries ">=2 generations" "unreadable /boot" "bootctl list" 1
+        for k in "$N" "$((N - 1))" "$((N - 2))"; do
+            id="nixos-generation-$k.conf"
+            nlink="/nix/var/nix/profiles/system-$k-link"
+            if [ ! -e "$nlink" ]; then
+                fails=$((fails + 1))
+                detail="$detail gen$k:no-link"
+                continue
+            fi
+            top=$(readlink -f "$nlink" 2>/dev/null || true)
+            case $top in
+                /nix/store/*-nixos-system-*) ;;
+                *)
+                    fails=$((fails + 1))
+                    detail="$detail gen$k:bad-target"
+                    continue
+                    ;;
+            esac
+            if ! jq -e --arg id "$id" --arg init "$top/init" \
+                'any(.[]; .id == $id and (((.options // "") | split(" ") | index("init=" + $init)) != null))' \
+                <<<"$entries" >/dev/null; then
+                fails=$((fails + 1))
+                detail="$detail gen$k:no-init"
+                continue
+            fi
+            root=$(jq -r --arg id "$id" '.[] | select(.id == $id) | .root // empty' <<<"$entries" | head -n1)
+            [ -n "$root" ] || root=$esp
+            linux=$(jq -r --arg id "$id" '.[] | select(.id == $id) | .linux // empty' <<<"$entries" | head -n1)
+            if [ -n "$linux" ]; then
+                f="$root/${linux#/}"
+                [ -f "$f" ] || {
+                    fails=$((fails + 1))
+                    detail="$detail gen$k:linux-missing"
+                }
+            else
+                fails=$((fails + 1))
+                detail="$detail gen$k:no-linux"
+            fi
+            while IFS= read -r f; do
+                [ -n "$f" ] || continue
+                [ -f "$root/${f#/}" ] || {
+                    fails=$((fails + 1))
+                    detail="$detail gen$k:initrd-missing"
+                }
+            done < <(jq -r --arg id "$id" '.[] | select(.id == $id) | (.initrd // [])[]' <<<"$entries")
+        done
+        if [ "$fails" -eq 0 ]; then
+            record L1 loader-entries "N, N-1, N-2 entries bound and present" "3 entries ok" Pass "$esp"
+        else
+            record L1 loader-entries "N, N-1, N-2 entries bound and present" "failures:$detail" Fail "$esp"
+        fi
+    fi
+
+    if [ -n "$N" ]; then
+        sel=$(jq -r '.[] | select(.isSelected == true) | .id' <<<"$entries" | head -n1)
+        def=$(jq -r '.[] | select(.isDefault == true) | .id' <<<"$entries" | head -n1)
+        expect_eq L1 loader-selected "nixos-generation-$N.conf" "${sel:-none}" "$esp"
+        expect_eq L1 loader-default "nixos-generation-$N.conf" "${def:-none}" "$esp"
+    else
+        record L1 loader-selected "nixos-generation-N.conf" "no N" Fail "$esp"
+        record L1 loader-default "nixos-generation-N.conf" "no N" Fail "$esp"
     fi
 }
 
@@ -293,6 +439,7 @@ l3_hardware() {
 l4_home() {
     local gen home_files rel target got linked=0 leaves=0 missing=""
     local active vars mime starship
+    local hmvars sysvars declared key want i expected="" mismatch=""
     log "=== L4 user environment ==="
 
     active=$(systemctl is-active home-manager-adrioui.service 2>/dev/null || true)
@@ -300,7 +447,7 @@ l4_home() {
 
     gen=$(hm_generation)
     if [ -z "$gen" ] || [ ! -d "$gen/home-files" ]; then
-        record L4 managed-paths "$EXPECTED_HM_PATHS" "no generation" Fail "systemctl cat home-manager-adrioui"
+        record L4 managed-paths "derived leaves" "no generation" Fail "systemctl cat home-manager-adrioui"
     else
         home_files=$(readlink -f "$gen/home-files")
         while IFS= read -r rel; do
@@ -316,20 +463,67 @@ l4_home() {
             cd "$home_files" &&
                 find . -mindepth 1 \( -type f -o -type l \) -printf '%P\n' | LC_ALL=C sort
         )
-        if [ "$linked" -eq "$EXPECTED_HM_PATHS" ] && [ "$leaves" -eq "$EXPECTED_HM_PATHS" ]; then
-            record L4 managed-paths "$EXPECTED_HM_PATHS" "$linked" Pass "$home_files"
+        log "managed leaves=$leaves linked=$linked"
+        if [ "$linked" -eq "$leaves" ]; then
+            record L4 managed-paths "$leaves" "$linked" Pass "$home_files"
         else
-            record L4 managed-paths "$EXPECTED_HM_PATHS" "$linked of $leaves:$missing" Fail "$home_files"
+            record L4 managed-paths "$leaves" "$linked of $leaves:$missing" Fail "$home_files"
         fi
     fi
 
+    if [ ! -d "$SRC/.git" ]; then
+        record L4 session-vars "declared keys match zsh" "no $SRC" Fail "$SRC"
+        record L4 mimeapps "declared default" "no $SRC" Fail "$SRC"
+    else
+        hmvars=$(timeout 60 nix eval --json --offline --no-write-lock-file \
+            "git+file://$SRC#nixosConfigurations.t14.config.home-manager.users.$TARGET_USER.home.sessionVariables" 2>/dev/null || true)
+        sysvars=$(timeout 60 nix eval --json --offline --no-write-lock-file \
+            "git+file://$SRC#nixosConfigurations.t14.config.environment.sessionVariables" 2>/dev/null || true)
+        if [ -z "$hmvars" ] || [ -z "$sysvars" ]; then
+            record L4 session-vars "declared keys match zsh" "nix eval failed (root-owned $SRC?)" Fail "$SRC"
+        else
+            declared=$(printf '%s\n%s\n' "$hmvars" "$sysvars" | jq -s 'add' 2>/dev/null || true)
+            if [ -z "$declared" ] || [ "$(printf '%s' "$declared" | jq 'length')" -eq 0 ]; then
+                record L4 session-vars "declared keys match zsh" "no declared keys" Fail "$SRC"
+            else
 
 
-    vars=$(run_as_user zsh -lic 'printf "%s|%s|%s|%s|%s" "${EDITOR-}" "${PAGER-}" "${BROWSER-}" "${MOZ_ENABLE_WAYLAND-}" "${NIXOS_OZONE_WL-}"' 2>/dev/null | tail -n 1 || true)
-    expect_eq L4 session-vars "nvim|less|helium|1|1" "${vars:-missing}" "zsh -lic"
+                vars=$(run_as_user zsh -lic 'printf "%s|%s|%s|%s|%s|%s" "${EDITOR-}" "${VISUAL-}" "${PAGER-}" "${BROWSER-}" "${MOZ_ENABLE_WAYLAND-}" "${NIXOS_OZONE_WL-}"' 2>/dev/null | tail -n 1 || true)
+                [ -n "$vars" ] || vars='|||||'
+                for key in EDITOR VISUAL PAGER BROWSER MOZ_ENABLE_WAYLAND NIXOS_OZONE_WL; do
+                    want=$(printf '%s' "$declared" | jq -r --arg k "$key" '.[$k] // empty')
+                    [ -n "$want" ] || continue
+                    case $key in
+                        EDITOR) i=1 ;;
+                        VISUAL) i=2 ;;
+                        PAGER) i=3 ;;
+                        BROWSER) i=4 ;;
+                        MOZ_ENABLE_WAYLAND) i=5 ;;
+                        NIXOS_OZONE_WL) i=6 ;;
+                        *) continue ;;
+                    esac
+                    got=$(printf '%s' "$vars" | cut -d'|' -f"$i")
+                    expected="$expected $key=$want"
+                    [ "$got" = "$want" ] || mismatch="$mismatch $key=got:$got"
+                done
+                if [ -z "$mismatch" ]; then
+                    record L4 session-vars "declared keys match zsh" "declared:$expected" Pass "$SRC"
+                else
+                    record L4 session-vars "declared keys match zsh" "mismatch:$mismatch" Fail "$SRC"
+                fi
+            fi
+        fi
 
-    mime=$(run_as_user xdg-mime query default text/html 2>/dev/null || true)
-    expect_eq L4 mimeapps helium.desktop "${mime:-missing}" "xdg-mime query default text/html"
+        mime=$(timeout 60 nix eval --json --offline --no-write-lock-file \
+            "git+file://$SRC#nixosConfigurations.t14.config.home-manager.users.$TARGET_USER.home.xdg.mimeApps.defaultApplications" 2>/dev/null |
+            jq -r '."text/html" // empty' 2>/dev/null || true)
+        if [ -z "$mime" ]; then
+            record L4 mimeapps "declared default" "nix eval failed" Fail "$SRC"
+        else
+            got=$(run_as_user xdg-mime query default text/html 2>/dev/null || true)
+            expect_eq L4 mimeapps "$mime" "${got:-missing}" "xdg-mime query default text/html"
+        fi
+    fi
 
     starship=$(run_as_user bash -c 'command -v starship' 2>/dev/null || true)
     if [ -n "$starship" ]; then
@@ -341,6 +535,7 @@ l4_home() {
 
 l5_services() {
     local svc sync podman status=0 attempt out ok provider
+    local u show pid listen frag start hm_start decl decl_out loaded_out exe cmd why="" addr
     log "=== L5 services ==="
     expect_eq L5 firewall active "$(systemctl is-active firewall 2>/dev/null || true)" "systemctl is-active firewall"
 
@@ -358,6 +553,77 @@ l5_services() {
 
     podman=$(run_as_user podman info --format '{{.Host.Security.Rootless}}' 2>/dev/null || true)
     expect_eq L5 podman true "${podman:-missing}" "podman info"
+
+    u=amp-deepseek-proxy.service
+    show=$(run_as_user systemctl --user show -p LoadState -p ActiveState -p SubState -p MainPID -p FragmentPath -p ExecStart -p ExecMainStartTimestamp "$u" 2>/dev/null || true)
+    get() { printf '%s\n' "$show" | sed -n "s/^$1=//p" | head -n1; }
+    pid=$(get MainPID)
+    frag=$(get FragmentPath)
+    start=$(get ExecMainStartTimestamp)
+    [ -n "$start" ] || start="unknown"
+    listen=$(ss -ltnpH 'sport = :4014' 2>/dev/null | head -n1 || true)
+    addr=$(printf '%s' "$listen" | awk '{print $4}')
+    if [ "$(get LoadState)" != "loaded" ]; then
+        why="$why load=$(get LoadState)"
+    fi
+    if [ "$(get ActiveState)/$(get SubState)" != "active/running" ]; then
+        why="$why state=$(get ActiveState)/$(get SubState)"
+    fi
+    if [ -z "$pid" ] || [ "$pid" = "0" ]; then
+        why="$why no-mainpid"
+    fi
+    if [ ! -e "$TARGET_HOME/.config/systemd/user/$u" ] || [ "$frag" != "$TARGET_HOME/.config/systemd/user/$u" ]; then
+        why="$why fragment=$frag"
+    fi
+    if [ -z "$listen" ]; then
+        why="$why no-listener"
+    else
+        case $addr in
+            127.0.0.1:4014) ;;
+            *) why="$why address=$addr" ;;
+        esac
+        case $listen in
+            *"pid=$pid"*) ;;
+            *) why="$why listener-pid=$(printf '%s' "$listen" | sed -n 's/.*pid=\([0-9]*\).*/\1/p')" ;;
+        esac
+    fi
+    if [ -r "$TARGET_HOME/.config/systemd/user/$u" ]; then
+        decl=$(sed -n 's/^ExecStart=//p' "$(readlink -f "$TARGET_HOME/.config/systemd/user/$u")" | head -n1)
+        decl_out=$(printf '%s' "$decl" | awk '{print $1}')
+        decl_store=$(printf '%s' "$decl_out" | grep -o '^/nix/store/[^/]*' || true)
+        loaded_out=$(printf '%s' "$(get ExecStart)" | sed -n 's/^.*path=\([^ ]*\).*$/\1/p')
+        if [ -n "$decl_out" ] && [ "$decl_out" != "$loaded_out" ]; then
+            why="$why loaded=$loaded_out declared=$decl_out"
+        fi
+        if [ -n "$pid" ] && [ -e "/proc/$pid/exe" ]; then
+            exe=$(readlink -f "/proc/$pid/exe" 2>/dev/null || true)
+            cmd=$(tr '\0' ' ' <"/proc/$pid/cmdline" 2>/dev/null || true)
+            if [ -n "$decl_store" ]; then
+                case $cmd in
+                    *"$decl_store"*) ;;
+                    *) why="$why argv-not-under-declared-output" ;;
+                esac
+            else
+                why="$why no-declared-store"
+            fi
+            [ -n "$exe" ] || why="$why no-exe"
+        else
+            why="$why no-proc"
+        fi
+    else
+        why="$why no-unit-file"
+    fi
+    if [ "$start" != "unknown" ] && [ -n "$(systemctl show -p ExecMainStartTimestamp --value home-manager-adrioui.service 2>/dev/null || true)" ]; then
+        hm_start=$(systemctl show -p ExecMainStartTimestamp --value home-manager-adrioui.service 2>/dev/null || true)
+        if [ "$(date -d "$start" +%s 2>/dev/null || echo 0)" -lt "$(( $(date -d "$hm_start" +%s 2>/dev/null || echo 0) - 5 ))" ]; then
+            why="$why started-before-hm"
+        fi
+    fi
+    if [ -z "$why" ]; then
+        record L5 proxy-process "declared unit process owns 4014" "pid=$pid start=$start" Pass "$TARGET_HOME/.config/systemd/user/$u"
+    else
+        record L5 proxy-process "declared unit process owns 4014" "why:$why" Fail "$TARGET_HOME/.config/systemd/user/$u"
+    fi
 
     if [ -z "$THREAD" ]; then
         skip L5 model-access "Served" "no thread" "check-access --thread" 1
@@ -390,89 +656,187 @@ l5_services() {
     fi
 }
 
+n2_boot_init() {
+    local n2=$1 id line
+    for id in $(journalctl --list-boots --no-pager -o json 2>/dev/null | jq -r '.[].boot_id' 2>/dev/null); do
+        line=$(journalctl -b "$id" -k -o cat 2>/dev/null | grep -m1 'Kernel command line:' || true)
+        case $line in
+            *"init=$n2/init"*) printf '%s' "$id"; return 0 ;;
+        esac
+    done
+    return 1
+}
+
+attest_menu() {
+    local f=$EVID/menu-rehearsal.txt id line n1
+    n1=$(readlink -f "/nix/var/nix/profiles/system-$((N - 1))-link" 2>/dev/null || true)
+    if [ ! -s "$f" ]; then
+        skip L6 menu-rehearsal "journal boot N-1" "no transcript" "$f" 1
+        return
+    fi
+    id=$(sed -n 's/^boot_id=//p' "$f" | head -n1 | tr -d '-')
+    if [ -z "$id" ] || ! journalctl --list-boots --no-pager -o json 2>/dev/null | jq -e --arg id "$id" 'any(.[]; .boot_id == $id)' >/dev/null 2>&1; then
+        record L6 menu-rehearsal "journal boot N-1" "boot_id ${id:-absent} not in journal" Fail "$f"
+        return
+    fi
+    line=$(journalctl -b "$id" -k -o cat 2>/dev/null | grep -m1 'Kernel command line:' || true)
+    if [ -n "$n1" ] && printf '%s' "$line" | grep -q "init=$n1/init"; then
+        record L6 menu-rehearsal "journal boot N-1" "boot $id init=$n1" Attested "$f"
+    else
+        record L6 menu-rehearsal "journal boot N-1" "boot $id init mismatch" Fail "$f"
+    fi
+}
+
+attest_rescue() {
+    local f=$EVID/rescue-media.txt want=${DUNIAWI_RESCUE_ISO_SHA256:-} got
+    if [ ! -s "$f" ]; then
+        skip L6 rescue-media "pinned rescue ISO" "no transcript" "$f" 1
+        return
+    fi
+    if [ -z "$want" ]; then
+        skip L6 rescue-media "pinned rescue ISO" "DUNIAWI_RESCUE_ISO_SHA256 is empty" "$f" 1
+        return
+    fi
+    got=$(sed -n 's/^iso_sha256=//p' "$f" | head -n1)
+    if [ "$got" = "$want" ] && grep -Eq '^[[:space:]]*timeout ' "$f" && grep -Eq '^[[:space:]]*default nixos-generation-' "$f"; then
+        record L6 rescue-media "pinned rescue ISO" "iso=$got loader.conf present" Attested "$f"
+    else
+        record L6 rescue-media "pinned rescue ISO" "iso=${got:-absent} loader.conf missing or hash mismatch" Fail "$f"
+    fi
+}
+
 l6_change() {
-    local rev durable_head durable_status links gen_count n2 target
+    local rev durable_head durable_status n2 n2link built cur days boot
     log "=== L6 change control ==="
 
-
-
-
-    rev=$(nixos-version --configuration-revision 2>/dev/null || true)
+    rev=$(/run/current-system/sw/bin/nixos-version --configuration-revision 2>/dev/null || true)
     if [ -z "$rev" ] && [ -r /run/current-system/configurationRevision ]; then
         rev=$(cat /run/current-system/configurationRevision)
     fi
     if printf '%s' "$rev" | grep -Eq '^[0-9a-f]{40}$'; then
-        record L6 revision-format "40 hex" "$rev" Pass "nixos-version --configuration-revision"
+        record L6 revision-format "40 hex" "$rev" Pass "/run/current-system/sw/bin/nixos-version"
     else
-        record L6 revision-format "40 hex" "${rev:-absent}" Fail "nixos-version --configuration-revision"
+        record L6 revision-format "40 hex" "${rev:-absent}" Fail "/run/current-system/sw/bin/nixos-version"
     fi
 
     if [ -n "$EXPECT_REV" ]; then
         expect_eq L6 revision-source "$EXPECT_REV" "${rev:-absent}" "--expect-revision"
     else
-        durable_head=$(git -c safe.directory='*' -C /var/lib/duniawi-src rev-parse HEAD 2>/dev/null || true)
-        expect_eq L6 revision-source "${durable_head:-durable HEAD}" "${rev:-absent}" "git -C /var/lib/duniawi-src rev-parse HEAD"
+        durable_head=$(git -c safe.directory='*' -C "$SRC" rev-parse HEAD 2>/dev/null || true)
+        expect_eq L6 revision-source "${durable_head:-durable HEAD}" "${rev:-absent}" "git -C $SRC rev-parse HEAD"
     fi
 
-    if [ -d /var/lib/duniawi-src/.git ]; then
-        if durable_status=$(git -c safe.directory='*' -C /var/lib/duniawi-src status --porcelain 2>/dev/null); then
+    if [ -d "$SRC/.git" ]; then
+        built=$(timeout 60 nix eval --offline --no-write-lock-file --raw \
+            "git+file://$SRC#nixosConfigurations.t14.config.system.build.toplevel.outPath" 2>/dev/null || true)
+        cur=$(readlink -f /run/current-system 2>/dev/null || true)
+        if [ -n "$built" ] && [ "$built" = "$cur" ]; then
+            record L6 revision-build "flake build = current" "$built" Pass "$SRC"
+        else
+            record L6 revision-build "flake build = current" "built=${built:-eval-failed} current=$cur" Fail "$SRC"
+        fi
+        if durable_status=$(git -c safe.directory='*' -C "$SRC" status --porcelain 2>/dev/null); then
             durable_status=$(printf '%s' "$durable_status" | grep -c . || true)
             durable_status=${durable_status:-0}
-            expect_eq L6 durable-clean 0 "$durable_status" "git -C /var/lib/duniawi-src status --porcelain"
+            expect_eq L6 durable-clean 0 "$durable_status" "git -C $SRC status --porcelain"
         else
-            record L6 durable-clean 0 "git status failed" Fail "git -C /var/lib/duniawi-src status --porcelain"
+            record L6 durable-clean 0 "git status failed" Fail "git -C $SRC status --porcelain"
         fi
-        log "durable flake.lock $(sha256sum /var/lib/duniawi-src/flake.lock 2>/dev/null | cut -d' ' -f1)"
+        log "durable flake.lock $(sha256sum "$SRC/flake.lock" 2>/dev/null | cut -d' ' -f1)"
     else
-        record L6 durable-clean 0 "no /var/lib/duniawi-src" Fail "git -C /var/lib/duniawi-src status --porcelain"
+        record L6 revision-build "flake build = current" "no $SRC" Fail "$SRC"
+        record L6 durable-clean 0 "no $SRC" Fail "git -C $SRC status --porcelain"
     fi
 
-    links=$(find /nix/var/nix/profiles -maxdepth 1 -name 'system-*-link' -printf '%f\n' 2>/dev/null | LC_ALL=C sort -V)
-    gen_count=$(printf '%s\n' "$links" | grep -c . || true)
-    gen_count=${gen_count:-0}
-    if [ "$gen_count" -ge 3 ]; then
-        record L6 generations ">=3" "$gen_count" Pass "nix-env --list-generations"
+    n2link="/nix/var/nix/profiles/system-$((N - 2))-link"
+    n2=$(readlink -f "$n2link" 2>/dev/null || true)
+    if [ -n "$N" ] && [ -e "/nix/var/nix/profiles/system-$((N - 1))-link" ] && [ -e "$n2link" ] &&
+        case $n2 in /nix/store/*-nixos-system-*) true ;; *) false ;; esac; then
+        if nix path-info "$n2" >/dev/null 2>&1; then
+            record L6 generations "N-1 and N-2 exact links" "N=$N N-1=$(readlink -f "/nix/var/nix/profiles/system-$((N - 1))-link") N-2=$n2" Pass "$n2link"
+        else
+            record L6 generations "N-1 and N-2 exact links" "N-2 not in store: $n2" Fail "$n2link"
+        fi
     else
-        record L6 generations ">=3" "$gen_count" Fail "nix-env --list-generations"
+        record L6 generations "N-1 and N-2 exact links" "missing N-1/N-2 link (N=${N:-none})" Fail "$n2link"
     fi
 
-    if [ "$gen_count" -ge 3 ]; then
-        n2=$(printf '%s\n' "$links" | tail -n 3 | head -n 1)
-        target=$(readlink -f "/nix/var/nix/profiles/$n2" 2>/dev/null || true)
-        case $target in
-            /nix/store/*-nixos-system-*)
-                record L6 n-2 bootable "$n2 -> $target" Pass "$n2"
-                ;;
-            *)
-                record L6 n-2 bootable "$n2 -> ${target:-dangling}" Fail "$n2"
-                ;;
-        esac
+    if [ -n "$n2" ]; then
+        if timeout 60 nix store verify --recursive --no-trust "$n2" >/dev/null 2>&1; then
+            record L6 n-2-intact "store verify N-2" "ok" Pass "$n2"
+        else
+            record L6 n-2-intact "store verify N-2" "failed" Fail "$n2"
+        fi
+        if [ -e "$n2link" ]; then
+            days=$((( $(date +%s) - $(stat -c %Y "$n2link") ) / 86400))
+            if [ "$days" -lt 14 ]; then
+                record L6 n-2-age "<14 days" "$days days" Pass "$n2link"
+            else
+                record L6 n-2-age "<14 days" "$days days" Fail "$n2link"
+            fi
+        else
+            record L6 n-2-age "<14 days" "no N-2 link" Fail "$n2link"
+        fi
+        boot=$(n2_boot_init "$n2" || true)
+        if [ -n "$boot" ]; then
+            record L6 n-2-boot "journal boot with N-2 init" "boot $boot init=$n2" Pass "journalctl --list-boots"
+        else
+            record L6 n-2-boot "journal boot with N-2 init" "no retained boot for $n2" Fail "journalctl --list-boots"
+        fi
     else
-        record L6 n-2 bootable "fewer than 3 generations" Fail "nix-env --list-generations"
+        record L6 n-2-intact "store verify N-2" "no N-2" Fail "$n2link"
+        record L6 n-2-age "<14 days" "no N-2" Fail "$n2link"
+        record L6 n-2-boot "journal boot with N-2 init" "no N-2" Fail "journalctl --list-boots"
     fi
 
-    if [ -s "$EVID/rescue-media.txt" ]; then
-        record L6 rescue-media "booted USB" "recorded" Pass "$EVID/rescue-media.txt"
-    else
-        skip L6 rescue-media "booted USB" "no operator evidence" "$EVID/rescue-media.txt" 1
-    fi
-    if [ -s "$EVID/menu-rehearsal.txt" ]; then
-        record L6 menu-rehearsal "booted N-1" "recorded" Pass "$EVID/menu-rehearsal.txt"
-    else
-        skip L6 menu-rehearsal "booted N-1" "no operator evidence" "$EVID/menu-rehearsal.txt" 1
-    fi
+    attest_menu
+    attest_rescue
 }
 
 finalize() {
+    local files=(verify.tsv context.json)
+    local boot_id cmdline profile_link booted bootctl_json nixver head
+    boot_id=$(cat /proc/sys/kernel/random/boot_id 2>/dev/null || true)
+    cmdline=$(cat /proc/cmdline 2>/dev/null || true)
+    profile_link=$(readlink /nix/var/nix/profiles/system 2>/dev/null || true)
+    booted=$(readlink -f /run/booted-system 2>/dev/null || true)
+    bootctl_json=$(bootctl list --json=short 2>/dev/null || echo '[]')
+    [ -n "$bootctl_json" ] || bootctl_json='[]'
+    nixver=$(/run/current-system/sw/bin/nixos-version --json 2>/dev/null || echo '{}')
+    head=$(git -c safe.directory='*' -C "$SRC" rev-parse HEAD 2>/dev/null || true)
+    jq -n \
+        --arg evidence "$EVID" \
+        --arg boot_id "$boot_id" \
+        --arg cmdline "$cmdline" \
+        --arg profile "$profile_link" \
+        --arg booted "$booted" \
+        --arg head "$head" \
+        --argjson nixos "$nixver" \
+        --argjson bootctl "$bootctl_json" \
+        '{evidence:$evidence, boot_id:$boot_id, cmdline:$cmdline, profile:$profile, booted:$booted, durable_head:$head, nixos:$nixos, bootctl:$bootctl}' \
+        >"$EVID/context.json"
+
+
+    printf 'verify-complete checks=%d pass=%d fail=%d notrun=%d attested=%d\n' \
+        "$checks" "$pass" "$fail" "$notrun" "$attested" >>"$TSV"
+    [ -f "$EVID/menu-rehearsal.txt" ] && files+=(menu-rehearsal.txt)
+    [ -f "$EVID/rescue-media.txt" ] && files+=(rescue-media.txt)
+    (
+        cd "$EVID"
+        sha256sum "${files[@]}" >manifest.sha256
+    )
+    if [ "$(id -u)" -eq 0 ]; then
+        chmod 0640 "$TSV" "$LOG" "$EVID/context.json" "$EVID/manifest.sha256"
+        [ -f "$EVID/menu-rehearsal.txt" ] && chmod 0640 "$EVID/menu-rehearsal.txt"
+        [ -f "$EVID/rescue-media.txt" ] && chmod 0640 "$EVID/rescue-media.txt"
+    else
+        chmod 0600 "$TSV" "$LOG" "$EVID/context.json" "$EVID/manifest.sha256"
+    fi
     local result=Pass
     if [ "$fail" -ne 0 ]; then
         result=Fail
     fi
-
-
-    printf 'verify-complete\tchecks=%d\tpass=%d\tfail=%d\tnotrun=%d\n' \
-        "$checks" "$pass" "$fail" "$notrun" >>"$TSV"
-    log "=== result: $result checks=$checks pass=$pass fail=$fail notrun=$notrun required-notrun=$required_notrun ==="
+    log "=== result: $result checks=$checks pass=$pass fail=$fail notrun=$notrun attested=$attested required-notrun=$required_notrun ==="
     cat "$TSV"
     if [ "$fail" -ne 0 ]; then
         exit 1
