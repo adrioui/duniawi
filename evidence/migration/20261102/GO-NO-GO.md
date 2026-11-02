@@ -141,7 +141,7 @@ EVID=/var/log/duniawi-migration/20261102T103246 \
 | sqlite-integrity | PASS 0 (1,227 checked; 453 WAL) | `verify.tsv`, `db-fail.txt` |
 | gitleaks (stage) | NotRun (path-only; no secret values read) | `verify.tsv` |
 | verify-complete | PASS 6 | `verify.tsv` |
-| elapsed / start / end | 2021 s / 2026-11-02T12:40:31+07 / 13:14:12+07 | `verify.rc`, `verify.elapsed` |
+| elapsed / start / end | 2080 s / 2026-11-02T14:08:41+07 / 14:43:21+07 | `verify.rc`, `verify.elapsed` |
 
 ### 6.1 Verification-integrity incident (caught and repaired)
 
@@ -200,7 +200,7 @@ the independent `find -uid 0` census catch. Evidence:
 | 2 | A4/A5 approvals absent; no window, no live-switch authorization | `docs/design/approvals.md` | repo owner | open |
 | 3 | Secrets not rotated/provisioned; proxy remains fail-closed 503 | `docs/design/secrets.md`; ledger row 23 | user | open (rotation tomorrow) |
 | 4 | Running system gid is 100; target gid 1000; `getent group 1000` is absent until first switch | `id`; `00-preflight.log` | operator | expected pre-switch; verify after switch |
-| 5 | Boot-menu rollback rehearsal NotRun (hardware) | `04-rollback-baseline.log`; `evidence/rollback/README.md` | operator | NotRun |
+| 5 | Gen 1 booted and logged in; gen 2 pending user reboot/report | `rollback-pre-reboot.log`; `rollback-rehearsal.log` | operator | in progress (gen1 PASS) |
 | 6 | Stage content secret scan not run (path oracle only; avoids reading secret values) | `verify.tsv` | security owner | NotRun |
 | 7 | Worktree count is 82 gitdir files (52 unique names), not 53; all resolve, phase-2 repair not done | `07-spot-checks.log` | maintainer | deferred |
 | 8 | DB+WAL pair count measured 453, not the brief's 494; reconcile the claim | `07-spot-checks.log` | maintainer | open |
@@ -211,8 +211,10 @@ the independent `find -uid 0` census catch. Evidence:
 
 ## 9. Rollback plan
 
-Baseline: **1 generation** (generation 1, current, built 2026-10-31); `bootctl list`
-has `nixos-generation-1.conf` and the firmware entry. There is no N-1/N-2.
+Baseline: **2 generations** (gen 1 built 2026-10-31; gen 2 built 2026-11-02T14:43:55).
+Gen 2 is the default boot entry; gen 1 booted via one-shot at 14:48:06 and
+logged in successfully (home 1000:100, 0 unmapped IDs, 0 failed units).
+Gen 2 return and gid-1000 verification are pending the user's reboot/report.
 
 ### 9.1 Home rollback (no reboot)
 
@@ -285,4 +287,6 @@ backup or the retained homes.
 - `10-hardlink-repair.log`, `10b-relink-temp-cleanup.log`, `spot-hardlink-groups.txt`, `spot-stage-inodes-final.tsv`
 - `10c-dir-mtime-refresh.log`, `10d-remap-after-refresh.log`
 - `07-spot-checks.log`, `spot-*.txt`
+- `rollback-pre-reboot.log`, `rollback-rehearsal.log`
+- `verify.tsv` (final, stamp 20261102T140753)
 - `go-no-go.md`

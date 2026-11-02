@@ -1,0 +1,17 @@
+=== rollback-rehearsal gen1 2026-11-02T14:48:06+07:00 ===
+   1   2026-10-31 10:49:19   
+   2   2026-11-02 14:43:55   (current)
+         type: Boot Loader Specification Type #1 (.conf)
+        title: NixOS (Generation 2 NixOS Yarara 26.05.20261029.6f06d20 (Linux 6.18.59), built on 2026-11-02) (default)
+           id: nixos-generation-2.conf
+       source: /boot//loader/entries/nixos-generation-2.conf (on the EFI System Partition)
+     sort-key: nixos
+      version: Generation 2 NixOS Yarara 26.05.20261029.6f06d20 (Linux 6.18.59), built on 2026-11-02
+   machine-id: 776e5688ac5945da8bfc0f53bbd61c56
+        linux: /boot//EFI/nixos/cmpgyrhwmyhc886w5aykkdjwyhd4k9mx-linux-6.18.59-bzImage.efi
+id: uid=1000(adrioui) gid=100(users) groups=100(users),1(wheel),57(networkmanager)
+group 1000: 
+home 1000:100 700 /home/adrioui
+unmapped: 0
+failed units: 0
+/nix/store/04q282abf92ypcwxqarbwzvrym4fvbcv-nixos-system-nixos-26.05.13164.6f06d204d8f2

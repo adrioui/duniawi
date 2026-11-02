@@ -1,0 +1,39 @@
+2026-11-02T14:44:02+07:00
+== before one-shot ==
+   1   2026-10-31 10:49:19   
+   2   2026-11-02 14:43:55   (current)
+         type: Boot Loader Specification Type #1 (.conf)
+        title: NixOS (Generation 2 NixOS Yarara 26.05.20261029.6f06d20 (Linux 6.18.59), built on 2026-11-02) (default) (not reported/new)
+           id: nixos-generation-2.conf
+       source: /boot//loader/entries/nixos-generation-2.conf (on the EFI System Partition)
+     sort-key: nixos
+      version: Generation 2 NixOS Yarara 26.05.20261029.6f06d20 (Linux 6.18.59), built on 2026-11-02
+   machine-id: 776e5688ac5945da8bfc0f53bbd61c56
+        linux: /boot//EFI/nixos/cmpgyrhwmyhc886w5aykkdjwyhd4k9mx-linux-6.18.59-bzImage.efi
+       initrd: /boot//EFI/nixos/dpar04n3zrj4dg9gi67f30xq813caq43-initrd-linux-6.18.59-initrd.efi
+      options: init=/nix/store/yhk5wi2bfaqwwqxijr3l98rjw5yg5dkc-nixos-system-nixos-26.05.20261029.6f06d20/init acpi_backlight=native psmouse.synaptics_intertouch=0 root=fstab loglevel=4 lsm=landlock,yama,bpf
+
+         type: Boot Loader Specification Type #1 (.conf)
+        title: NixOS (Generation 1 NixOS Yarara 26.05.13164.6f06d204d8f2 (Linux 6.18.59), built on 2026-10-31) (selected)
+           id: nixos-generation-1.conf
+       source: /boot//loader/entries/nixos-generation-1.conf (on the EFI System Partition)
+     sort-key: nixos
+== set one-shot to generation 1 ==
+== after one-shot ==
+         type: Boot Loader Specification Type #1 (.conf)
+        title: NixOS (Generation 2 NixOS Yarara 26.05.20261029.6f06d20 (Linux 6.18.59), built on 2026-11-02) (not reported/new)
+           id: nixos-generation-2.conf
+       source: /boot//loader/entries/nixos-generation-2.conf (on the EFI System Partition)
+     sort-key: nixos
+      version: Generation 2 NixOS Yarara 26.05.20261029.6f06d20 (Linux 6.18.59), built on 2026-11-02
+   machine-id: 776e5688ac5945da8bfc0f53bbd61c56
+        linux: /boot//EFI/nixos/cmpgyrhwmyhc886w5aykkdjwyhd4k9mx-linux-6.18.59-bzImage.efi
+       initrd: /boot//EFI/nixos/dpar04n3zrj4dg9gi67f30xq813caq43-initrd-linux-6.18.59-initrd.efi
+      options: init=/nix/store/yhk5wi2bfaqwwqxijr3l98rjw5yg5dkc-nixos-system-nixos-26.05.20261029.6f06d20/init acpi_backlight=native psmouse.synaptics_intertouch=0 root=fstab loglevel=4 lsm=landlock,yama,bpf
+
+         type: Boot Loader Specification Type #1 (.conf)
+        title: NixOS (Generation 1 NixOS Yarara 26.05.13164.6f06d204d8f2 (Linux 6.18.59), built on 2026-10-31) (default) (selected)
+           id: nixos-generation-1.conf
+       source: /boot//loader/entries/nixos-generation-1.conf (on the EFI System Partition)
+     sort-key: nixos
+oneshot set: nixos-generation-1.conf
