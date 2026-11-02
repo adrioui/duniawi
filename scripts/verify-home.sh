@@ -239,6 +239,7 @@ else
         for db in "${dbs[@]}"; do [ -f "$db-wal" ] && sample+=("$db"); done
     fi
     tmp=$(mktemp -d "$EVID/dbtmp.XXXXXX"); ok=0 bad=0
+    trap 'rm -rf "${tmp:-}"' EXIT
     for db in "${sample[@]}"; do
         rm -f "$tmp/c.db" "$tmp/c.db-wal" "$tmp/c.db-shm"
         cp "$db" "$tmp/c.db" 2>/dev/null || continue
@@ -250,7 +251,6 @@ else
             bad=$((bad + 1)); printf 'FAIL %s\n%s\n' "$db" "$r" >>"$EVID/db-fail.txt"
         fi
     done
-    rm -rf "$tmp"
     log "sqlite checked=$ok bad=$bad"
     check "sqlite-integrity" "0" "$bad"
 fi
@@ -264,6 +264,16 @@ log "stage hardlinked files: $(find "$STAGE" -xdev -type f -links +1 | wc -l)"
 log "stage sparse files:     $(find "$STAGE" -xdev -type f -printf '%s %b\n' | awk '$2*512 < $1' | wc -l)"
 log "stage bytes:            $(du -sb "$STAGE" | cut -f1)"
 
-log "=== result: $([ "$fail" -eq 0 ] && echo PASS || echo FAIL) ==="
+
+
+oracles=$(awk -F'\t' '$2=="PASS" || $2=="FAIL"' "$EVID/verify.tsv" | wc -l)
+result=$([ "$fail" -eq 0 ] && echo PASS || echo FAIL)
+
+
+
+
+
+printf 'verify-complete\t%s\t%s\n' "$result" "$oracles" >>"$EVID/verify.tsv"
+log "=== result: $result ($oracles oracle rows) ==="
 cat "$EVID/verify.tsv"
 exit "$fail"

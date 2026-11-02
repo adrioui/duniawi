@@ -36,6 +36,7 @@
           attr
           libcap
           python3
+          util-linux
           gawk
           findutils
         ];

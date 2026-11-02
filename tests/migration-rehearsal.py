@@ -79,7 +79,16 @@ export STAGE=/home/adrioui.restore
 export EVID=/tmp/evid
 export INCLUDE_FILE=/tmp/inc.txt
 export MIN_FREE_GB=0
+export ALLOW_WRITABLE_SOURCE=1
 rm -rf $EVID $STAGE
+echo "findmnt: $(command -v findmnt || echo MISSING)"
+# The guard must refuse a writable source when the escape hatch is absent.
+env -u ALLOW_WRITABLE_SOURCE SRC=/srv/fixture/var/home/adrifadilah \
+    STAGE=/tmp/never-stage EVID=/tmp/evid-guard INCLUDE_FILE=/tmp/inc.txt \
+    MIN_FREE_GB=0 bash /etc/restore-home.sh >/tmp/guard.log 2>&1
+echo "guard rc=$? (expect non-zero)"
+grep -q 'not mounted read-only' /tmp/guard.log && echo "guard message ok"
+test ! -e /tmp/never-stage && echo "guard left no stage"
 bash /etc/restore-home.sh
 echo "restore rc=$?"
 true
@@ -170,7 +179,45 @@ true
 
 
 
+
+note("F7 same-size, same-mtime corruption must fail", machine.succeed(r"""
+set +e +o pipefail
+F=/home/adrioui.restore/.claude/projects/p/transcript.jsonl
+cp -a "$F" /tmp/transcript.bak
+before=$(stat -c '%s %Y' "$F")
+printf '%s\n' '{"EVENT":"x"}' > "$F"
+touch -r /tmp/transcript.bak "$F"
+after=$(stat -c '%s %Y' "$F")
+echo "size+mtime before=$before after=$after (deliberately identical)"
+rm -rf /tmp/evid-fault; mkdir -p /tmp/evid-fault
+cp /tmp/evid/rsync-filter.rules /tmp/evid-fault/
+export SRC=/srv/fixture/var/home/adrifadilah
+export STAGE=/home/adrioui.restore
+export EVID=/tmp/evid-fault
+export INCLUDE_FILE=/tmp/inc.txt
+export OLD_HOME=/srv/fixture/var/home/adrifadilah
+bash /etc/verify-home.sh --checksum --deep; rc=$?
+echo "$rc" > /tmp/evid-fault/verify.rc
+echo "fault rc=$rc"
+grep -E 'drift-lines|verify-complete' /tmp/evid-fault/verify.tsv
+cp -a /tmp/transcript.bak "$F"
+rm -rf /tmp/evid-after; mkdir -p /tmp/evid-after
+cp /tmp/evid/rsync-filter.rules /tmp/evid-after/
+EVID=/tmp/evid-after bash /etc/verify-home.sh --checksum --deep; rc2=$?
+echo "$rc2" > /tmp/evid-after/verify.rc
+echo "after-restore rc=$rc2"
+grep -E 'drift-lines|verify-complete' /tmp/evid-after/verify.tsv
+true
+"""))
+
+
+
+
+
 machine.succeed("locale -a | grep -qi '^en_US'")
+machine.succeed("command -v findmnt")
+machine.succeed("grep -q 'not mounted read-only' /tmp/guard.log")
+machine.succeed("test ! -e /tmp/never-stage")
 machine.succeed("! grep -q FAIL /tmp/evid/checks.tsv")
 
 oracles = (
@@ -183,11 +230,29 @@ oracles = (
 )
 for evid in ("/tmp/evid", "/tmp/evid-utf8"):
     machine.succeed(f"test -s {evid}/verify.rc && grep -qx 0 {evid}/verify.rc")
-    machine.succeed(f'test "$(grep -c . {evid}/verify.tsv)" -ge {len(oracles)}')
     for key in oracles:
         machine.succeed(
             f"""awk -F'\\t' -v k={key} '$1==k && $2=="PASS" {{f=1}} END {{exit !f}}' {evid}/verify.tsv"""
         )
+
+
+    machine.succeed(
+        f"""awk -F'\\t' '$1=="verify-complete" && $2=="PASS" && $3>={len(oracles)} {{f=1}} END {{exit !f}}' {evid}/verify.tsv"""
+    )
+
+
+
+machine.succeed("! grep -qx 0 /tmp/evid-fault/verify.rc")
+machine.succeed(
+    """awk -F'\\t' '$1=="drift-lines" && $2=="FAIL" {f=1} END {exit !f}' /tmp/evid-fault/verify.tsv"""
+)
+machine.succeed(
+    """awk -F'\\t' '$1=="verify-complete" && $2=="FAIL" {f=1} END {exit !f}' /tmp/evid-fault/verify.tsv"""
+)
+machine.succeed("grep -qx 0 /tmp/evid-after/verify.rc")
+machine.succeed(
+    f"""awk -F'\\t' '$1=="verify-complete" && $2=="PASS" && $3>={len(oracles)} {{f=1}} END {{exit !f}}' /tmp/evid-after/verify.tsv"""
+)
 machine.succeed("test -f /home/adrioui.restore/Works/Bangunindo/BLIV/repos/demo/botocore/credentials.py")
 machine.succeed("test ! -e /home/adrioui.restore/.aws/credentials")
 machine.succeed("test ! -e /home/adrioui.restore/Works/Bangunindo/BLIV/license_key.txt")

@@ -36,6 +36,22 @@ check() {
 
 [ "$(id -u)" -eq 0 ] || die "run as root from a local TTY"
 [ -d "$SRC" ] || die "source home not found at $SRC"
+
+
+
+
+
+
+
+
+if findmnt -no OPTIONS --target "$SRC" 2>/dev/null | grep -qE '(^|,)ro(,|$)'; then
+    log "source is mounted read-only"
+else
+    [ "${ALLOW_WRITABLE_SOURCE:-0}" = "1" ] \
+        || die "source $SRC is not mounted read-only; refusing (set ALLOW_WRITABLE_SOURCE=1 only for a fixture)"
+    log "WARNING: source is not read-only; continuing because ALLOW_WRITABLE_SOURCE=1"
+fi
+
 [ -e "$STAGE" ] && die "stage already exists at $STAGE; inspect it or remove it deliberately"
 
 mkdir -p "$EVID"
