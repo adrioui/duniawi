@@ -76,6 +76,10 @@
       environment = {
         shells = [ pkgs.zsh ];
 
+        
+        
+        etc."duniawi/device-verify.sh".source = ../scripts/device-verify.sh;
+
         sessionVariables = {
           NIXOS_OZONE_WL = "1";
           MOZ_ENABLE_WAYLAND = "1";

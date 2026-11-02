@@ -311,6 +311,54 @@ service endpoints. The graph does not change; only R changes.
 | CI | `.github/workflows/ci.yml` (Gate 2) |
 | Migration | `docs/design/migration.md` |
 | Rollback | `docs/design/rollback.md` |
+| Device acceptance | `scripts/device-verify.sh`; `/etc/duniawi/device-verify.sh` |
+| Recorded revision | `modules/base.nix` assertion; `system.configurationRevision` |
 
 If a node cannot be mapped to a file, aspect, command, or artifact, the graph
 is wrong and must be redrawn before code is written.
+
+## 10. Device-hardening graph
+
+Status: **implemented; the live switch is pending.**
+
+§1–§9 design the migration. This graph makes the running system match the
+declared one: Home Manager activation, a recorded revision, and a retained
+N-2 rollback. Every node is one-shot; the only repeated flow is the user's
+session.
+
+```mermaid
+flowchart LR
+  O[observe Device] --> D[decide D1-D2]
+  D --> U[unblock the .wants symlink]
+  U --> S1[switch 1: gen3, HM paths linked]
+  S1 --> S2[switch 2: /etc gate, gen4]
+  S2 --> V[verify L1-L6 + check-access]
+  V --> R[retain N-2, rescue USB, menu]
+  R --> C[record Verdict]
+```
+
+| # | Node | Input | Transform | Output | Implementation | Evidence |
+|---|---|---|---|---|---|---|
+| 1 | Observe | `Device` | read-only probes, unit audit | `Baseline` | `device-verify.sh`, P0 commands | `00-baseline.txt` |
+| 2 | Decide | `Baseline` + owner | choose D1–D2 | `Plan` | signed decision row | decision record |
+| 3 | Unblock | `Plan` | move the foreign `.wants` symlink | `Unblocked` | `mv` + `daemon-reload` | `readlink`, archive path |
+| 4 | Switch 1 | `Revision` | build, switch, HM activation | gen3, 14 links | `nixos-rebuild switch` | HM log, `verify.tsv` |
+| 5 | Switch 2 | gen3 + the `/etc` entry | build, switch | gen4 | `nixos-rebuild switch` | `system-4-link` |
+| 6 | Verify | gen4, HM, Amp | six layers + `check-access` | `[LayerResult]` | `device-verify.sh` | `verify.tsv` |
+| 7 | Retain | `System` | generations, USB, menu | `N-2`, `Rescue` | `nix-env`, `bootctl` | boot transcript |
+| 8 | Record | results | update dossier and docs | `Verdict` | P5 | evidence dir |
+
+### Device failures
+
+| Node | Failure | Strategy | Evidence required |
+|---|---|---|---|
+| Unblock | `ForeignPathCollision` | Escape (known path) | the moved symlink path |
+| Unblock | `DirtySource` | Die | `git status --porcelain` empty |
+| Switch 1 | `EvalError` | Die | eval stderr |
+| Switch 1 | `NetworkTimeout` | Retry 3× (5/15/45 s) | download log |
+| Switch 1 | `HMActivationFailure` | Die; fix the collision, rerun once | `is-failed`, journal |
+| Switch 2 | `StaleSource` | Die | built revision = durable HEAD |
+| Verify | `ModelAccessFailure` | Retry once, then `Fail`; no OS rollback | `check-access` JSON/stderr |
+| Verify | `LayerFail` | Die; roll back the phase | `verify.tsv` row |
+| Retain | `GenerationShortfall` | Die | fewer than 3 generations |
+| Retain | `RescueMediaAbsent` | Die for L6 | booted USB transcript |

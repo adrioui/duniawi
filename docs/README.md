@@ -14,7 +14,7 @@ Operator documentation for this nix-darwin repository.
 | [Shell](shell.md) | zsh, Starship, Keychain environment, terminals |
 | [Development tools](dev-tools.md) | language runtimes, containers, Nix tooling |
 | [Applications](applications.md) | editors, Helium, media apps, XcodeBuildMCP |
-| [Maintenance](maintenance.md) | clean worktrees, validation gates, rebuilds, updates |
+| [Maintenance](maintenance.md) | clean worktrees, validation gates, device acceptance, rebuilds, updates |
 
 ## Reading order
 

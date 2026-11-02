@@ -159,3 +159,64 @@ These are facts, not approvals.
    and at least N-1 and N-2 generations retained.
 10. Every status names its evidence; `Pass` without a command and artifact is
     not a status.
+
+## 7. Device acceptance (t14 hardening)
+
+Status: **implemented in `scripts/device-verify.sh`; the live switch is
+pending.**
+
+The migration graph proves data can move; this graph proves the running OS is
+the declared OS. It adds one invariant at evaluation time — a build from a tree
+without `.git` fails — and one command that compares Home Manager's declared
+file set with the live links.
+
+### 7.1 Entities
+
+| Entity | Identity | Source | Evidence |
+|---|---|---|---|
+| Device | `t14` | `hostnamectl`, `/run/current-system` | baseline row |
+| LayerResult | `L1`–`L6` + check name | verifier | `verify.tsv` |
+| ManagedPath | absolute target path | HM generation + `readlink` | `hm-collisions`, `managed-paths` |
+| UnitDisposition | unit name | unit audit | `declared` row |
+| Revision | commit SHA | `nixos-version --configuration-revision`, `git rev-parse` | `revision-format`, `revision-source` |
+| Generation | generation number | `/nix/var/nix/profiles` | `generations`, `n-2` |
+| ModelAccess | `provider/model` | `check-access` | `model-access` |
+| Evidence | directory | `$HOME/.local/state/duniawi/evidence/<stamp>` | `verify.tsv` |
+
+### 7.2 Variants
+
+| Variant | Values | Used by |
+|---|---|---|
+| LayerResult | `Pass`, `Fail`, `NotRun` | verifier, acceptance |
+| ManagedPathState | `Absent`, `HomeManagerLink`, `ForeignFile`, `ForeignSymlink`, `BackedUp` | HM audit |
+| UnitDisposition | `Declared`, `Foreign`, `Archived` | unit audit |
+| GenerationRole | `Current`, `N-1`, `N-2`, `ISO` | retention |
+| ActivationState | `Blocked`, `Activated`, `Failed` | Home Manager |
+| ModelAccess | `Served`, `Refused`, `Unknown` | L5 |
+
+### 7.3 Errors
+
+| Error | Class | Strategy | Detection |
+|---|---|---|---|
+| `ForeignPathCollision` | domain | Escape (known path) | `hm-collisions`, `*.hm-backup` |
+| `HMActivationFailure` | domain | Die | `systemctl is-failed home-manager-adrioui` |
+| `RevisionAbsent` | domain | Die | `configurationRevision` missing or not 40 hex |
+| `StaleSource` | domain | Die | built revision ≠ durable HEAD |
+| `DirtySource` | defect | Die | `git status --porcelain` non-empty |
+| `GenerationShortfall` | domain | Die | fewer than 3 generations |
+| `RescueMediaAbsent` | domain | Die for L6 | no booted-USB transcript |
+| `ModelAccessFailure` | external | Retry once, then `Fail`; no OS rollback | `check-access` non-zero or refused |
+| `LayerFail` | domain | Die; roll back the phase | `verify.tsv` `Fail` row |
+
+### 7.4 Invariants
+
+11. A build from a tree without `.git` fails evaluation; there is no unnamed
+    running system.
+12. Every Home Manager managed path is a link into the current generation's
+    `-home-manager-files` tree; a foreign file or symlink is a named collision.
+13. `--strict` is the acceptance mode: a required `NotRun` exits 2, so L1, L2,
+    L4, L5's model row, L6, and the declared row cannot pass unobserved.
+14. `check-access` is an external service probe, not an OS health signal; it
+    can `Fail` without a system rollback.
+15. The durable build source is `/var/lib/duniawi-src`, clean, and its HEAD is
+    the recorded revision.
