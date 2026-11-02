@@ -141,6 +141,10 @@ run_as_user() {
             HOME="$TARGET_HOME" USER="$TARGET_USER" LOGNAME="$TARGET_USER" \
             XDG_RUNTIME_DIR="/run/user/$TARGET_UID" \
             DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$TARGET_UID/bus" \
+            XDG_DATA_DIRS="/etc/profiles/per-user/$TARGET_USER/share:/run/current-system/sw/share:/usr/share" \
+            XDG_DATA_HOME="$TARGET_HOME/.local/share" \
+            XDG_CONFIG_HOME="$TARGET_HOME/.config" \
+            XDG_CACHE_HOME="$TARGET_HOME/.cache" \
             PATH="$TARGET_HOME/.nix-profile/bin:/etc/profiles/per-user/$TARGET_USER/bin:/run/current-system/sw/bin" \
             "$@"
     else
