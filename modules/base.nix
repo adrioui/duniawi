@@ -61,7 +61,7 @@ let
           assertion = config.system.configurationRevision != null;
           message = ''
             Build from a git checkout so the running system records its revision.
-            t14: /var/lib/duniawi-src. Darwin: its own checkout.
+            t14: /etc/nixos. Darwin: its own checkout.
           '';
         }
       ];

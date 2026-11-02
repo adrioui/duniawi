@@ -35,7 +35,7 @@ export PATH="$PATH:/run/current-system/sw/bin:/run/current-system/sw/sbin"
 
 PROVIDER_MODEL=${PROVIDER_MODEL:-deepseek/deepseek-v4.1-flash}
 TARGET_USER=${TARGET_USER:-adrioui}
-SRC=${NIX_SRC:-/var/lib/duniawi-src}
+SRC=${NIX_SRC:-/etc/nixos}
 
 EVID=
 EXPECT_REV=

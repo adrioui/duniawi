@@ -218,5 +218,5 @@ file set with the live links.
     L4, L5's model row, L6, and the declared row cannot pass unobserved.
 14. `check-access` is an external service probe, not an OS health signal; it
     can `Fail` without a system rollback.
-15. The durable build source is `/var/lib/duniawi-src`, clean, and its HEAD is
+15. The durable build source is `/etc/nixos`, clean, and its HEAD is
     the recorded revision.

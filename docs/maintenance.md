@@ -89,7 +89,7 @@ L6 proves more than the revision string:
   durable clone's HEAD;
 - `revision-build` evaluates
   `nixosConfigurations.t14.config.system.build.toplevel.outPath` from
-  `/var/lib/duniawi-src` and requires it to equal `/run/current-system`;
+  `/etc/nixos` and requires it to equal `/run/current-system`;
 - `generations` requires exact `system-<N>-link`, `system-<N-1>-link` and
   `system-<N-2>-link` targets;
 - `n-2-intact` runs `nix store verify --recursive --no-trust` on N-2;
@@ -128,8 +128,8 @@ from a tree without `.git` fails evaluation. Build the live system from the
 durable clone:
 
 ```bash
-sudo git -C /var/lib/duniawi-src status --porcelain   # empty
-sudo nixos-rebuild switch --flake /var/lib/duniawi-src#t14
+sudo git -C /etc/nixos status --porcelain   # empty
+sudo nixos-rebuild switch --flake /etc/nixos#t14
 nixos-version --configuration-revision               # 40 hex = git rev-parse HEAD
 ```
 
