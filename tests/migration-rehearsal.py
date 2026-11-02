@@ -126,7 +126,9 @@ export INCLUDE_FILE=/tmp/inc.txt
 export MIN_FREE_GB=0
 export OLD_HOME=/srv/fixture/var/home/adrifadilah
 bash /etc/verify-home.sh --checksum --deep
-echo "verify rc=$?"
+rc=$?
+echo "$rc" > /tmp/evid/verify.rc
+echo "verify rc=$rc"
 true
 """))
 
@@ -139,9 +141,53 @@ true
 """))
 
 
+
+
+
+
+
+
+note("F6 verify under en_US.UTF-8", machine.succeed(r"""
+set +e +o pipefail
+echo "locales: $(locale -a | grep -i '^en_US' | tr '\n' ' ')"
+rm -rf /tmp/evid-utf8; mkdir -p /tmp/evid-utf8
+cp /tmp/evid/rsync-filter.rules /tmp/evid-utf8/
+export SRC=/srv/fixture/var/home/adrifadilah
+export STAGE=/home/adrioui.restore
+export EVID=/tmp/evid-utf8
+export INCLUDE_FILE=/tmp/inc.txt
+export OLD_HOME=/srv/fixture/var/home/adrifadilah
+export LANG=en_US.UTF-8 LC_ALL=en_US.UTF-8
+bash /etc/verify-home.sh --checksum --deep
+rc=$?
+echo "$rc" > /tmp/evid-utf8/verify.rc
+echo "utf8 verify rc=$rc"
+cat /tmp/evid-utf8/verify.tsv
+true
+"""))
+
+
+
+
+
+machine.succeed("locale -a | grep -qi '^en_US'")
 machine.succeed("! grep -q FAIL /tmp/evid/checks.tsv")
-machine.succeed("test ! -s /tmp/evid/not-explained.txt")
-machine.succeed("! grep -q FAIL /tmp/evid/verify.tsv")
+
+oracles = (
+    "drift-lines",
+    "unexplained-exclusions",
+    "secret-paths-present",
+    "worktree-pointers",
+    "git-fsck-regression",
+    "sqlite-integrity",
+)
+for evid in ("/tmp/evid", "/tmp/evid-utf8"):
+    machine.succeed(f"test -s {evid}/verify.rc && grep -qx 0 {evid}/verify.rc")
+    machine.succeed(f'test "$(grep -c . {evid}/verify.tsv)" -ge {len(oracles)}')
+    for key in oracles:
+        machine.succeed(
+            f"""awk -F'\\t' -v k={key} '$1==k && $2=="PASS" {{f=1}} END {{exit !f}}' {evid}/verify.tsv"""
+        )
 machine.succeed("test -f /home/adrioui.restore/Works/Bangunindo/BLIV/repos/demo/botocore/credentials.py")
 machine.succeed("test ! -e /home/adrioui.restore/.aws/credentials")
 machine.succeed("test ! -e /home/adrioui.restore/Works/Bangunindo/BLIV/license_key.txt")

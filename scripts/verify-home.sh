@@ -16,6 +16,14 @@
 
 set -Eeuo pipefail
 
+
+
+
+
+
+
+export LC_ALL=C
+
 SRC=${SRC:-/run/media/adrioui/backup/home}
 STAGE=${STAGE:-/home/adrioui.restore}
 EVID=${EVID:-/var/log/duniawi-migration/$(date +%Y%m%dT%H%M%S)}
