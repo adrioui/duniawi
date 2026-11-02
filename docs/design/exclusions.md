@@ -23,6 +23,7 @@ home.
 | `.ssh/` | private keys, known hosts, agent sockets | new SSH key |
 | `.gnupg/` | private keys, passphrase state, agent sockets | new GPG key |
 | `.config/sops/` | old age private key | new per-host age key |
+| `.env` (exact basename) | project credentials; 45 in-scope files measured on this backup | recreate via sops or the provider |
 | `.aws/` | AWS credentials | re-authenticate / new key |
 | `.config/gh/` | GitHub OAuth token | `gh auth login` |
 | `.docker/` | registry auth, token seed | re-authenticate |
@@ -43,7 +44,7 @@ home.
 | `.local/share/Trash/` | deleted data, unpredictable secrets | do not restore |
 | `**/*.log` under `.config/`, `.local/share/`, `.cache/` | logs may contain headers/tokens | archive only; no restore |
 | `**/.env`, `**/env` under `.config/` | provider secrets | exclude; recreate via sops |
-| Secrets by **exact path or exact basename, never by prefix**: `.ssh/`, `.gnupg/`, `.aws/credentials`, `.netrc`, `.git-credentials`, `.config/gh/hosts.yml`, `.config/sops/age/keys.txt`, `.docker/config.json`, `.kube/config`, `id_rsa`, `id_ed25519`, `id_ecdsa`, `*.kdbx`, `Works/Bangunindo/BLIV/license_key.txt`, `**/.aws/credentials` | keys/certs | exclude; recreate via sops or the provider |
+| Secrets by **exact path or exact basename, never by prefix**: `.ssh/`, `.gnupg/`, `.aws/credentials`, `.netrc`, `.git-credentials`, `.config/gh/hosts.yml`, `.config/sops/age/keys.txt`, `.docker/config.json`, `.kube/config`, `id_rsa`, `id_ed25519`, `id_ecdsa`, `*.kdbx`, `.env` (exact basename; `example.env` is not matched), `Works/Bangunindo/BLIV/license_key.txt`, `**/.aws/credentials` | keys/certs | exclude; recreate via sops or the provider |
 
 Name-only prefix globs are forbidden. Measured on this backup, the previous
 rule `**/credentials*` removed 563 in-scope files whose basename merely starts

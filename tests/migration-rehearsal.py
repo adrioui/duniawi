@@ -37,6 +37,7 @@ echo '[default]' > $S/.aws/credentials
 echo 'module.exports=1' > $S/Personal/app/node_modules/pkg/index.js
 echo '{"event":"x"}' > $S/.claude/projects/p/transcript.jsonl
 echo state > $S/Learns/proj/.dlt/state.txt
+echo 'FAKE_SECRET=not-a-secret' > $S/Learns/proj/.env
 echo notes > $S/Personal/notes.md
 ln $S/Personal/notes.md $S/Personal/notes.hard
 setfattr -n user.provenance -v old-home $S/Personal/notes.md
@@ -103,6 +104,7 @@ echo "excluded .aws/credentials:     $(test -e $D/.aws/credentials && echo PRESE
 echo "excluded license_key.txt:      $(test -e $D/Works/Bangunindo/BLIV/license_key.txt && echo PRESENT || echo absent)"
 echo "excluded node_modules:         $(test -e $D/Personal/app/node_modules && echo PRESENT || echo absent)"
 echo "excluded .dlt:                 $(test -e $D/Learns/proj/.dlt && echo PRESENT || echo absent)"
+echo "excluded .env:                 $(test -e $D/Learns/proj/.env && echo PRESENT || echo absent)"
 echo "root-owned file mapped:        $(stat -c '%u:%g' $D/.herdr/worktrees/btj--bliv-demo/wt1/w.txt)"
 echo "home dir:                      $(stat -c '%u:%g %a' $D)"
 echo "metadata:                      $(stat -c '%a %h' $D/Personal/notes.md)"
@@ -256,6 +258,7 @@ machine.succeed(
 machine.succeed("test -f /home/adrioui.restore/Works/Bangunindo/BLIV/repos/demo/botocore/credentials.py")
 machine.succeed("test ! -e /home/adrioui.restore/.aws/credentials")
 machine.succeed("test ! -e /home/adrioui.restore/Works/Bangunindo/BLIV/license_key.txt")
+machine.succeed("test ! -e /home/adrioui.restore/Learns/proj/.env")
 machine.succeed("test \"$(stat -c %u:%g /home/adrioui.restore/Personal/notes.md)\" = 1000:1000")
 machine.succeed("test \"$(stat -c %i /home/adrioui.restore/Personal/notes.md)\" = \"$(stat -c %i /home/adrioui.restore/Personal/notes.hard)\"")
 machine.succeed("test \"$(stat -c %a /home/adrioui.restore/Personal/app/tool)\" = 4755")

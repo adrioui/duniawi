@@ -115,6 +115,7 @@ cat >"$EVID/exclusion-policy.ere" <<'POLICY'
 (^|/)\.aws/credentials$
 (^|/)\.netrc$
 (^|/)\.git-credentials$
+(^|/)\.env$
 ^\.config/gh/hosts\.yml$
 ^\.config/sops/age/keys\.txt$
 ^\.docker/config\.json$
@@ -160,6 +161,13 @@ present=0
 for s in "${secrets[@]}"; do
     if [ -e "$STAGE/$s" ]; then log "SECRET PRESENT: $s"; present=$((present + 1)); fi
 done
+
+
+dotenv=$(find "$STAGE" -xdev -type f -name '.env' -printf '.' 2>/dev/null | wc -c)
+if [ "$dotenv" -ne 0 ]; then
+    log "SECRET PRESENT: .env basenames=$dotenv"
+    present=$((present + dotenv))
+fi
 check "secret-paths-present" "0" "$present"
 if command -v gitleaks >/dev/null 2>&1; then
     if gitleaks detect --no-git --redact --max-target-megabytes 10 --source "$STAGE" \
