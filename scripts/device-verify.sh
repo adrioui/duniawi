@@ -136,7 +136,13 @@ expect_eq() {
 }
 
 run_as_user() {
+
+
+    local cd_home='cd "$HOME" && exec "$@"'
     if [ "$(id -u)" -eq 0 ]; then
+
+
+
         runuser -u "$TARGET_USER" -- env \
             HOME="$TARGET_HOME" USER="$TARGET_USER" LOGNAME="$TARGET_USER" \
             XDG_RUNTIME_DIR="/run/user/$TARGET_UID" \
@@ -146,9 +152,9 @@ run_as_user() {
             XDG_CONFIG_HOME="$TARGET_HOME/.config" \
             XDG_CACHE_HOME="$TARGET_HOME/.cache" \
             PATH="$TARGET_HOME/.nix-profile/bin:/etc/profiles/per-user/$TARGET_USER/bin:/run/current-system/sw/bin" \
-            "$@"
+            /run/current-system/sw/bin/bash -c "$cd_home" _ "$@"
     else
-        "$@"
+        (cd "$TARGET_HOME" && "$@")
     fi
 }
 
