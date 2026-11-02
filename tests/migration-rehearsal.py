@@ -40,6 +40,9 @@ echo state > $S/Learns/proj/.dlt/state.txt
 echo 'FAKE_SECRET=not-a-secret' > $S/Learns/proj/.env
 echo notes > $S/Personal/notes.md
 ln $S/Personal/notes.md $S/Personal/notes.hard
+# Cross-include hardlink: this group spans Works and Personal. A per-path
+# restore breaks it even though every file's content is correct.
+ln $S/Works/Bangunindo/BLIV/repos/demo/README.md $S/Personal/notes.cross
 setfattr -n user.provenance -v old-home $S/Personal/notes.md
 setfacl -m g:adrioui:r-- $S/Personal/notes.md
 # chown clears setuid and capabilities, so create everything, chown, then set bits
@@ -261,6 +264,7 @@ machine.succeed("test ! -e /home/adrioui.restore/Works/Bangunindo/BLIV/license_k
 machine.succeed("test ! -e /home/adrioui.restore/Learns/proj/.env")
 machine.succeed("test \"$(stat -c %u:%g /home/adrioui.restore/Personal/notes.md)\" = 1000:1000")
 machine.succeed("test \"$(stat -c %i /home/adrioui.restore/Personal/notes.md)\" = \"$(stat -c %i /home/adrioui.restore/Personal/notes.hard)\"")
+machine.succeed("test \"$(stat -c %i /home/adrioui.restore/Works/Bangunindo/BLIV/repos/demo/README.md)\" = \"$(stat -c %i /home/adrioui.restore/Personal/notes.cross)\"")
 machine.succeed("test \"$(stat -c %a /home/adrioui.restore/Personal/app/tool)\" = 4755")
 machine.succeed("getcap /home/adrioui.restore/Personal/app/tool | grep -q cap_net_bind_service")
 machine.succeed("getfattr -d /home/adrioui.restore/Personal/notes.md | grep -q user.provenance")

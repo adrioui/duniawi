@@ -118,15 +118,18 @@ sha256sum "$EVID/rsync-filter.rules" | tee "$EVID/rsync-filter.sha256"
 
 
 mkdir -m 0700 "$STAGE"
-for p in "${INC[@]}"; do
-    log "copy $p"
-    (
-        cd "$SRC"
-        rsync -aHASX --numeric-ids --relative \
-            --filter="merge $EVID/rsync-filter.rules" \
-            --info=stats2 "$p" "$STAGE/"
-    ) || die "rsync failed for $p"
-done
+
+
+
+
+
+log "copy in-scope paths (single rsync; -H preserves cross-path hardlinks)"
+(
+    cd "$SRC"
+    rsync -aHASX --numeric-ids --relative \
+        --filter="merge $EVID/rsync-filter.rules" \
+        --info=stats2 "${INC[@]}" "$STAGE/"
+) || die "rsync failed"
 
 
 
