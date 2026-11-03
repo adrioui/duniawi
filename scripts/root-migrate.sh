@@ -73,7 +73,6 @@ preflight_stage() {
 
 write_excludes() {
 cat >"$EVID/rsync-excludes.txt" <<'EOF'
-# secrets, keys, auth
 **/.ssh/
 **/.gnupg/
 **/.password-store/
@@ -93,13 +92,11 @@ cat >"$EVID/rsync-excludes.txt" <<'EOF'
 **/id_ed25519*
 **/keys.txt
 **/license_key.txt
-# caches, run state, trash
 **/.cache/
 **/Trash/
 **/.local/share/Trash/
 **/*.sock
 **/*.pid
-# generated state named by the scope
 Personal/**/node_modules/
 Personal/**/.yarn/cache/
 Personal/**/.swc/

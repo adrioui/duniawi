@@ -50,12 +50,5 @@
           }
         ];
       };
-
-    homeManager =
-      { pkgs, ... }:
-      {
-
-        home.packages = [ pkgs.cloudflared ];
-      };
   };
 }

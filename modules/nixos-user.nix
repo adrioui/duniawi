@@ -17,7 +17,6 @@
 
         sessionPath = [
           "$HOME/.local/bin"
-          "$HOME/.npm-global/bin"
         ];
 
         sessionVariables = {
@@ -29,55 +28,40 @@
 
         packages = with pkgs; [
           age
-          bat
           btop
           bun
-          curl
-          direnv
-          eza
           fastfetch
           fd
           ffmpeg
-          fzf
           gcc
           gh
-          git
           gnumake
           go
           helium
-          helix
           jq
           lazydocker
           lazygit
-          less
           neovim
           nix-tree
           nixd
           nodejs
-          openssh
           pkg-config
           pnpm
           python3
           qbittorrent
           ripgrep
           rustup
+          slack
           sops
           sqlite
           tmux
           tree
-          unzip
           uv
-          vim
-          wget
-          which
           yq
-          yt-dlp
           zellij
-          zip
-          zoxide
-          zsh
 
           (pkgs.callPackage ../pkgs/amp-cli.nix { })
+          (pkgs.callPackage ../pkgs/herdr-app.nix { })
           llm.claude-code
           llm.cursor-agent
           llm.herdr
@@ -85,8 +69,6 @@
           llm.pi
         ];
       };
-
-      dconf.enable = true;
 
       gtk = {
         enable = true;
@@ -145,10 +127,19 @@
           enable = true;
           enableZshIntegration = true;
         };
+        gpg.enable = true;
         zoxide = {
           enable = true;
           enableZshIntegration = true;
         };
+      };
+
+      services.gpg-agent = {
+        enable = true;
+        defaultCacheTtl = 34560000;
+        maxCacheTtl = 34560000;
+        pinentry.package = pkgs.pinentry-curses;
+        extraConfig = "allow-preset-passphrase";
       };
 
       assertions = [

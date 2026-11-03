@@ -60,6 +60,8 @@ in
           getty.autologinUser = lib.mkForce "adrioui";
         };
 
+        programs.dconf.enable = true;
+
         virtualisation = {
           podman.enable = lib.mkForce false;
           memorySize = 2048;
@@ -103,8 +105,6 @@ in
       machine.succeed("getent group 1000 | grep -q adrioui")
       machine.succeed("! find /home/adrioui -xdev \\( -nouser -o -nogroup \\) -print | grep -q .")
 
-      # Gate 4 fixture: ACLs/xattrs are required on the VM's ext4 filesystem,
-      # and a full destination plus a corrupted SQLite copy must fail closed.
       machine.succeed(
           "REQUIRE_ACL=1 REQUIRE_FULL_DISK=1 REQUIRE_ROOT=1 "
           "TMPDIR=/tmp bash /etc/migration-fixture.sh"
@@ -127,8 +127,6 @@ in
       machine.succeed("systemctl --failed --no-legend | wc -l | grep -q '^0$'")
       machine.fail("journalctl --no-pager | grep -E 'test-upstream|test-inbound'")
 
-      # Failure injection: killing the main process must be recovered by the
-      # unit's Restart=on-failure policy, with the same health behavior.
       machine.succeed(
           "su - adrioui -c 'XDG_RUNTIME_DIR=/run/user/1000 "
           "systemctl --user show -p MainPID --value amp-deepseek-proxy.service' "
@@ -150,7 +148,6 @@ in
           "systemctl --user --failed --no-legend' | wc -l | grep -q '^0$'"
       )
 
-      # Missing credentials must produce 503, not a fallback to plaintext.
       machine.succeed(
           "su - adrioui -c 'XDG_RUNTIME_DIR=/run/user/1000 "
           "HOST=127.0.0.1 PORT=4015 UPSTREAM_AUTH_KEY= INBOUND_AUTH_KEY= "
@@ -167,7 +164,6 @@ in
       machine.wait_for_open_port(4014)
       machine.succeed("curl -fsS http://127.0.0.1:4014/health | grep -q '\"ok\":true'")
 
-      # Failure injection: an immediate power loss, then boot the same disk.
       machine.crash()
       machine.start(allow_reboot=True)
       machine.wait_for_unit("multi-user.target")

@@ -14,8 +14,6 @@
         den.aspects.vpn
         den.aspects.browser
         den.aspects.dev
-        den.aspects.shell
-        den.aspects.media
         den.aspects.deviceVerify
       ];
 
@@ -65,7 +63,6 @@
 
     adrioui = {
       includes = [
-        den.aspects.base
         den.aspects.ampDeepseekNixos
         den.aspects.shell
         den.aspects.media

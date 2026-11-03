@@ -11,8 +11,7 @@
 
       x86_64-linux.t14 = {
         hostName = "nixos";
-        aspect = den.aspects.t14;
-        users.adrioui.aspect = den.aspects.adrioui;
+        users.adrioui = { };
 
         instantiate = inputs.nixpkgs-stable.lib.nixosSystem;
         home-manager.module = inputs.home-manager-stable.nixosModules.home-manager;
@@ -33,6 +32,7 @@
         "rave-isis-model"
         "rave-percussion-model"
         "rave-water-model"
+        "slack"
         "vschaos2-ordinario-1024-model"
       ])
     ];

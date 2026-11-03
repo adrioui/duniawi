@@ -40,16 +40,12 @@ echo state > $S/Learns/proj/.dlt/state.txt
 echo 'FAKE_SECRET=not-a-secret' > $S/Learns/proj/.env
 echo notes > $S/Personal/notes.md
 ln $S/Personal/notes.md $S/Personal/notes.hard
-# Cross-include hardlink: this group spans Works and Personal. A per-path
-# restore breaks it even though every file's content is correct.
 ln $S/Works/Bangunindo/BLIV/repos/demo/README.md $S/Personal/notes.cross
 setfattr -n user.provenance -v old-home $S/Personal/notes.md
 setfacl -m g:adrioui:r-- $S/Personal/notes.md
-# chown clears setuid and capabilities, so create everything, chown, then set bits
 cp /run/current-system/sw/bin/true $S/Personal/app/tool
 truncate -s 32M $S/Personal/app/sparse.img
 printf x | dd of=$S/Personal/app/sparse.img bs=1 seek=16777216 conv=notrunc status=none
-# A WAL database whose committed rows live only in the -wal file.
 python3 - <<'PY'
 import sqlite3, os
 p = "/srv/fixture/var/home/adrifadilah/Personal/app/data.db"
@@ -86,7 +82,6 @@ export MIN_FREE_GB=0
 export ALLOW_WRITABLE_SOURCE=1
 rm -rf $EVID $STAGE
 echo "findmnt: $(command -v findmnt || echo MISSING)"
-# The guard must refuse a writable source when the escape hatch is absent.
 env -u ALLOW_WRITABLE_SOURCE SRC=/srv/fixture/var/home/adrifadilah \
     STAGE=/tmp/never-stage EVID=/tmp/evid-guard INCLUDE_FILE=/tmp/inc.txt \
     MIN_FREE_GB=0 bash /etc/restore-home.sh >/tmp/guard.log 2>&1
