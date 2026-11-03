@@ -4,6 +4,7 @@
     {
       config,
       pkgs,
+      lib,
       ...
     }:
     let
@@ -101,8 +102,20 @@
           document-font-name = "Adwaita Sans 11";
           monospace-font-name = "Hack 10";
         };
+        "org/gnome/desktop/session" = {
+          idle-delay = lib.hm.gvariant.mkUint32 0;
+        };
+        "org/gnome/desktop/screensaver" = {
+          idle-activation-enabled = false;
+        };
         "org/gnome/desktop/wm/preferences" = {
           button-layout = "appmenu:minimize,maximize,close";
+        };
+        "org/gnome/settings-daemon/plugins/power" = {
+          idle-dim = false;
+          sleep-inactive-ac-type = "nothing";
+          sleep-inactive-battery-type = "nothing";
+          power-button-action = "interactive";
         };
       };
 

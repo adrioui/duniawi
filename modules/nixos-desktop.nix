@@ -36,6 +36,24 @@
         journald.extraConfig = "SystemMaxUse=1G";
       };
 
+      systemd.sleep.settings.Sleep = {
+        AllowSuspend = "no";
+        AllowHibernation = "no";
+        AllowHybridSleep = "no";
+        AllowSuspendThenHibernate = "no";
+      };
+
+      services.logind.settings.Login = {
+        HandleLidSwitch = "ignore";
+        HandleLidSwitchExternalPower = "ignore";
+        HandleLidSwitchDocked = "ignore";
+        HandleSuspendKey = "ignore";
+        HandleHibernateKey = "ignore";
+        IdleAction = "ignore";
+      };
+
+      services.upower.criticalPowerAction = "PowerOff";
+
       zramSwap.enable = true;
 
       programs.zsh.enable = true;
