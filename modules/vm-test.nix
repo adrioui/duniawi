@@ -41,7 +41,16 @@ in
         services = {
           xserver.enable = lib.mkForce false;
           displayManager.sddm.enable = lib.mkForce false;
+          displayManager.gdm.enable = lib.mkForce false;
           desktopManager.plasma6.enable = lib.mkForce false;
+          desktopManager.gnome.enable = lib.mkForce false;
+          gnome = {
+            core-apps.enable = lib.mkForce false;
+            core-shell.enable = lib.mkForce false;
+            games.enable = lib.mkForce false;
+            sushi.enable = lib.mkForce false;
+            gnome-keyring.enable = lib.mkForce false;
+          };
           printing.enable = lib.mkForce false;
           avahi.enable = lib.mkForce false;
           tlp.enable = lib.mkForce false;
@@ -50,6 +59,7 @@ in
           tailscale.enable = lib.mkForce false;
           getty.autologinUser = lib.mkForce "adrioui";
         };
+        programs.dconf.enable = lib.mkForce false;
 
         virtualisation = {
           podman.enable = lib.mkForce false;

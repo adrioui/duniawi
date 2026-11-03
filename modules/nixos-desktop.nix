@@ -39,6 +39,14 @@
         displayManager.gdm.enable = true;
         desktopManager.gnome.enable = true;
 
+        gnome = {
+          core-apps.enable = true;
+          core-shell.enable = true;
+          games.enable = false;
+          sushi.enable = true;
+          gnome-keyring.enable = true;
+        };
+
         libinput.enable = true;
         upower.enable = true;
         printing.enable = true;
@@ -67,8 +75,13 @@
       zramSwap.enable = true;
 
       programs.zsh.enable = true;
+      programs.dconf.enable = true;
 
-      fonts.packages = [ pkgs.nerd-fonts.hack ];
+      fonts.packages = [
+        pkgs.nerd-fonts.hack
+        pkgs.adwaita-fonts
+        pkgs.gnome-themes-extra
+      ];
 
       environment = {
         shells = [ pkgs.zsh ];
@@ -82,10 +95,12 @@
 
         systemPackages = with pkgs; [
           curl
+          dconf-editor
           file
           git
+          gnome-text-editor
+          gnome-tweaks
           htop
-          kdePackages.kate
           lsof
           nano
           pciutils
