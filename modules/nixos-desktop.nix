@@ -28,24 +28,8 @@
       };
 
       services = {
-        xserver = {
-          enable = true;
-          xkb = {
-            layout = "us";
-            variant = "";
-          };
-        };
-
         displayManager.gdm.enable = true;
         desktopManager.gnome.enable = true;
-
-        gnome = {
-          core-apps.enable = true;
-          core-shell.enable = true;
-          games.enable = false;
-          sushi.enable = true;
-          gnome-keyring.enable = true;
-        };
 
         libinput.enable = true;
         upower.enable = true;
@@ -77,11 +61,7 @@
       programs.zsh.enable = true;
       programs.dconf.enable = true;
 
-      fonts.packages = [
-        pkgs.nerd-fonts.hack
-        pkgs.adwaita-fonts
-        pkgs.gnome-themes-extra
-      ];
+      fonts.packages = [ pkgs.nerd-fonts.hack ];
 
       environment = {
         shells = [ pkgs.zsh ];
@@ -98,7 +78,6 @@
           dconf-editor
           file
           git
-          gnome-text-editor
           gnome-tweaks
           htop
           lsof

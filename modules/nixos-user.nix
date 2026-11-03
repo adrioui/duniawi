@@ -3,7 +3,6 @@
   den.aspects.nixosUser.homeManager =
     {
       config,
-      lib,
       pkgs,
       ...
     }:
@@ -85,35 +84,9 @@
           llm.opencode
           llm.pi
         ];
-
-        activation.kdeCleanup = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
-          run mkdir -p "$HOME/.config/user-disabled/kde"
-          for path in \
-            .config/gtk-3.0 .config/gtk-4.0 .config/xsettingsd \
-            .config/kdeglobals .config/qt5ct .config/qt6ct \
-            .config/plasmarc .config/plasmanotifyrc .config/plasmashellrc \
-            .config/plasma-localerc .config/plasma-org.kde.plasma.desktop-appletsrc \
-            .config/kwinrc .config/kwinoutputconfig.json .config/kscreenlockerrc \
-            .config/kwalletrc .config/krunnerrc .config/baloofilerc \
-            .config/powerdevilrc .config/kactivitymanagerdrc \
-            .config/kactivitymanagerd-statsrc .config/ksmserverrc \
-            .config/kded5rc .config/kded6rc .config/kdedefaults \
-            .config/khotkeysrc .config/kaccessrc .config/kcminputrc \
-            .config/kdeconnect; do
-            if [ -e "$HOME/$path" ] && [ ! -e "$HOME/.config/user-disabled/kde/$(basename "$path")" ]; then
-              run mv "$HOME/$path" "$HOME/.config/user-disabled/kde/$(basename "$path")"
-            fi
-          done
-          for path in \
-            .local/share/plasma .local/share/plasmashell \
-            .local/share/kded5 .local/share/kservices5 .local/share/kxmlgui5 \
-            .local/share/knotifications5 .local/share/kwalletd; do
-            if [ -e "$HOME/$path" ] && [ ! -e "$HOME/.config/user-disabled/kde/$(basename "$path")" ]; then
-              run mv "$HOME/$path" "$HOME/.config/user-disabled/kde/$(basename "$path")"
-            fi
-          done
-        '';
       };
+
+      dconf.enable = true;
 
       gtk = {
         enable = true;

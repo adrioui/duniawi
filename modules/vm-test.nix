@@ -59,7 +59,6 @@ in
           tailscale.enable = lib.mkForce false;
           getty.autologinUser = lib.mkForce "adrioui";
         };
-        programs.dconf.enable = lib.mkForce false;
 
         virtualisation = {
           podman.enable = lib.mkForce false;

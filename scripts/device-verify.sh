@@ -512,7 +512,7 @@ l4_home() {
 
         mime=$(timeout 60 nix eval --json --offline --no-write-lock-file \
             "git+file://$SRC#nixosConfigurations.t14.config.home-manager.users.$TARGET_USER.xdg.mimeApps.defaultApplications" 2>/dev/null |
-            jq -r '."text/html" // empty' 2>/dev/null || true)
+            jq -r '."text/html" | if type == "array" then (.[0] // empty) else . end' 2>/dev/null || true)
         if [ -z "$mime" ]; then
             record L4 mimeapps "declared default" "nix eval failed" Fail "$SRC"
         else
