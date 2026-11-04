@@ -41,7 +41,11 @@
         services.tailscale = {
           enable = true;
           useRoutingFeatures = "client";
+          openFirewall = true;
+          extraSetFlags = [ "--ssh" ];
         };
+
+        networking.firewall.trustedInterfaces = [ "tailscale0" ];
 
         assertions = [
           {
