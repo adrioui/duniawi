@@ -58,7 +58,7 @@ system = {
 nixpkgs.hostPlatform = "aarch64-darwin";
 ```
 
-Home Manager uses its own `home.stateVersion = "23.11"` in the `base` aspect.
+Home Manager uses its own `home.stateVersion = "23.11"` in the `base` aspect. The t14 user overrides it to `"26.05"` in `nixos-user.nix`; the assertion there prevents the Darwin value from leaking into the NixOS home.
 
 ## Overlays
 
@@ -66,7 +66,6 @@ Home Manager uses its own `home.stateVersion = "23.11"` in the `base` aspect.
 
 | Overlay | Purpose |
 |---|---|
-| `inputs.llm-agents.overlays.shared-nixpkgs` | AI CLI packages under `pkgs.llm-agents` |
 | `inputs.helium.overlays.default` | Helium browser |
 | local Helium override | finds `Helium.app` in the nested DMG layout and wraps it with update-disabling flags |
 
@@ -92,8 +91,9 @@ Add a package name only when the package is required. Do not enable global unfre
 
 ```bash
 nix fmt --no-write-lock-file --no-update-lock-file
-nix flake check --no-write-lock-file --no-update-lock-file
+nix flake check --all-systems --no-build
 darwin-rebuild build --flake path:$PWD#adri
+nix build .#nixosConfigurations.t14.config.system.build.toplevel --print-out-paths
 ```
 
 `nix flake check` covers:
@@ -102,9 +102,10 @@ darwin-rebuild build --flake path:$PWD#adri
 * `deadnix`
 * `statix`
 * `flake.lock` freshness
-* the real darwin system derivation
-* the home-manager activation derivation
-* the Amp DeepSeek proxy tests
+* the real Darwin system derivation
+* the Darwin Home Manager activation
+* the t14 NixOS system derivation
+* the t14 Home Manager activation
 
 Treat `flake.lock` as read-only during validation. Use `nix flake update` only when intentionally updating inputs.
 

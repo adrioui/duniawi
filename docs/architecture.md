@@ -2,7 +2,7 @@
 
 ## Status
 
-The repository is a single `aarch64-darwin` flake built with `flake-parts`, `import-tree`, and `den`. Features are written as den aspects, not host files.
+The repository is a two-host flake built with `flake-parts`, `import-tree`, and `den`: `adri` on `aarch64-darwin` and `t14` on `x86_64-linux`. Features are written as den aspects, not host files.
 
 ## Layout
 
@@ -10,16 +10,19 @@ The repository is a single `aarch64-darwin` flake built with `flake-parts`, `imp
 |---|---|
 | `flake.nix` | inputs and `flake-parts.mkFlake` |
 | `flake.lock` | pinned inputs |
-| `modules/flake-parts.nix` | imports `den.flakeModule`, sets `aarch64-darwin` |
+| `modules/flake-parts.nix` | imports `den.flakeModule`, sets both systems |
 | `modules/den.nix` | host/user entities, default includes, unfree allowlist |
 | `modules/host.nix` | which aspects apply to `adri` and `adrifadilah` |
+| `modules/t14.nix` | which aspects apply to `t14` and `adrioui` |
 | `modules/base.nix` | Nix settings, platform, overlays, system identity |
 | `modules/homebrew.nix` | Homebrew casks/brews and activation policy |
-| `modules/vpn.nix` | Tailscale, Netbird, VPN casks, cloudflared |
+| `modules/vpn.nix` | Tailscale, Netbird, VPN casks |
 | `modules/audio.nix` | Pure Data and externals |
 | `modules/max.nix` | Max/MSP and `nn_tilde` package |
-| `modules/ai.nix` | Amp, Claude Code, OpenCode, Cursor, Pi, Herdr |
-| `modules/amp-deepseek.nix` | Amp DeepSeek proxy, tunnel, official modes |
+| `modules/cli.nix` | shared portable AI/CLI home packages |
+| `modules/herdr.nix` | Herdr desktop app/core platform payloads |
+| `modules/nixos-user.nix` | t14 user packages and GNOME settings |
+| `modules/nixos-desktop.nix` | t14 GNOME, boot, and system packages |
 | `modules/shell.nix` | zsh, starship, Keychain environment |
 | `modules/editor.nix` | Vim, Neovim, Helix |
 | `modules/dev.nix` | language toolchains and Nix tooling |
@@ -32,13 +35,15 @@ The repository is a single `aarch64-darwin` flake built with `flake-parts`, `imp
 
 ## Entities
 
-`modules/den.nix` declares:
+`modules/den.nix` declares two hosts:
 
 ```nix
 den.hosts.aarch64-darwin.adri.users.adrifadilah = { };
+den.hosts.x86_64-linux.t14.users.adrioui = { };
 ```
 
-This gives the pipeline one host (`adri`) and one user (`adrifadilah`). The user defaults to the `homeManager` class:
+`adri` uses the unstable `nixpkgs`; `t14` instantiates with `nixpkgs-stable`.
+Both users default to the `homeManager` class:
 
 ```nix
 schema.user.classes = lib.mkDefault [ "homeManager" ];
@@ -66,8 +71,7 @@ den.aspects.adri.includes = [
   den.aspects.vpn
   den.aspects.audio
   den.aspects.max
-  den.aspects.ai
-  den.aspects.ampDeepseek
+  den.aspects.herdr
   den.aspects.shell
   den.aspects.editor
   den.aspects.dev
@@ -77,7 +81,7 @@ den.aspects.adri.includes = [
 ];
 ```
 
-The user include list is narrower and describes what the user itself needs. Host includes cover machine-wide services and packages.
+The user include list is narrower and describes what the user itself needs. Host includes cover machine-wide services and packages; portable tools go in the user's `den.aspects.cli` include instead.
 
 ## Why this structure
 
@@ -93,49 +97,58 @@ The user include list is narrower and describes what the user itself needs. Host
 
 | Output | Purpose |
 |---|---|
-| `packages.xcodebuildmcp` | XcodeBuildMCP |
-| `packages.default` | XcodeBuildMCP |
+| `packages.xcodebuildmcp` | Darwin XcodeBuildMCP |
+| `packages.default` | `xcodebuildmcp` on Darwin; `device-verify` on Linux |
 | `devShells.default` | Nix formatter and linters |
-| `checks.darwin-system` | full system derivation |
-| `checks.home-manager-activation` | home-manager activation derivation |
+| `checks.darwin-system` | full Darwin system derivation |
+| `checks.home-manager-activation` | Darwin Home Manager activation |
+| `checks.nixos-system` | full t14 NixOS system |
+| `checks.nixos-home-manager-activation` | t14 Home Manager activation |
+| `checks.t14-vm` | boot and activation proof for t14 |
 | `checks.nixfmt` | formatting |
 | `checks.deadnix` | unused Nix code |
 | `checks.statix` | Nix lint |
 | `checks.lockfile` | flake.lock freshness |
-| `checks.amp-deepseek` | proxy contract tests |
 | `formatter` | `nixfmt-tree` |
 
 ## Inputs
 
 | Input | Use |
 |---|---|
-| `nixpkgs` | package set |
+| `nixpkgs` | base package set for `adri` |
+| `nixpkgs-cli` | current Pi and OpenCode 2 for both hosts |
+| `nixpkgs-stable` | NixOS base for `t14` |
 | `darwin` | nix-darwin |
 | `home-manager` | user configuration |
-| `llm-agents` | AI CLI packages |
+| `bend` | Bend 2 |
+| `sops-nix` | secrets on t14 |
+| `nixos-hardware` | ThinkPad hardware profile |
 | `xcodebuildmcp` | pinned XcodeBuildMCP source |
 | `flake-parts` | flake output structure |
 | `import-tree` | module discovery |
 | `den` | aspect engine |
 | `helium` | browser package |
 
-The `nixpkgs` input follows through `darwin` and `home-manager`. `helium` follows `nixpkgs`.
+`nixpkgs-cli` is separate because `t14` runs `nixpkgs-stable`, which lags Pi and
+OpenCode. It does not replace the host package sets.
 
 ## Adding a feature
 
 1. Create `modules/<feature>.nix`.
 2. Define `den.aspects.<feature>` with the classes it needs.
-3. Add the aspect to `modules/host.nix` for the host or user.
+3. Add the aspect to `modules/host.nix` or `modules/t14.nix` for the host or user.
 4. Add any custom package under `pkgs/`.
-5. Run `nix flake check --no-write-lock-file --no-update-lock-file`.
-6. Build the system with `darwin-rebuild build --flake path:$PWD#adri`.
+5. Run `nix flake check --all-systems --no-build`.
+6. Build `darwin-rebuild build --flake path:$PWD#adri` and `nix build .#nixosConfigurations.t14.config.system.build.toplevel`.
 
 ## Verification
 
 ```bash
-nix flake check --no-write-lock-file --no-update-lock-file
+nix flake check --all-systems --no-build
 nix eval .#darwinConfigurations.adri.config --json
+nix eval .#nixosConfigurations.t14.config --json
 nix build .#darwinConfigurations.adri.system --print-out-paths
+nix build .#nixosConfigurations.t14.config.system.build.toplevel --print-out-paths
 ```
 
 ## Troubleshooting

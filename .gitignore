@@ -4,4 +4,5 @@
 /.envrc
 .DS_Store
 /thoughts/
+/.agents/
 /.claude/settings.local.json

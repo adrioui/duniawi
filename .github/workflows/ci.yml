@@ -29,8 +29,8 @@ jobs:
         run: nix flake check --no-build --no-write-lock-file --no-update-lock-file --all-systems
       - name: Static checks
         run: nix build --no-link .#checks.x86_64-linux.nixfmt .#checks.x86_64-linux.deadnix .#checks.x86_64-linux.statix .#packages.x86_64-linux.device-verify
-      - name: Proxy tests, migration fixture, migration rehearsal
-        run: nix build --no-link .#checks.x86_64-linux.amp-deepseek .#checks.x86_64-linux.migration-fixture .#checks.x86_64-linux.migration-rehearsal
+      - name: Migration fixture and rehearsal
+        run: nix build --no-link .#checks.x86_64-linux.migration-fixture .#checks.x86_64-linux.migration-rehearsal
       - name: Build NixOS toplevel
         run: nix build --no-link .#nixosConfigurations.t14.config.system.build.toplevel
       - name: NixOS VM proof
@@ -61,8 +61,6 @@ jobs:
         run: nix flake check --no-build --no-write-lock-file --no-update-lock-file --all-systems
       - name: Static checks
         run: nix build --no-link .#checks.aarch64-darwin.nixfmt .#checks.aarch64-darwin.deadnix .#checks.aarch64-darwin.statix
-      - name: Proxy tests
-        run: nix build --no-link .#checks.aarch64-darwin.amp-deepseek
       - name: Build Darwin host
         run: nix build --no-link .#darwinConfigurations.adri.system
       - name: Home Manager activation

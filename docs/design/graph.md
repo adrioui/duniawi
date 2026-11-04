@@ -301,8 +301,7 @@ service endpoints. The graph does not change; only R changes.
 | Dev | `modules/dev.nix` |
 | Media | `modules/media.nix` |
 | VPN | `modules/vpn.nix` |
-| AI | `modules/ai.nix` |
-| Amp/DeepSeek | `modules/amp-deepseek.nix` (Darwin launchd); `modules/amp-deepseek-nixos.nix` (systemd + sops) |
+| AI | `modules/herdr.nix` |
 | VM proof | `modules/vm-test.nix` (`checks.x86_64-linux.t14-vm`) |
 | Browser / Xcode / audio / max / homebrew | existing Darwin-only modules |
 | Per-system checks | `modules/per-system.nix` |

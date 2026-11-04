@@ -8,7 +8,6 @@
       ...
     }:
     let
-      llm = inputs.llm-agents.packages.${pkgs.stdenv.hostPlatform.system};
       helium = inputs.helium.packages.${pkgs.stdenv.hostPlatform.system}.default;
     in
     {
@@ -61,13 +60,7 @@
           yq
           zellij
 
-          (pkgs.callPackage ../pkgs/amp-cli.nix { })
           (pkgs.callPackage ../pkgs/herdr-app.nix { })
-          llm.claude-code
-          llm.cursor-agent
-          llm.herdr
-          llm.opencode
-          llm.pi
         ];
       };
 

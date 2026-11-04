@@ -2,7 +2,7 @@
 
 ## Status
 
-Network access is provided by Tailscale, Netbird, and optional commercial VPN clients. `cloudflared` is installed for outbound tunnel workflows.
+Network access is provided by Tailscale, Netbird, and optional commercial VPN clients. The previous `cloudflared` tunnel and Amp DeepSeek proxy are removed.
 
 ## Components
 
@@ -14,9 +14,8 @@ Network access is provided by Tailscale, Netbird, and optional commercial VPN cl
 | Netbird | mesh VPN service | `darwin` |
 | ProtonVPN | commercial VPN client | Homebrew cask |
 | Cloudflare WARP | commercial VPN client | Homebrew cask |
-| `cloudflared` | tunnel client | `homeManager` package |
 
-The Amp DeepSeek tunnel is a separate feature documented in `docs/amp-deepseek.md`.
+The Amp DeepSeek tunnel and `cloudflared` package are removed.
 
 ## Tailscale
 
@@ -45,16 +44,16 @@ launchd.daemons.netbird = {
 
 The wrapper waits for `/nix/store`, creates `/var/run/netbird`, then runs `netbird service run`.
 
-## Cloudflared
+## Cloudflared removed
 
-`cloudflared` is in `home.packages`. It is used explicitly by tunnel features, not as a background service by default. The Amp DeepSeek tunnel is the only declared tunnel in this repository.
+`cloudflared` is no longer installed. The Amp DeepSeek tunnel and proxy were
+removed with it; Amp now uses its configured provider directly.
 
 ## Verification
 
 ```bash
 tailscale status
 netbird status
-cloudflared --version
 launchctl print system/io.netbird.client
 ```
 
@@ -65,7 +64,6 @@ launchctl print system/io.netbird.client
 * No VPN credentials or enrollment keys are stored in this repository.
 * Tailscale and Netbird authentication is external.
 * Homebrew VPN clients may auto-update; that is accepted for GUI clients.
-* `cloudflared` tokens must come from Keychain at runtime, never from Nix or a plist.
 
 ## Troubleshooting
 
@@ -74,6 +72,4 @@ launchctl print system/io.netbird.client
 | Tailscale not connected | `tailscale status`; sign in or approve the machine |
 | Netbird not running | `launchctl print system/io.netbird.client` and `/var/log/netbird/client.error.log` |
 | Netbird cannot create runtime dir | confirm `/var/run/netbird` is created by the wrapper |
-| `cloudflared` missing | `home.packages` must include `pkgs.cloudflared` |
-| tunnel cannot resolve local service | check the tunnel ingress and the origin listener |
 | DNS changes by a VPN break other services | inspect `scutil --dns` and the VPN split-tunnel settings |

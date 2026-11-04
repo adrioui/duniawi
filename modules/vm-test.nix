@@ -5,7 +5,6 @@
 }:
 let
   pkgs = inputs.nixpkgs-stable.legacyPackages.x86_64-linux;
-  proxy = pkgs.callPackage ../pkgs/amp-deepseek { };
 in
 {
   flake.checks.x86_64-linux.t14-vm = pkgs.testers.nixosTest {
@@ -80,17 +79,6 @@ in
           initialPassword = lib.mkForce "test";
           linger = lib.mkForce true;
         };
-
-        home-manager.users.adrioui.systemd.user.services.amp-deepseek-proxy.Service.Environment =
-          lib.mkForce
-            [
-              "HOST=127.0.0.1"
-              "PORT=4014"
-              "UPSTREAM_HOST=api.deepseek.com"
-              "UPSTREAM_PATH=/anthropic"
-              "UPSTREAM_AUTH_KEY=test-upstream"
-              "INBOUND_AUTH_KEY=test-inbound"
-            ];
       };
 
     testScript = ''
@@ -98,7 +86,6 @@ in
       machine.wait_for_unit("multi-user.target")
       machine.wait_for_unit("home-manager-adrioui.service")
       machine.wait_for_unit("user@1000.service")
-      machine.wait_for_open_port(4014)
 
       machine.succeed("stat -c '%u:%g' /home/adrioui | grep -q '1000:1000'")
       machine.succeed("getent passwd adrioui | grep -q ':1000:1000:'")
@@ -110,67 +97,18 @@ in
           "TMPDIR=/tmp bash /etc/migration-fixture.sh"
       )
 
-      machine.succeed("curl -fsS http://127.0.0.1:4014/health | grep -q '\"ok\":true'")
-      machine.succeed("ss -ltnp | grep -q '127.0.0.1:4014'")
-      machine.fail("ss -ltnp | grep -q '0.0.0.0:4014'")
-
-      machine.succeed(
-          "curl -s -o /dev/null -w '%{http_code}' "
-          "-X POST http://127.0.0.1:4014/v1/messages "
-          "-H 'x-api-key: wrong' -H 'content-type: application/json' -d '{}' "
-          "| grep -q 401"
-      )
-
-      machine.succeed("su - adrioui -c 'XDG_RUNTIME_DIR=/run/user/1000 systemctl --user is-active amp-deepseek-proxy.service'")
-      machine.succeed("su - adrioui -c 'XDG_RUNTIME_DIR=/run/user/1000 systemctl --user list-unit-files --state=enabled' | grep -q amp-deepseek-proxy")
-      machine.fail("su - adrioui -c 'XDG_RUNTIME_DIR=/run/user/1000 systemctl --user list-unit-files --state=enabled' | grep -Eq 'commandcode|litellm|bifrost|cline|qoder|collie|dsh-web|sprint69|gpg-preset'")
       machine.succeed("systemctl --failed --no-legend | wc -l | grep -q '^0$'")
-      machine.fail("journalctl --no-pager | grep -E 'test-upstream|test-inbound'")
-
-      machine.succeed(
-          "su - adrioui -c 'XDG_RUNTIME_DIR=/run/user/1000 "
-          "systemctl --user show -p MainPID --value amp-deepseek-proxy.service' "
-          "> /tmp/amp-deepseek-main.pid"
-      )
-      pid = machine.succeed("cat /tmp/amp-deepseek-main.pid").strip()
-      machine.succeed(f"test '{pid}' -gt 1")
-      machine.succeed(f"kill -9 '{pid}'")
-      machine.wait_until_succeeds(
-          "curl -fsS http://127.0.0.1:4014/health | grep -q '\"ok\":true'", timeout=60
-      )
-      machine.succeed(
-          "su - adrioui -c 'XDG_RUNTIME_DIR=/run/user/1000 "
-          "systemctl --user is-active amp-deepseek-proxy.service' | grep -q active"
-      )
-      machine.succeed("systemctl --failed --no-legend | wc -l | grep -q '^0$'")
-      machine.succeed(
-          "su - adrioui -c 'XDG_RUNTIME_DIR=/run/user/1000 "
-          "systemctl --user --failed --no-legend' | wc -l | grep -q '^0$'"
-      )
-
-      machine.succeed(
-          "su - adrioui -c 'XDG_RUNTIME_DIR=/run/user/1000 "
-          "HOST=127.0.0.1 PORT=4015 UPSTREAM_AUTH_KEY= INBOUND_AUTH_KEY= "
-          "${proxy}/bin/amp-deepseek-proxy >/tmp/amp-deepseek-nosecrets.log 2>&1 & echo $! >/tmp/amp-deepseek-nosecrets.pid'"
-      )
-      machine.wait_for_open_port(4015)
-      machine.succeed("curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:4015/health | grep -q 503")
-      machine.succeed("kill $(cat /tmp/amp-deepseek-nosecrets.pid)")
 
       machine.reboot()
       machine.wait_for_unit("multi-user.target")
       machine.wait_for_unit("home-manager-adrioui.service")
       machine.wait_for_unit("user@1000.service")
-      machine.wait_for_open_port(4014)
-      machine.succeed("curl -fsS http://127.0.0.1:4014/health | grep -q '\"ok\":true'")
 
       machine.crash()
       machine.start(allow_reboot=True)
       machine.wait_for_unit("multi-user.target")
       machine.wait_for_unit("home-manager-adrioui.service")
       machine.wait_for_unit("user@1000.service")
-      machine.wait_for_open_port(4014)
-      machine.succeed("curl -fsS http://127.0.0.1:4014/health | grep -q '\"ok\":true'")
       machine.succeed("systemctl --failed --no-legend | wc -l | grep -q '^0$'")
     '';
   };

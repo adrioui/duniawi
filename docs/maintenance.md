@@ -25,12 +25,14 @@ Run all of these before a commit:
 
 ```bash
 nix fmt --no-write-lock-file --no-update-lock-file
-nix flake check --no-write-lock-file --no-update-lock-file
+nix flake check --all-systems --no-build
 nix build .#darwinConfigurations.adri.system --print-out-paths
 nix build .#checks.aarch64-darwin.home-manager-activation --print-out-paths
+nix build .#nixosConfigurations.t14.config.system.build.toplevel --print-out-paths
+nix build .#checks.x86_64-linux.nixos-home-manager-activation --print-out-paths
 ```
 
-`nix flake check` covers formatting, dead code, lint, lockfile freshness, the real darwin system, the home-manager activation, and the Amp proxy tests.
+`nix flake check` covers formatting, dead code, lint, lockfile freshness, the Darwin system and activation, and the t14 NixOS system and activation.
 
 ## Device acceptance gate (t14)
 
@@ -187,12 +189,7 @@ Homebrew activation does not auto-update or upgrade. Keep every persistent brew/
 
 ## Amp
 
-After the first activation, restart Amp or run `plugins: reload` so the official modes plugin loads. The DeepSeek tunnel and proxy are launchd agents; check:
-
-```bash
-launchctl list | grep amp-deepseek
-curl -sS http://127.0.0.1:4014/health
-```
+After the first activation, restart Amp or run `plugins: reload` so the official modes plugin loads. There is no Amp proxy or tunnel service to check.
 
 ## Commit hygiene
 

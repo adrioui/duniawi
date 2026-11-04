@@ -25,10 +25,7 @@
       den.batteries.primary-user
       den.batteries.hostname
       (den.batteries.unfree [
-        "amp"
         "amp-cli"
-        "claude-code"
-        "cursor-agent"
         "rave-isis-model"
         "rave-percussion-model"
         "rave-water-model"

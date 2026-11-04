@@ -2,23 +2,36 @@
 
 ## Status
 
-The AI toolchain is installed system-wide. Amp is pinned separately because its upstream releases move faster than the flake's nixpkgs input. DeepSeek is reached through a dedicated Cloudflare Tunnel and proxy documented in `docs/amp-deepseek.md`.
+Portable AI/CLI tools are declared once in `modules/cli.nix` as a
+`homeManager` aspect and included by both users, `adrifadilah` on `adri` and
+`adrioui` on `t14`. Platform-only payloads stay in `modules/herdr.nix` or
+`modules/nixos-desktop.nix`.
 
-## Packages
+The shared aspect covers Amp, OpenCode 2, Pi, Bend, and the Amp official-modes
+activation. Herdr's terminal TUI and OpenCode V1 are removed; only the Herdr
+desktop app/core remain. See [Shared modules](module-sharing.md) for the layer
+and source rules.
 
-`modules/ai.nix` installs:
+## Shared packages
 
-| Package | Role |
-|---|---|
-| `amp-cli` from `pkgs/amp-cli.nix` | Amp coding agent CLI |
-| `llm-agents.pi` | Pi coding agent |
-| `llm-agents.opencode` | OpenCode |
-| `llm-agents.cursor-agent` | Cursor agent |
-| `llm-agents.claude-code` | Claude Code |
-| `herdr` | terminal agent/herd tooling |
+| Package | Source | Role |
+|---|---|---|
+| `amp-cli` | `pkgs/amp-cli.nix` | Amp CLI, pinned upstream build |
+| `pi-coding-agent` | `nixpkgs-cli` | Pi 1.5.0 |
+| `opencode2` | `pkgs/opencode2.nix` | OpenCode 2.2.5, prebuilt npm binary |
+| `bend` | `inputs.bend` | Bend 2 |
+| `official-modes` | `pkgs/amp-official-modes` | writable Amp plugin |
 
-`pkgs/amp-cli.nix` is pinned to the latest upstream release at packaging time
-and supports both `aarch64-darwin` and `x86_64-linux`:
+`nixpkgs-cli` is a pinned nixpkgs input used only for Pi and OpenCode 2. The
+NixOS host uses `nixpkgs-stable` for its system, and stable lags both tools;
+the separate input keeps the CLI current without moving the whole NixOS base.
+
+`opencode2` is installed from the official `@opencode/cli` npm tarball for the
+host platform and wrapped with `ripgrep`. The package name is `opencode2` so it
+cannot collide with the removed V1 command.
+
+`pkgs/amp-cli.nix` pins the upstream Amp build and supports both
+`aarch64-darwin` and `x86_64-linux`:
 
 ```text
 0.0.1793462430-g2650be
@@ -26,15 +39,26 @@ linux-x64:    sha256-vi8KehFrc1Xoexbgdk1wjs4VKpPeVb+m2oyIQU1F2YY=
 darwin-arm64: sha256-oqACkG+PJeBI4DVldP9AbrvZEWFzMnxkqR1MYhr5DJE=
 ```
 
-It is unfree and allowlisted in `modules/den.nix`.
+It is unfree and allowed narrowly in `modules/cli.nix`.
 
-## Amp DeepSeek
+## Platform-only packages
 
-The Amp DeepSeek integration is documented separately:
+| Package | Host | Location |
+|---|---|---|
+| `herdr-app`, `herdr-core` | `adri` | `environment.systemPackages` |
+| `herdr-app` | `t14` | `home.packages` |
+| `herdr-core` | `t14` | `environment.systemPackages` |
 
-* `docs/amp-deepseek.md` — tunnel, proxy, Keychain, model mapping, modes.
+`pkgs/herdr-app.nix` and `pkgs/herdr-core.nix` each contain both the macOS and
+Linux payload behind `stdenv.hostPlatform`. The Herdr TUI (`pkgs.herdr` /
+`llm.herdr`) is not installed.
 
-The local system plugin `~/.config/amp/plugins/official-modes` registers the official mode list, including DeepSeek V4.1 Flash. It is copied from `pkgs/amp-official-modes/` by home-manager activation because Amp requires a writable plugin directory.
+## Official modes
+
+`modules/cli.nix` copies `pkgs/amp-official-modes/` to
+`~/.config/amp/plugins/official-modes` during Home Manager activation. Amp
+requires a writable plugin directory, so this cannot be a read-only Nix store
+link.
 
 ## Keychain environment
 
@@ -47,25 +71,26 @@ The local system plugin `~/.config/amp/plugins/official-modes` registers the off
 | `OPENCODE_API_KEY` | `opencode-api-key` |
 | `OPENCODE_GO_API_KEY` | same as `OPENCODE_API_KEY` |
 
-Values are read with `security find-generic-password` at runtime. They are not written to Nix, plists, or logs.
+Values are read with `security find-generic-password` at runtime. They are not
+written to Nix, plists, or logs.
 
 ## Verification
 
 ```bash
 amp --version
-amp plugins list
-amp config model-providers list --json
-claude --version
-opencode --version
-cursor-agent --version
+opencode2 --version
+pi --version
+bend guide
+herdr-core --version
 ```
 
-For the DeepSeek route:
+Check the package list directly:
 
 ```bash
-amp config model-providers check-access \
-  --provider-model deepseek/deepseek-v4.1-flash \
-  --thread <thread-id>
+nix eval --json .#darwinConfigurations.adri.config.home-manager.users.adrifadilah.home.packages \
+  --apply 'ps: map (p: p.name) ps'
+nix eval --json .#nixosConfigurations.t14.config.home-manager.users.adrioui.home.packages \
+  --apply 'ps: map (p: p.name) ps'
 ```
 
 ## Security
@@ -73,7 +98,8 @@ amp config model-providers check-access \
 * API keys live in Keychain, never in the repository.
 * Amp provider credentials are stored in Amp's encrypted cloud config.
 * The unfree allowlist is narrow.
-* The official modes plugin is vendored from the official Amp plugin cache and pinned in `pkgs/amp-official-modes/SOURCE.md`.
+* The official modes plugin is vendored from the official Amp plugin cache and
+  pinned in `pkgs/amp-official-modes/SOURCE.md`.
 * No AI tool receives a repository-stored secret.
 
 ## Troubleshooting
@@ -81,9 +107,7 @@ amp config model-providers check-access \
 | Symptom | Check |
 |---|---|
 | `amp` missing | rebuild and check `pkgs/amp-cli.nix` |
+| `opencode2` missing | check `pkgs/opencode2.nix` and `nixpkgs-cli` |
+| `pi` resolves to a Homebrew shim | remove the old `/opt/homebrew/bin/pi` wrapper |
 | Amp model list only shows built-ins | restart Amp or run `plugins: reload`; check `amp plugins list` |
-| DeepSeek mode missing | check the `official-modes` plugin and the `amp-deepseek-tunnel` connection |
-| `401` from DeepSeek proxy | inbound key in Keychain and Amp connection |
 | Keychain variable empty | item name and login keychain |
-| Claude Code auth fails | `claude` uses its own auth, not the shell exports |
-| Cursor agent missing | `pkgs.llm-agents.cursor-agent` must be in `environment.systemPackages` |

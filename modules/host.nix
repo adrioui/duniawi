@@ -6,8 +6,7 @@
     den.aspects.vpn
     den.aspects.audio
     den.aspects.max
-    den.aspects.ai
-    den.aspects.ampDeepseek
+    den.aspects.herdr
     den.aspects.shell
     den.aspects.shellDarwin
     den.aspects.editor
@@ -20,8 +19,7 @@
   den.aspects.adrifadilah.includes = [
     den.aspects.base
     den.aspects.vpn
-    den.aspects.ai
-    den.aspects.ampDeepseek
+    den.aspects.cli
     den.aspects.shell
     den.aspects.shellDarwin
     den.aspects.media

@@ -1,8 +1,10 @@
 {
-  description = "adri nix-darwin setup";
+  description = "Nix flake for adri (macOS) and t14 (NixOS)";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+
+    nixpkgs-cli.url = "github:NixOS/nixpkgs/ea9e3ef341e11c193537f674f821a99f9f436729";
 
     nixpkgs-stable.url = "github:NixOS/nixpkgs/6f06d204d8f2d8761d9da78778745974a3216381";
 
@@ -21,7 +23,10 @@
     sops-nix.url = "github:Mic92/sops-nix/60182817ee048ac94b4c68ea76d5ef2e8aac730d";
     sops-nix.inputs.nixpkgs.follows = "nixpkgs-stable";
 
-    llm-agents.url = "github:numtide/llm-agents.nix";
+    bend = {
+      url = "github:bendlang/bend";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     xcodebuildmcp = {
       url = "github:getsentry/XcodeBuildMCP/e6ef59b49b44012c824f0a0de261c96142e37390";

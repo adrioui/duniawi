@@ -100,7 +100,6 @@ in
       nixpkgs = {
         hostPlatform = "aarch64-darwin";
         overlays = [
-          inputs.llm-agents.overlays.shared-nixpkgs
           inputs.helium.overlays.default
           (_final: prev: {
             helium = prev.helium.overrideAttrs (_old: {

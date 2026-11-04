@@ -29,22 +29,20 @@
           );
       };
 
-      proxy = pkgs.callPackage ../pkgs/amp-deepseek { };
+      deviceVerify = pkgs.callPackage ../pkgs/device-verify.nix {
+        rescueIsoSha256 = inputs.self.nixosConfigurations.t14.config.duniawi.deviceVerify.rescueIsoSha256;
+      };
     in
     {
-      packages = {
-        amp-deepseek-proxy = proxy;
-      }
-      // lib.optionalAttrs isDarwin {
-        xcodebuildmcp = pkgs.callPackage ../pkgs/xcodebuildmcp.nix { src = inputs.xcodebuildmcp; };
-        default = pkgs.callPackage ../pkgs/xcodebuildmcp.nix { src = inputs.xcodebuildmcp; };
-      }
-      // lib.optionalAttrs isLinux {
-        default = proxy;
-        device-verify = pkgs.callPackage ../pkgs/device-verify.nix {
-          rescueIsoSha256 = inputs.self.nixosConfigurations.t14.config.duniawi.deviceVerify.rescueIsoSha256;
+      packages =
+        lib.optionalAttrs isDarwin {
+          xcodebuildmcp = pkgs.callPackage ../pkgs/xcodebuildmcp.nix { src = inputs.xcodebuildmcp; };
+          default = pkgs.callPackage ../pkgs/xcodebuildmcp.nix { src = inputs.xcodebuildmcp; };
+        }
+        // lib.optionalAttrs isLinux {
+          default = deviceVerify;
+          device-verify = deviceVerify;
         };
-      };
 
       devShells.default = pkgs.mkShell {
         packages = [
@@ -75,19 +73,6 @@
           ${pkgs.flake-checker}/bin/flake-checker "$src"
           touch "$out"
         '';
-
-        amp-deepseek =
-          pkgs.runCommand "amp-deepseek-tests"
-            {
-              src = ../pkgs/amp-deepseek;
-              nativeBuildInputs = [ pkgs.nodejs ];
-            }
-            ''
-              cp -r "$src" "$TMPDIR/amp-deepseek"
-              cd "$TMPDIR/amp-deepseek"
-              node --test test/*.test.mjs
-              touch "$out"
-            '';
       }
       // lib.optionalAttrs isDarwin {
         darwin-system = inputs.self.darwinConfigurations.adri.system;

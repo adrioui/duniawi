@@ -51,19 +51,13 @@
               assertion = config.networking.hostName == "nixos";
               message = "Keep the network hostname nixos during the migration.";
             }
-            {
-              assertion =
-                !(config.home-manager.users.adrioui.ampDeepseekNixos.enable or false)
-                || (config.home-manager.users.adrioui.systemd.user.services ? amp-deepseek-proxy);
-              message = "ampDeepseekNixos must define the amp-deepseek-proxy user service.";
-            }
           ];
         };
     };
 
     adrioui = {
       includes = [
-        den.aspects.ampDeepseekNixos
+        den.aspects.cli
         den.aspects.shell
         den.aspects.media
         den.aspects.nixosUser

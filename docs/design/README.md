@@ -1,5 +1,11 @@
 # Cross-platform Den design
 
+> **Historical record.** This directory documents the migration design and its
+> evidence. Current operator behavior lives in [AI tools](../ai-tools.md) and
+> [Shared modules](../module-sharing.md). References to the Amp DeepSeek proxy,
+> `llm-agents`, or the removed Herdr TUI describe the design at the time, not
+> the current system.
+
 Status: **Gate 2 implemented; Gate 3 VM proof and failure injection passed;
 the live migration is blocked by root verification, A3b, A4/A5, and secrets**
 
